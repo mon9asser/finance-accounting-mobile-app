@@ -20,7 +20,7 @@ const App = () => {
 
     return (
         <SafeAreaView style={{flex: 1}}>
-          
+          <Text>Hello</Text>
         </SafeAreaView>
     )
     
