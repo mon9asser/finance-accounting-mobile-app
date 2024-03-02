@@ -1,7 +1,12 @@
 import { StyleSheet } from "react-native"; 
 
 var styles = StyleSheet.create({
-    
+    direct: {
+        color: {
+            white: "#fff"
+        }
+    },
+
     flex: {
         flex: 1
     },
@@ -82,6 +87,39 @@ var styles = StyleSheet.create({
 
     space_top_15: {
         marginTop: 15
+    },
+
+    error_message: {
+        borderColor: 'red',
+        borderWidth: 1,
+        backgroundColor: '#ffeded',
+        padding: 10,
+        borderRadius: 5
+    },
+
+    error_text: {
+        color: 'red',
+        fontSize: 12,
+        textAlign:"center"
+    },
+
+    success_message: {
+        borderColor: 'green',
+        borderWidth: 1,
+        backgroundColor: '#edfff6',
+        padding: 10,
+        borderRadius: 5
+    },
+    success_text: {
+        color: 'green',
+        fontSize: 12,
+        textAlign:"center"
+    },
+
+    primary_button: {
+        width: '100%', 
+        padding: 3, 
+        backgroundColor:'#F65F6E'
     }
 
 });

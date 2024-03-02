@@ -6,8 +6,8 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';   
-import { StyleSheet, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput } from 'react-native';
-
+import { StyleSheet, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput } from 'react-native';
+import { Button } from "react-native-paper";
 // App Files 
 import {config} from "./../settings/config.js" ;
 import {styles} from "./../objects/styles.js"; 
@@ -26,10 +26,10 @@ class LoginComponents extends Component {
             user_email: '',
             password: '',
 
-            notificationBox: { display: 'flex' },
+            notificationBox: { display: 'none' },
             notificationCssClass: {},
             notificationTextCssClass: {},
-            notificationMessage: "Notification Box",
+            notificationMessage: "",
 
             isPressed: false,
 
@@ -106,7 +106,7 @@ class LoginComponents extends Component {
 
     loginUser = () => {
         this.setNotificationBox("none")
-        this.setPressBtn(true);
+        this.setPressBtn(true); 
 
         if( this.state.isPressed ) {
             alert("Please wait while we validate your login access.");
@@ -183,7 +183,7 @@ class LoginComponents extends Component {
             
             // unkown reason 
             if( message == '' ) {
-                message = 'Something went wrong, please check your internet connection and try again'
+                message = 'Something went wrong, please check your internet connection and try again.'
             }
 
             // stop activator indicator
@@ -275,9 +275,18 @@ class LoginComponents extends Component {
                             </TouchableOpacity>
                         </View>
 
-                        <View style={{ ...styles.wrapper, ...this.state.notificationBox, ...this.state.notificationCssClass}}>
+                        <View style={{ ...styles.wrapper, ...this.state.notificationBox, ...this.state.notificationCssClass, ...styles.space_top_25}}>
                             <Text style={this.state.notificationTextCssClass}>{this.state.notificationMessage}</Text>
                         </View> 
+
+                        <Button mode="contained" onPress={() => this.loginUser() } style={{ ...styles.primary_button, ...styles.space_top_25 }}>
+                                {
+                                    this.state.isPressed ?
+                                    <ActivityIndicator color={styles.direct.color.white} />
+                                    :
+                                    <Text style={styles.buttonText}>Login</Text>
+                                } 
+                        </Button>
 
                     </View>
 
