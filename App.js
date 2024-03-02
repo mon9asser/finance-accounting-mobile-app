@@ -10,8 +10,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';   
 import { StyleSheet, Text, Image, View, TouchableOpacity, SafeAreaView, AppState } from 'react-native';
 
-// App Components 
-import {config} from "./components/settings/config.js" ;
+// App Files 
+import {config} from "./settings/config.js" ;
+import {styles} from "./objects/styles.js";
+
+// App Screens 
+import {HomeComponents} from './components/home.js';
+import {LoginComponents} from './components/login.js';
+
+import {DashboardComponents} from './components/dashboard.js';
 
 // Functions 
 const Stack = createStackNavigator();
@@ -19,8 +26,18 @@ const Stack = createStackNavigator();
 const App = () => {
 
     return (
-        <SafeAreaView style={{flex: 1}}>
-          <Text>Hello</Text>
+        <SafeAreaView style={styles.flex}>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName='Home'>
+
+              <Stack.Screen name="Home" component={HomeComponents} options={{ headerShown: false }}  />
+              <Stack.Screen name="Login" component={LoginComponents} options={{ headerShown: false }}  />
+               
+              
+              <Stack.Screen name="Dashboard" component={DashboardComponents}/> 
+
+            </Stack.Navigator>
+          </NavigationContainer>
         </SafeAreaView>
     )
     
