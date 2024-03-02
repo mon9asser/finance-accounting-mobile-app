@@ -9,10 +9,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput } from 'react-native';
 import { Button } from "react-native-paper";
 // App Files 
-import {config} from "./../settings/config.js" ;
+import {config,} from "./../settings/config.js" ;
 import {styles} from "./../objects/styles.js"; 
-
-
+import {get_setting} from "./../objects/storage.js"
+import {get_lang} from './../objects/languages.js'
 
 class LoginComponents extends Component {
 
@@ -34,9 +34,26 @@ class LoginComponents extends Component {
             isPressed: false,
 
             user_email_hlght: false,
-            password_hlght: false,
-
+            password_hlght: false, 
+            language: "en"
         }
+    }
+
+    translate = (key) => {
+        return get_lang[this.state.language][key];
+    }
+
+    setLanguage = (val) => {
+        this.setState({
+            language: val
+        })
+    }
+    
+    componentDidMount = async () => {
+        
+        var {language}  = await get_setting();
+        this.setLanguage(language)
+
     }
 
     redirect_to = (screen) => {
@@ -248,7 +265,7 @@ class LoginComponents extends Component {
                     <View style={styles.row}>
 
                         <View style={{...styles.space_bottom_25}}>
-                            <Text style={styles.screen_headline}>Login</Text>
+                            <Text style={styles.screen_headline}> {this.translate("login")} </Text>
                             <Text style={styles.screen_subheadline}>Please sign in to continue</Text>
                         </View>
                         
