@@ -1,30 +1,29 @@
+
+
+// Default
+import React from "react";
+
+// Distruct 
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-
-import React from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createStackNavigator } from '@react-navigation/stack';   
+import { StyleSheet, Text, Image, View, TouchableOpacity, SafeAreaView, AppState } from 'react-native';
 
-const Drawer = createDrawerNavigator();
-const  HomeScreen = () => (<Text>Home Screen</Text>);
-const  NotificationsScreen = () => (<Text>Notification Screen</Text>);
-function MyDrawer() {
-  return (
-    <Drawer.Navigator>
-      <Drawer.Screen name="Home" component={HomeScreen} />
-      <Drawer.Screen name="Notifications" component={NotificationsScreen} />
-      {/* Add more screens as needed */}
-    </Drawer.Navigator>
-  );
-}
+// App Components 
+import {config} from "./components/settings/config.js" ;
 
+// Functions 
+const Stack = createStackNavigator();
 
 const App = () => {
-  return (
-    <NavigationContainer>
-      <MyDrawer />
-    </NavigationContainer>
-  );
-};
 
+    return (
+        <SafeAreaView style={{flex: 1}}>
+          
+        </SafeAreaView>
+    )
+    
+}
+ 
 export default App;
