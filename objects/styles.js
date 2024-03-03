@@ -16,6 +16,10 @@ var styles = StyleSheet.create({
         flexDirection: 'row'
     },
     
+    text_center: {
+        textAlign:'center'
+    },
+
     text_left: {
         textAlign: "left"
     }, 
@@ -51,7 +55,7 @@ var styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-
+    
     input: { 
         backgroundColor:'#f1f1f1', 
         maxHeight: 55, 

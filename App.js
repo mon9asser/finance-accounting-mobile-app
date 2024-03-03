@@ -12,7 +12,7 @@ import { StyleSheet, Text, Image, View, TouchableOpacity, SafeAreaView, AppState
 
 // App Files 
 import {config} from "./settings/config.js" ;
-import {styles} from "./objects/styles.js";
+import {styles} from "./objects/styles.js"; 
 
 
 // ---------------------------------
@@ -21,7 +21,9 @@ import {styles} from "./objects/styles.js";
 import {HomeComponents} from './components/home.js';
 
 import {LoginComponents} from './components/user/login.js';
+import {ResetPasswordComponents} from './components/user/password-reset.js';
 import {RegisterComponents} from './components/user/register.js';
+import { ChangePasswordComponents } from "./components/user/password-change.js";
 
 import {DashboardComponents} from './components/dashboard.js';
 
@@ -33,14 +35,15 @@ const App = () => {
     return (
         <SafeAreaView style={styles.flex}>
           <NavigationContainer>
-            <Stack.Navigator initialRouteName='Register'>
+            <Stack.Navigator initialRouteName='Dashboard'>
       
               <Stack.Screen name="Home" component={HomeComponents} options={{ headerShown: false }}  />
               <Stack.Screen name="Register" component={RegisterComponents} options={{ headerShown: false }}  />
               <Stack.Screen name="Login" component={LoginComponents} options={{ headerShown: false }}  />
-               
+              <Stack.Screen name="ResetPassword" component={ResetPasswordComponents} options={{ headerShown: false }}  />
+              <Stack.Screen name="ChangePassword" component={ChangePasswordComponents} options={{ headerShown: false }}  />
               
-              <Stack.Screen name="Dashboard" component={DashboardComponents}/> 
+              <Stack.Screen name="Dashboard" component={DashboardComponents} /> 
 
             </Stack.Navigator>
           </NavigationContainer>

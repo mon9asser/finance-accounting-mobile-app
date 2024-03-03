@@ -1,6 +1,7 @@
 
 // Default
 import React, { Component } from "react";
+import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';  
 
 
@@ -17,7 +18,7 @@ import {config,} from "../../settings/config.js" ;
 import {styles} from "../../objects/styles.js"; 
 import {get_setting} from "../../objects/storage.js"
 import {get_lang} from '../../objects/languages.js' 
-
+import {add_session, get_session, delete_session } from './../../objects/storage.js'
 
 class RegisterComponents extends Component {
     
@@ -50,9 +51,13 @@ class RegisterComponents extends Component {
             confirm_password_hlght: false,
 
             language: {},
-            current_language: "en"
+            current_language: "en",
+
+            isConnected: false
 
         };
+
+        this.internetState = null;
     }
 
     setCurrentLanguage = (lang = "en") => {
@@ -72,13 +77,36 @@ class RegisterComponents extends Component {
     }
     
     
-    // Assign application language
-    componentDidMount = async () => {
-        
+    // Setup Language
+    setupLanguage = async() => {
         var {language}  = await get_setting(); 
         this.setCurrentLanguage(language);
         this.setLanguage(language);
+    }
+
+    // internet connection
+    internetConnectionStatus = () => {
+        this.internetState = NetInfo.addEventListener(state => {
+            this.setState({ isConnected: state.isConnected });
+        });
+    }
+
+    // Assign application language
+    componentDidMount = async () => {
         
+        // setup language
+        await this.setupLanguage();
+        
+        // internet connection
+        this.internetConnectionStatus();
+
+    } 
+
+    componentWillUnmount() {
+        // internetState to network state updates
+        if (this.internetState) {
+            this.internetState();
+        }
     }
 
     setCompanyNameHlght = (value) => {
@@ -200,6 +228,17 @@ class RegisterComponents extends Component {
         this.setNotificationBox("none")
         this.setPressBtn(true);
 
+        if(! this.state.isConnected) {
+
+            this.setNotificationBox("flex")
+            this.setNotificationCssClass(styles.error_message);
+            this.setNotificationCssTextClass(styles.error_text)
+            this.setNotificationMessage(this.state.language.connection_status);
+
+            this.setPressBtn(false); 
+            return;
+        }
+
         if( this.state.isPressed ) {
             alert(this.state.language.complete_application);
             return;
@@ -214,7 +253,8 @@ class RegisterComponents extends Component {
         var version = this.state.version;
         var app_name = this.state.app_name.trim();
         var agree_checkbox = this.state.agree_checkbox;
-
+        var language = this.state.current_language;
+        
         var data = {
             name: user_name,
             email: user_email,
@@ -222,7 +262,8 @@ class RegisterComponents extends Component {
             company_name: company,
             app_name: app_name,
             platform: platform,
-            version: version
+            version: version,
+            language: language
         };
 
         
@@ -309,9 +350,18 @@ class RegisterComponents extends Component {
             var message = '';
 
             if( error.response != undefined ) {
-                message = this.state.language.check_internet_connection
+                message = this.state.language.api_connection_error;
+                
             } else if( error.request != undefined ) {
                 message = this.state.language.api_connection_error;
+                
+                if( error.request._response ) {
+                    var ob_response = JSON.parse(error.request._response);
+                    if( ob_response.is_error) {
+                        message = ob_response.data;
+                    } 
+                }
+
             } else {
                 message = this.state.language.check_internet_connection
             }

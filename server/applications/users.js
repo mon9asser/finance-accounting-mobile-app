@@ -124,14 +124,14 @@ const verify_api_keys = ( req, res, next ) => {
     if( secretKey === undefined || secretKey === "" || publicKey === undefined || publicKey === "" ) {
         objx.data = localize.access_denied
 
-        return res.status(401).send(objx);
+        return res.send(objx);
     }
  
 
     if( publicKey === conf.server.keys.public && secretKey === conf.server.keys.secret ) {
         next();
     } else {
-        return res.status(401).send(objx);
+        return res.send(objx);
     }
     
 
@@ -290,9 +290,7 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
     var email = req.body.email; 
     var password= req.body.password; 
     var app_name = req.body.app_name;
-    console.log(email)
-    console.log(password)
-    console.log(app_name)
+    
     //- Validate inputs 
     if( email == '' || email == undefined || password == '' || password == undefined || app_name == '' || app_name == undefined ) {
         objx.data = localize.provide_fields;
@@ -315,6 +313,7 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
         objx.is_error = true; 
         objx.success = false; 
         objx.data = localize.email_not_exist;  
+        
         return res.send(objx); 
     } 
     
@@ -325,11 +324,13 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
         
         if( compare == false ) {
             objx.data = localize.incorrect_data;
+            console.log(objx);
             return res.send(objx);
         }
 
     } catch (e) {
         objx.data = localize.incorrect_data;
+        
         return res.send(objx);
     }
 

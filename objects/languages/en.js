@@ -15,6 +15,7 @@ const en = {
         password: "Password",
         confirm_password: "Confirm Password",
 
+        connection_status: "You are currently offline. Please check your wireless or internet connection.",
         register: "Sign Up",
         i_agree_to: "I agree to",
         and: "and",
@@ -28,12 +29,22 @@ const en = {
         passwords_dont_match:"The passwords do not match",
         check_agree_checkbox:"Please check 'I agree to terms and conditions'",
         do_have_an_account: "Already have an account?",
-        do_not_have_an_account: "You don't have an account?",
+        do_not_have_an_account: "You don't have an account?", 
 
-        api_connection_error: "API Connection Error: Please check with your service provider."
+        remember_password: "Have you remembered your password?",
 
+        api_connection_error: "API Connection Error: Please check with your service provider.",
 
+        passcode: "Passcode",
+        verify_passcode: "Verify the passcode",
+        required_passcode: "You have not entered the passcode. Please ensure to copy and paste the passcode sent to your email into the above passcode field.",
+        reset_my_password: "Rset my password",
+        passcode_msg: "Please enter the correct email address, then check your email inbox to receive the passcode.",
+        passcode_req_btn: "Send the passcode to my email",
 
+        change_password: "Change Password",
+        change_password_label: "Change your password",
+        save_new_password: "Update my password"
 }
 
 

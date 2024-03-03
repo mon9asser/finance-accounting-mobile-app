@@ -21,8 +21,21 @@ class DashboardComponents extends Component {
         super(props);
 
     }
-
+    componentDidMount = () => {
+        this.props.navigation.setOptions({
+            headerTitle: "Title changed! -",
+            headerTitleStyle: {
+                color: "red" 
+            },
+            headerStyle: {
+                backgroundColor: "tan"
+            }
+        }) 
+    }
     render = () => {
+        
+         
+        
         return (
             <Text>
                 Dashboard

@@ -20,18 +20,17 @@ import {get_lang} from '../../objects/languages.js'
 import {add_session, get_session, delete_session } from './../../objects/storage.js'
 
 
-class LoginComponents extends Component {
+class ResetPasswordComponents extends Component {
 
     constructor(props) {
 
         super(props);
 
-        this.state = {
-
-            app_name: config.application.name,
+        this.state = { 
+             
             user_email: '',
-            password: '',
-
+            btnText: "",
+            
             notificationBox: { display: 'none' },
             notificationCssClass: {},
             notificationTextCssClass: {},
@@ -40,7 +39,10 @@ class LoginComponents extends Component {
             isPressed: false,
 
             user_email_hlght: false,
-            password_hlght: false, 
+            passing_code_hlght: false,
+            passcode_value: '',
+            passcode_enabled: false,
+
             language: {},
             current_language: "en",
 
@@ -77,7 +79,7 @@ class LoginComponents extends Component {
     internetConnectionStatus = () => {
         this.internetState = NetInfo.addEventListener(state => {
             this.setState({ isConnected: state.isConnected });
-        });
+        }); 
     }
 
     // Assign application language
@@ -93,7 +95,7 @@ class LoginComponents extends Component {
     
     componentWillUnmount() {
         // internetState to network state updates
-        if (this.internetState) {
+        if (this.internetState) { 
             this.internetState();
         }
     }
@@ -108,12 +110,7 @@ class LoginComponents extends Component {
             user_email_hlght: value
         })
     }
-
-    setPasswordHlght = (value) => {
-        this.setState({
-            password_hlght: value
-        })
-    }
+ 
 
     setPressBtn = (value) => {
         this.setState({
@@ -124,6 +121,18 @@ class LoginComponents extends Component {
     validateEmail = (email) => {
         var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return re.test(email);
+    }
+
+    setPasscode = (value) => {
+        this.setState({
+            passcode_value:  value
+        })
+    }
+
+    setEnablePasscode = (value) => {
+        this.setState({
+            passcode_enabled:  value
+        })
     }
 
     setNotificationMessage = (text) => {
@@ -156,21 +165,28 @@ class LoginComponents extends Component {
         this.setState({
             user_email: value
         })
+    } 
+
+    setPasscodeHlght = (value) => { 
+        this.setState({
+            passing_code_hlght: value
+        }); 
     }
 
-    setPassword = (value) => {
+    generateToVerificationCode = () => {
         this.setState({
-            password: value
+            btnText: this.state.language.verify_passcode
         })
     }
 
-    loginUser = () => {
+
+    submitRequest  = () => {
 
         this.setNotificationBox("none")
         this.setPressBtn(true); 
-
+        
         if(! this.state.isConnected) {
-
+            
             this.setNotificationBox("flex")
             this.setNotificationCssClass(styles.error_message);
             this.setNotificationCssTextClass(styles.error_text)
@@ -186,28 +202,19 @@ class LoginComponents extends Component {
         }
 
         var user_email = this.state.user_email.trim();
-        var app_name = this.state.app_name.trim();
-        var password = this.state.password.trim();
-        var language = this.state.current_language;
+        var language = this.state.current_language
 
         var data = { 
             email: user_email,
-            password: password, 
-            app_name: app_name,
             language: language
         }; 
+
         if( user_email == '' ) {
             this.setUserEmailHlght(true);
         }
 
-        if( password == '' ) {
-            this.setPasswordHlght(true);
-        }
- 
-
         if ( 
-            user_email == '' ||
-            password == ''  
+            user_email == '' 
         ) {
 
             this.setPressBtn(false);
@@ -231,7 +238,7 @@ class LoginComponents extends Component {
 
         var axConf = {
             method: 'post', // Can be 'get', 'put', 'delete', etc.
-            url: config.api('api/application/login'),
+            url: config.api('api/application/reset'),
             data: data,
             headers: {
                 'Content-Type': 'application/json',
@@ -239,6 +246,27 @@ class LoginComponents extends Component {
                 'X-api-secret-key': config.keys.secret
             }
         };
+
+        if( this.state.passcode_enabled ) {
+             
+            var passcode = this.state.passcode_value.trim();
+            if (passcode === "") {
+                 
+                this.setNotificationBox("flex")
+                this.setNotificationCssClass(styles.error_message)
+                this.setNotificationCssTextClass(styles.error_text)
+                this.setNotificationMessage(this.state.language.required_passcode);
+
+                this.setPressBtn(false);  
+                return;  
+            } 
+
+            axConf.url = config.api('api/application/passcode-verify'),
+            data.passcode = passcode;
+            axConf.data = data;
+
+        }
+
         
         
         let errorCallback = (error = null) => {
@@ -277,29 +305,23 @@ class LoginComponents extends Component {
             if(res.data.success) {
 
                 // stop activator indicator
-                this.setPressBtn(false);
-
-                // store app and user in session
-                await add_session(
-                    res.data.data.application,
-                    res.data.data.user
-                ); 
+                this.setPressBtn(false);  
                 
-                var _session = await get_session();
+                // show successful message 
+                this.setNotificationBox("flex")
+                this.setNotificationCssClass(styles.success_message)
+                this.setNotificationCssTextClass(styles.success_text)
+                this.setNotificationMessage(res.data.data.message); 
                 
-                // show successful message
-                if( _session !== null ) {
-                    this.setNotificationBox("flex")
-                    this.setNotificationCssClass(styles.success_message)
-                    this.setNotificationCssTextClass(styles.success_text)
-                    this.setNotificationMessage(this.state.language.successful_login); 
-                }
-
-                // transfer use to dashboard screen after 5 seconds
-                setTimeout(() => {
-                    this.setNotificationBox("none");
-                    this.redirect_to('Dashboard'); 
-                }, 500);
+                if( ! this.state.passcode_enabled ) {
+                    this.setEnablePasscode(true);
+                    this.generateToVerificationCode();
+                } else {
+                   this.setNotificationBox("none");
+                   this.props.navigation.navigate("ChangePassword", {
+                        email: this.state.user_email
+                   }); 
+                } 
 
             } else {
                 
@@ -328,8 +350,8 @@ class LoginComponents extends Component {
                     <View style={styles.row}>
 
                         <View style={{...styles.space_bottom_25}}>
-                            <Text style={styles.screen_headline}> {localizer.login} </Text>
-                            <Text style={styles.screen_subheadline}> {localizer.login_subtitle} </Text>
+                            <Text style={styles.screen_headline}> {localizer.reset_my_password}</Text>
+                            <Text style={styles.screen_subheadline}> {localizer.passcode_msg} </Text>
                         </View>
                         
                         <View style={{borderColor:(this.state.user_email_hlght) ? 'red': '#eee', ...styles.input, ...styles.space_top_15}}>
@@ -339,19 +361,19 @@ class LoginComponents extends Component {
                             }} placeholder={localizer.email}  style={{...styles.input_field}} />
                         </View>
 
-                        <View style={{ borderColor:(this.state.password_hlght) ? 'red': '#eee', ...styles.input, ...styles.space_top_15}}>
-                            <TextInput secureTextEntry={I18nManager.isRTL? false: true} onChangeText={(value) => {
-                                this.setPassword(value);
-                                this.setPasswordHlght(false)
-                            }} placeholder={this.state.language.password} style={{...styles.input_field}} />
+                        <View style={{ borderColor:(this.state.passing_code_hlght) ? 'red': '#eee',  display:(this.state.passcode_enabled)? "flex": "none", ...styles.input, ...styles.space_top_15}}>
+                            <TextInput onChangeText={(value) => {
+                                this.setPasscode(value);
+                                this.setPasscodeHlght(false)
+                            }} placeholder={localizer.passcode} style={{...styles.input_field}} />
                         </View>  
 
                         <View style={{...styles.space_top_15, ...styles.direction_row, ...styles.text_left}}>
                             <Text style={{...styles.label}}>
-                                {localizer.forget_password} {" "}
+                                {localizer.remember_password} {" "}
                             </Text>
-                            <TouchableOpacity onPress={() => this.redirect_to("ResetPassword")}>
-                                <Text style={{...styles.label_hlgt}}>{localizer.reset}</Text>
+                            <TouchableOpacity onPress={() => this.redirect_to("Login")}>
+                                <Text style={{...styles.label_hlgt}}>{localizer.login}</Text>
                             </TouchableOpacity>
                         </View>
 
@@ -359,12 +381,20 @@ class LoginComponents extends Component {
                             <Text style={this.state.notificationTextCssClass}>{this.state.notificationMessage}</Text>
                         </View> 
 
-                        <Button mode="contained" onPress={() => this.loginUser() } style={{ ...styles.primary_button, ...styles.space_top_25 }}>
+                        <Button mode="contained" onPress={() => this.submitRequest () } style={{ ...styles.primary_button, ...styles.space_top_25 }}>
                                 {
                                     this.state.isPressed ?
                                     <ActivityIndicator color={styles.direct.color.white} />
                                     :
-                                    <Text style={styles.buttonText}>{localizer.login}</Text>
+                                   
+                                    <Text style={styles.buttonText}> 
+                                        {
+                                            ( this.state.btnText == '' ) ?
+                                            localizer.passcode_req_btn
+                                            :
+                                            this.state.btnText
+                                        }
+                                     </Text>
                                 } 
                         </Button>
 
@@ -392,4 +422,4 @@ class LoginComponents extends Component {
 }
 
 
-export { LoginComponents }
+export { ResetPasswordComponents }
