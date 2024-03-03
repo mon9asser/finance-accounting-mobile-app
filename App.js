@@ -14,10 +14,14 @@ import { StyleSheet, Text, Image, View, TouchableOpacity, SafeAreaView, AppState
 import {config} from "./settings/config.js" ;
 import {styles} from "./objects/styles.js";
 
+
+// ---------------------------------
 // App Screens 
+// ---------------------------------
 import {HomeComponents} from './components/home.js';
-import {LoginComponents} from './components/login.js';
-import {RegisterComponents} from './components/register.js';
+
+import {LoginComponents} from './components/user/login.js';
+import {RegisterComponents} from './components/user/register.js';
 
 import {DashboardComponents} from './components/dashboard.js';
 

@@ -45,6 +45,13 @@ var styles = StyleSheet.create({
         alignItems: 'center',
     },
 
+    scrollContainer: {
+        paddingTop: 100,
+        paddingBottom: 75,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
     input: { 
         backgroundColor:'#f1f1f1', 
         maxHeight: 55, 
@@ -63,6 +70,12 @@ var styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         height: '100%' 
+    },
+
+    checkbox_container: {
+        flexDirection: "row", 
+        alignItems: "center", 
+        width: '100%'
     },
 
     label: {
@@ -96,6 +109,14 @@ var styles = StyleSheet.create({
 
     space_top_15: {
         marginTop: 15
+    },
+
+    space_top_10: {
+        marginTop: 10
+    },
+
+    space_top_5: {
+        marginTop: 5
     },
 
     error_message: {

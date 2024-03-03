@@ -8,7 +8,7 @@ var config = {
         version: Platform.Version
     },
 
-    ip: 'http://192.168.8.120', // 'http://192.168.8.120',  
+    ip: 'http://192.168.100.7', // 'http://192.168.8.120',  
     port: '3000',
     keys: {
         public: "@d#R$t%YY^B&N*)C(V*&b!n@%m9214#^$^&&%NCBVdSDFFLKLK%%LSDSDOO15454",
