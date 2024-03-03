@@ -1,0 +1,35 @@
+
+
+notofications
+
+---------------------------------
+settings
+	Edit Account	
+	theme
+	language
+	tracking inventory
+	Printings
+		invoices
+			sales
+			purchase
+			returns
+			
+Logout
+
+
+---------------------------------
+
+
+
+
+
+User Account ( Profile )
+	Image and name
+Current Quota 
+Dashboard
+Support
+Privacy Policy
+Terms and Conditions
+
+Supscription
+

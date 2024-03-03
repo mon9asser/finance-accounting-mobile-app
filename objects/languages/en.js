@@ -44,7 +44,12 @@ const en = {
 
         change_password: "Change Password",
         change_password_label: "Change your password",
-        save_new_password: "Update my password"
+        save_new_password: "Update my password",
+
+        dashboard_title: "Dashboard",
+        app_settings: "Settings",
+        app_notifications: "Notifications"
+
 }
 
 

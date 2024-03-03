@@ -123,6 +123,14 @@ var styles = StyleSheet.create({
         marginTop: 5
     },
 
+    space_15_right: {
+        marginRight: 15
+    },
+
+    space_15_left: {
+        marginLeft: 15
+    },
+
     error_message: {
         borderColor: 'red',
         borderWidth: 1,
@@ -154,6 +162,16 @@ var styles = StyleSheet.create({
         width: '100%', 
         padding: 3, 
         backgroundColor:'#F65F6E'
+    },
+
+    header_icon: {
+        width: 28,
+        height: 28 
+    },
+
+    header_icon_md: {
+        width: 20,
+        height: 20 
     }
 
 });

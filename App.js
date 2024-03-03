@@ -26,6 +26,8 @@ import {RegisterComponents} from './components/user/register.js';
 import { ChangePasswordComponents } from "./components/user/password-change.js";
 
 import {DashboardComponents} from './components/dashboard.js';
+import { AppSettingsComponents } from './components/settings.js';
+import { AppNotificationsComponents } from './components/notifications.js';
 
 // Functions 
 const Stack = createStackNavigator();
@@ -44,7 +46,9 @@ const App = () => {
               <Stack.Screen name="ChangePassword" component={ChangePasswordComponents} options={{ headerShown: false }}  />
               
               <Stack.Screen name="Dashboard" component={DashboardComponents} /> 
-
+              <Stack.Screen name="AppSettings" component={AppSettingsComponents} /> 
+              <Stack.Screen name="AppNotifications" component={AppNotificationsComponents} /> 
+              
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>
