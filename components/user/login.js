@@ -208,7 +208,7 @@ class LoginComponents extends Component {
             var message = '';
 
             if( error.response != undefined ) {
-                message = this.state.language.check_internet_connection
+                message = this.state.language.api_connection_error;
             } else if( error.request != undefined ) {
                 message = this.state.language.api_connection_error;
             } else {
