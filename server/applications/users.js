@@ -4,7 +4,7 @@ var sanitizer = require('sanitizer');
 var jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); 
 const nodemailer = require('nodemailer');
-
+const { language } = require("./../localize/language")
 var ApplicationRouter = express.Router();
 let { User, Application } = require("./confguration");
 const { conf } = require("./../settings/config")
@@ -25,8 +25,10 @@ const validateEmail = (email) => {
     return re.test(email);
 }
 
-const sendPassingCodeToEmail = (userObject, callback) => {
+// => Localized  !
+const sendPassingCodeToEmail = (userObject, lang, callback) => {
      
+    var localize = language[lang];
 
     const transporter = nodemailer.createTransport(conf.email.settings);
     var h1Style = `color: #241c15;
@@ -71,12 +73,12 @@ const sendPassingCodeToEmail = (userObject, callback) => {
     white-space: nowrap;`;
 
     var headline1 = `<h1 style='${h1Style}'>Next Daily Sales</h1>`;
-    var paragraph1 = `<p style='${pStyles}'>Hello ${userObject.email}</p>`;
-    var paragraph2 = `<p style='${pStyles}'>Thank you for requesting the passcode to recover your account on Next Daily Sales™.</p>`
-    var paragraph3 = `<p style='${pStyles}'>You simply need to copy and paste the passcode provided below into the next daily sales application</p>`
+    var paragraph1 = `<p style='${pStyles}'>${localize.hello} ${userObject.email}</p>`;
+    var paragraph2 = `<p style='${pStyles}'>${localize.request_passcode_msg}</p>`
+    var paragraph3 = `<p style='${pStyles}'>${localize.copy_paste_passcode}</p>`
     var btnlink = `<b>${userObject.passing_code}</b>`;
-    var paragraph4 = `<p style='${pStyles}'>Should you have any concerns, please do not hesitate to contact our support team. Thank you.</p>`;
-    var paragraph5 = `<p style='color:blue;'>Happy Selling!</p>`;
+    var paragraph4 = `<p style='${pStyles}'>${localize.any_concern_text}.</p>`;
+    var paragraph5 = `<p style='color:blue;'>${localize.happy_selling}</p>`;
 
     var body = `${headline1}
                 ${paragraph1}
@@ -89,7 +91,7 @@ const sendPassingCodeToEmail = (userObject, callback) => {
     var message = {
         from: conf.email.sender,
         to: userObject.email,
-        subject: "Next Daily Sales: Reset password", 
+        subject: "Next Daily Sales: " + localize.reset_password, 
         html:body
     }; 
 
@@ -103,11 +105,15 @@ const sendPassingCodeToEmail = (userObject, callback) => {
  
 }
 
+// => Localized  !
 const verify_api_keys = ( req, res, next ) => {
+
+    var current_language = req.body.language? req.body.language: "en";
+    var localize = language[current_language];
 
     var objx = {
         is_error: true,
-        data: "Access Denied !",
+        data: localize.access_denied,
         success: false
     };
 
@@ -116,7 +122,7 @@ const verify_api_keys = ( req, res, next ) => {
     
 
     if( secretKey === undefined || secretKey === "" || publicKey === undefined || publicKey === "" ) {
-        objx.data = "Access Denied !";
+        objx.data = localize.access_denied
 
         return res.status(401).send(objx);
     }
@@ -132,12 +138,15 @@ const verify_api_keys = ( req, res, next ) => {
 }
 
 
-
+// => Localized  !
 ApplicationRouter.post("/application/create", verify_api_keys, async (req, res) => {
+
+    var current_language = req.body.language? req.body.language: "en";
+    var localize = language[current_language];
 
     var objx = {
         is_error: true,
-        data: "Access Denied !",
+        data: localize.access_denied,
         success: false
     };
 
@@ -155,7 +164,7 @@ ApplicationRouter.post("/application/create", verify_api_keys, async (req, res) 
  
     //- Validate inputs 
     if( name == '' || name == undefined || email == '' || email == undefined || password == '' || password == undefined ) {
-        objx.data = "Ensure you provide your name, email, and password for your account";
+        objx.data = localize.provide_fields;
 
         return res.send(objx); 
        
@@ -164,7 +173,7 @@ ApplicationRouter.post("/application/create", verify_api_keys, async (req, res) 
 
     //- Validate inputs 
     if( app_name == '' || app_name == undefined || platform == '' || platform == undefined || version == '' || version == undefined ) {
-        objx.data = "Additional fields are needed such as app name, platform, and version";
+        objx.data = localize.additional_fields;
 
         return res.send(objx); 
        
@@ -174,7 +183,7 @@ ApplicationRouter.post("/application/create", verify_api_keys, async (req, res) 
     if( !validate ) {
         objx.is_error = true; 
         objx.success = false; 
-        objx.data = "Invalid Email"; 
+        objx.data = localize.invalid_email;
         return res.send(objx); 
     }
     
@@ -183,7 +192,7 @@ ApplicationRouter.post("/application/create", verify_api_keys, async (req, res) 
          
         objx.is_error = true; 
         objx.success = false; 
-        objx.data = "Your email already exists!"; 
+        objx.data = localize.email_exists;
         return res.send(objx); 
     }
     
@@ -220,7 +229,7 @@ ApplicationRouter.post("/application/create", verify_api_keys, async (req, res) 
     // check if database already exists 
     var databaseExists = await Application.findOne({database_name: database});
     if( databaseExists !== null ) {
-        objx.data = "Your company name already exists, please login"; 
+        objx.data = localize.company_exists;
         return objx; 
     }
 
@@ -228,9 +237,9 @@ ApplicationRouter.post("/application/create", verify_api_keys, async (req, res) 
     var _app = await Application.create(app_row);
     
     if( ! _app ) {
-        objx.is_error= true,
-        objx.data = "Something went wrong!",
-        objx.success= false
+        objx.is_error= true;
+        objx.data = localize.something_wrong;
+        objx.success= false;
 
         return res.send(objx);
      }
@@ -248,9 +257,9 @@ ApplicationRouter.post("/application/create", verify_api_keys, async (req, res) 
     // Create User 
     var _user = await User.create(userObject);
     if( ! _user ) {
-       objx.is_error= true,
-       objx.data = "Something went wrong!",
-       objx.success= false
+       objx.is_error= true;
+       objx.data = localize.something_wrong;
+       objx.success= false;
     }
 
     var usr = {
@@ -265,12 +274,15 @@ ApplicationRouter.post("/application/create", verify_api_keys, async (req, res) 
     return res.send(objx);
 });
 
-
+// => Localized  !
 ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) => {
+
+    var current_language = req.body.language? req.body.language: "en";
+    var localize = language[current_language];
 
     var objx = {
         is_error: true,
-        data: "Access Denied !",
+        data: localize.access_denied,
         success: false
     };
 
@@ -283,7 +295,7 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
     console.log(app_name)
     //- Validate inputs 
     if( email == '' || email == undefined || password == '' || password == undefined || app_name == '' || app_name == undefined ) {
-        objx.data = "Ensure you provide your email, and password for your account";
+        objx.data = localize.provide_fields;
 
         return res.send(objx); 
        
@@ -293,7 +305,7 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
     if( !validate ) {
         objx.is_error = true; 
         objx.success = false; 
-        objx.data = "Invalid Email"; 
+        objx.data = localize.invalid_email; 
         return res.send(objx); 
     }
     
@@ -302,7 +314,7 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
     if( useremail === null ) { 
         objx.is_error = true; 
         objx.success = false; 
-        objx.data = "The email address you have entered does not exist in our records. Please proceed to create a new account!"; 
+        objx.data = localize.email_not_exist;  
         return res.send(objx); 
     } 
     
@@ -312,12 +324,12 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
         var compare = await bcrypt.compare(password, useremail.password);
         
         if( compare == false ) {
-            objx.data = "The username or password entered is incorrect. Please check the information you entered and try again!";
+            objx.data = localize.incorrect_data;
             return res.send(objx);
         }
 
     } catch (e) {
-        objx.data = "The username or password entered is incorrect. Please check the information you entered and try again!";
+        objx.data = localize.incorrect_data;
         return res.send(objx);
     }
 
@@ -330,7 +342,7 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
     if( database === null ) { 
         objx.is_error = true; 
         objx.success = false; 
-        objx.data = "Access to your company has been restricted; please reach out to our support team for assistance."; 
+        objx.data = localize.resricted_company; 
         return res.send(objx); 
     }
  
@@ -347,21 +359,25 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
     return res.send(objx);
 });
 
-
+// => Localized !
 ApplicationRouter.post("/application/reset", verify_api_keys, async (req, res) => {
+
+    var current_language = req.body.language? req.body.language: "en";
+    var localize = language[current_language];
 
     var objx = {
         is_error: true,
-        data: "Access Denied !",
+        data: localize.access_denied,
         success: false
     };
 
     // Data Validation    
     var email = req.body.email; 
-    console.log(email);
+    
+    
     //- Validate inputs 
     if( email == '' || email == undefined ) {
-        objx.data = "Please ensure you provide your email address.";
+        objx.data = localize.provide_fields;
 
         return res.send(objx); 
        
@@ -371,7 +387,7 @@ ApplicationRouter.post("/application/reset", verify_api_keys, async (req, res) =
     if( !validate ) {
         objx.is_error = true; 
         objx.success = false; 
-        objx.data = "Invalid Email"; 
+        objx.data = localize.invalid_email; 
         return res.send(objx); 
     }
     
@@ -380,7 +396,7 @@ ApplicationRouter.post("/application/reset", verify_api_keys, async (req, res) =
     if( useremail === null ) { 
         objx.is_error = true; 
         objx.success = false; 
-        objx.data = "The email address you have entered does not exist in our records. Please proceed to create a new account!"; 
+        objx.data = localize.email_not_exist; 
         return res.send(objx); 
     } 
     
@@ -392,20 +408,20 @@ ApplicationRouter.post("/application/reset", verify_api_keys, async (req, res) =
     var passing_code_sent = await useremail.save();
 
     // Sending passing code to user email 
-    sendPassingCodeToEmail(passing_code_sent, function(isSent){
+    sendPassingCodeToEmail(passing_code_sent, current_language, function(isSent){
         // send the response here 
         if( isSent ) {
             objx.success= true;
             objx.is_error = false;
             objx.data = {
-                message: "Please check your email inbox and copy-paste the passcode into the newly appeared field.",
+                message: localize.passcode_msg,
                 object: passing_code_sent,
             } 
              
         } else {
             objx.success= false
             objx.is_error = true;
-            objx.data = "Something went wrong";
+            objx.data =  localize.something_wrong;
         }
 
         return res.send(objx);
@@ -414,11 +430,15 @@ ApplicationRouter.post("/application/reset", verify_api_keys, async (req, res) =
     
 });
  
+// => Localized !
 ApplicationRouter.post("/application/passcode-verify", verify_api_keys, async (req, res) => {
+
+    var current_language = req.body.language? req.body.language: "en";
+    var localize = language[current_language];
 
     var objx = {
         is_error: true,
-        data: "Access Denied !",
+        data: localize.access_denied,
         success: false
     };
 
@@ -428,7 +448,7 @@ ApplicationRouter.post("/application/passcode-verify", verify_api_keys, async (r
 
     //- Validate inputs 
     if( email == '' || email == undefined || passcode == '' || passcode == undefined ) {
-        objx.data = "Ensure you provide the passcode and email";
+        objx.data = localize.provide_fields;
 
         return res.send(objx); 
        
@@ -438,7 +458,7 @@ ApplicationRouter.post("/application/passcode-verify", verify_api_keys, async (r
     if( !validate ) {
         objx.is_error = true; 
         objx.success = false; 
-        objx.data = "Invalid Email"; 
+        objx.data = localize.invalid_email;
         return res.send(objx); 
     }
     
@@ -447,7 +467,7 @@ ApplicationRouter.post("/application/passcode-verify", verify_api_keys, async (r
     if( useremail === null ) { 
         objx.is_error = true; 
         objx.success = false; 
-        objx.data = "The email address you have entered does not exist in our records. Please proceed to create a new account!"; 
+        objx.data = localize.email_not_exist;
         return res.send(objx); 
     } 
     
@@ -455,7 +475,7 @@ ApplicationRouter.post("/application/passcode-verify", verify_api_keys, async (r
     if( passcode !== useremail.passing_code ) {
         objx.is_error = true; 
         objx.success = false; 
-        objx.data = "It appears you have entered an incorrect passcode. Please provide the correct passcode."; 
+        objx.data = localize.wrong_passcode;
         return res.send(objx); 
     }
 
@@ -463,7 +483,7 @@ ApplicationRouter.post("/application/passcode-verify", verify_api_keys, async (r
 
     objx.is_error = false; 
     objx.success = true; 
-    objx.message = "You have successfully verified the passcode."
+    objx.message = localize.passcode_verificated_success;
     objx.data = {
         user: useremail,
         application: app
@@ -473,17 +493,21 @@ ApplicationRouter.post("/application/passcode-verify", verify_api_keys, async (r
     
 });
 
+//=> Localized !
  ApplicationRouter.post("/application/change-password", verify_api_keys, async(req, res) => {
     
+    var current_language = req.body.language? req.body.language: "en";
+    var localize = language[current_language];
+
     var objx = {
         is_error: true,
-        data: "Something Went Wrong!",
+        data: localize.something_wrong,
         success: false
     };
 
 
     if( !req.body.email || req.body.email == '' || !req.body.password || req.body.password == '' ) {
-        objx.data = "It appears there is an unauthorized request. To address this issue, please follow the designated authentication process or contact support for assistance.";
+        objx.data = localize.provide_fields;
         return res.send(objx);
     }
     
@@ -493,7 +517,7 @@ ApplicationRouter.post("/application/passcode-verify", verify_api_keys, async (r
     var user = await User.findOne({email: email});
 
     if( user === null ) {
-        objx.data = "This is an unauthorized request!, please follow the designated authentication process or contact support for assistance.";
+        objx.data = localize.user_not_found;
         return res.send(objx);
     } else { 
         user.password = await bcrypt.hash(newPass, 10);
@@ -501,10 +525,10 @@ ApplicationRouter.post("/application/passcode-verify", verify_api_keys, async (r
         try {
             var responsed = await user.save(); 
             objx.is_error = false; 
-            objx.data = "You have successfully saved your new password, you can use it to log into your account";
+            objx.data = localize.password_changed;
             objx.success = true; 
         } catch (error) {
-            objx.data = "Something went wrong, please try later !";
+            objx.data = localize.something_wrong;
             objx.is_error = true;
             objx.success = false;     
         }
