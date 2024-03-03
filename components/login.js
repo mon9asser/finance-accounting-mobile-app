@@ -1,18 +1,22 @@
 // Default
 import React, { Component } from "react";
+import axios from 'axios';  
+
 
 // Distruct 
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';   
-import { StyleSheet, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput } from 'react-native';
+import { I18nManager, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput } from 'react-native';
 import { Button } from "react-native-paper";
+
 // App Files 
 import {config,} from "./../settings/config.js" ;
 import {styles} from "./../objects/styles.js"; 
 import {get_setting} from "./../objects/storage.js"
 import {get_lang} from './../objects/languages.js'
+
 
 class LoginComponents extends Component {
 
@@ -35,25 +39,36 @@ class LoginComponents extends Component {
 
             user_email_hlght: false,
             password_hlght: false, 
-            language: "en"
+            language: {},
+            current_language: "en"
         }
     }
 
-    translate = (key) => {
-        return get_lang[this.state.language][key];
-    }
-
-    setLanguage = (val) => {
+     
+    setCurrentLanguage = (lang = "en") => {
         this.setState({
-            language: val
+            current_language: lang
+        })
+    } 
+
+    setLanguage = (val = "en" ) => {
+
+        
+        var lang = get_lang(val);
+        I18nManager.forceRTL(lang.is_rtl);
+        this.setState({
+            language: lang
         })
     }
     
+    
+    // Assign application language
     componentDidMount = async () => {
         
-        var {language}  = await get_setting();
-        this.setLanguage(language)
-
+        var {language}  = await get_setting(); 
+        this.setCurrentLanguage(language);
+        this.setLanguage(language);
+        
     }
 
     redirect_to = (screen) => {
@@ -122,30 +137,26 @@ class LoginComponents extends Component {
     }
 
     loginUser = () => {
+
         this.setNotificationBox("none")
         this.setPressBtn(true); 
 
         if( this.state.isPressed ) {
-            alert("Please wait while we validate your login access.");
+            alert(this.state.language.validate_login_access);
             return;
         }
 
         var user_email = this.state.user_email.trim();
         var app_name = this.state.app_name.trim();
         var password = this.state.password.trim();
-         
+        var language = this.state.current_language;
 
-        var data = {
-            
+        var data = { 
             email: user_email,
             password: password, 
             app_name: app_name,
-            
-        };
-
-        
-         
-
+            language: language
+        }; 
         if( user_email == '' ) {
             this.setUserEmailHlght(true);
         }
@@ -164,7 +175,7 @@ class LoginComponents extends Component {
             this.setNotificationBox("flex")
             this.setNotificationCssClass(styles.error_message);
             this.setNotificationCssTextClass(styles.error_text)
-            this.setNotificationMessage("Please make sure that you have filled in all the required information.");
+            this.setNotificationMessage(this.state.language.required_inputs);
 
             return;
         }
@@ -175,7 +186,7 @@ class LoginComponents extends Component {
             this.setNotificationBox("flex")
             this.setNotificationCssClass(styles.error_message)
             this.setNotificationCssTextClass(styles.error_text)
-            this.setNotificationMessage("You have entered an invalid email address.");
+            this.setNotificationMessage(this.state.language.invalid_email);
             return;
         }  
 
@@ -200,7 +211,7 @@ class LoginComponents extends Component {
             
             // unkown reason 
             if( message == '' ) {
-                message = 'Something went wrong, please check your internet connection and try again.'
+                message = this.state.language.check_internet_connection
             }
 
             // stop activator indicator
@@ -232,7 +243,7 @@ class LoginComponents extends Component {
                     this.setNotificationBox("flex")
                     this.setNotificationCssClass(styles.success_message)
                     this.setNotificationCssTextClass(styles.success_text)
-                    this.setNotificationMessage("Well done! You have successfully logged in. You will be redirected to the dashboard."); 
+                    this.setNotificationMessage(this.state.language.successful_login); 
                 }
 
                 // transfer use to dashboard screen after 5 seconds
@@ -249,7 +260,6 @@ class LoginComponents extends Component {
         }
 
         let error = (res) => {
-            
             errorCallback()
         }
 
@@ -258,6 +268,9 @@ class LoginComponents extends Component {
     }
 
     render = () => {
+
+        var localizer  = this.state.language; 
+
         return (
             <SafeAreaView style={styles.screens}>
                 <View style={styles.container}>
@@ -265,30 +278,30 @@ class LoginComponents extends Component {
                     <View style={styles.row}>
 
                         <View style={{...styles.space_bottom_25}}>
-                            <Text style={styles.screen_headline}> {this.translate("login")} </Text>
-                            <Text style={styles.screen_subheadline}>Please sign in to continue</Text>
+                            <Text style={styles.screen_headline}> {localizer.login} </Text>
+                            <Text style={styles.screen_subheadline}> {localizer.login_subtitle} </Text>
                         </View>
                         
                         <View style={{borderColor:(this.state.user_email_hlght) ? 'red': '#eee', ...styles.input, ...styles.space_top_15}}>
                             <TextInput onChangeText={(value) => {
                                 this.setUserEmail(value);
                                 this.setUserEmailHlght(false)
-                            }} placeholder="Email" style={{height: 55}} />
+                            }} placeholder={localizer.email}  style={{...styles.input_field}} />
                         </View>
 
                         <View style={{ borderColor:(this.state.password_hlght) ? 'red': '#eee', ...styles.input, ...styles.space_top_15}}>
-                            <TextInput secureTextEntry={true} onChangeText={(value) => {
+                            <TextInput secureTextEntry={I18nManager.isRTL? false: true} onChangeText={(value) => {
                                 this.setPassword(value);
                                 this.setPasswordHlght(false)
-                            }} placeholder="Password" style={{height: 55}} />
-                        </View> 
+                            }} placeholder={this.state.language.password} style={{...styles.input_field}} />
+                        </View>  
 
                         <View style={{...styles.space_top_15, ...styles.direction_row, ...styles.text_left}}>
                             <Text style={{...styles.label}}>
-                                Forget your password? {" "}
+                                {localizer.forget_password} {" "}
                             </Text>
                             <TouchableOpacity>
-                                <Text style={{...styles.label_hlgt}}>Reset</Text>
+                                <Text style={{...styles.label_hlgt}}>{localizer.reset}</Text>
                             </TouchableOpacity>
                         </View>
 
@@ -301,7 +314,7 @@ class LoginComponents extends Component {
                                     this.state.isPressed ?
                                     <ActivityIndicator color={styles.direct.color.white} />
                                     :
-                                    <Text style={styles.buttonText}>Login</Text>
+                                    <Text style={styles.buttonText}>{localizer.login}</Text>
                                 } 
                         </Button>
 

@@ -1,5 +1,6 @@
-import { StyleSheet } from "react-native"; 
-
+import { StyleSheet, I18nManager } from "react-native"; 
+ 
+//textAlign: I18nManager.isRTL ? 'right' : 'left',
 var styles = StyleSheet.create({
     direct: {
         color: {
@@ -54,6 +55,14 @@ var styles = StyleSheet.create({
         borderWidth: 1,  
         backgroundColor: '#f1f1f1',
         flex: 1
+    },
+
+    input_field: {
+        textAlign: I18nManager.isRTL ? 'right' : 'left',
+        verticalAlign: "middle",
+        justifyContent: "center",
+        alignItems: "center",
+        height: '100%' 
     },
 
     label: {

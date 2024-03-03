@@ -17,6 +17,7 @@ import {styles} from "./objects/styles.js";
 // App Screens 
 import {HomeComponents} from './components/home.js';
 import {LoginComponents} from './components/login.js';
+import {RegisterComponents} from './components/register.js';
 
 import {DashboardComponents} from './components/dashboard.js';
 
@@ -28,9 +29,10 @@ const App = () => {
     return (
         <SafeAreaView style={styles.flex}>
           <NavigationContainer>
-            <Stack.Navigator initialRouteName='Home'>
-
+            <Stack.Navigator initialRouteName='Register'>
+      
               <Stack.Screen name="Home" component={HomeComponents} options={{ headerShown: false }}  />
+              <Stack.Screen name="Register" component={RegisterComponents} options={{ headerShown: false }}  />
               <Stack.Screen name="Login" component={LoginComponents} options={{ headerShown: false }}  />
                
               
