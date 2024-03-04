@@ -17,6 +17,20 @@ var styles = StyleSheet.create({
         flexDirection: 'row'
     },
     
+    conten_center: {
+        justifyContent: 'center'
+    }, 
+
+    item_center: {
+        alignItems: 'center'
+    }, 
+    gap_10: {
+        gap: 10
+    },
+    gap_5: {
+        gap: 5
+    },
+
     text_center: {
         textAlign:'center'
     },
@@ -67,8 +81,8 @@ var styles = StyleSheet.create({
 
     container_scroll: {
         width:'100%', 
-        marginTop: 90,
-        marginBottom: 90,
+        marginTop: 90, 
+        paddingBottom: 110,
         paddingLeft: 15,
         paddingRight: 15,
         overflow: 'hidden',

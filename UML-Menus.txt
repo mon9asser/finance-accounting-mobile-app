@@ -7,14 +7,27 @@ settings
 	Edit Account	
 	theme
 	language
+	vat management
+		disable
+		Tax Number
+		vat percentage
+		
 	tracking inventory
+	tracking balance
 	Printings
 		invoices
 			sales
 			purchase
 			returns
-			
-Logout
+		reports
+	notifications		
+		notify me when a new sales is added by others
+		notify me when quantity of item is going to finish
+		notify me by a daily report 
+			time 
+delete my account 
+
+
 
 
 ---------------------------------
@@ -25,11 +38,29 @@ Logout
 
 User Account ( Profile )
 	Image and name
-Current Quota 
-Dashboard
-Support
-Privacy Policy
-Terms and Conditions
+xxxx Current Quota 
+User Permissions
+xxxx  Support
 
-Supscription
+
+xxxx Supscription
+
+xxxx settings
+
+xxxx Privacy Policy
+xxxx Terms and Conditions
+
+
+
+
+
+
+
+
+
+https://support.google.com/admob/answer/6128543?hl=en&sjid=6309845914349062331-EU
+The Next Dails Sales application is completely free to use. However, it is important to understand that we incur significant costs for remote data storage. By subscribing to our service, you play a crucial role in supporting us, enabling us to provide you with a larger data quota. This collaboration helps us to enhance and maintain the quality of service offered to you, as your support is the cornerstone of our continued improvement.
+
+	To put it in perspective, the value of your contribution is akin to the price of a 250ml juice—a small investment that reaps considerable rewards for both parties.    
+
 
