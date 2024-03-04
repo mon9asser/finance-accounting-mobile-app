@@ -48,7 +48,21 @@ const en = {
 
         dashboard_title: "Dashboard",
         app_settings: "Settings",
-        app_notifications: "Notifications"
+        app_notifications: "Notifications",
+
+
+        total_storage_usage: "Total Storage Usage",
+        supscription: "Supscription",
+        mywork_team: "My Work Team ",
+        add_new_user: "Add new user",
+        settings: "Settings",
+        team_log_history: "Team log history",
+        support: "Support",
+        privacypolicy: "Privacy Policy",
+        terms_condition: "Terms and Conditions",
+        delete_account: "Delete my account",
+        logout: "Logout",
+        internet_msg_box: "Oops! It Looks Like You're Offline"
 
 }
 

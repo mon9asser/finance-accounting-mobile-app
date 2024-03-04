@@ -12,7 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';   
-import { I18nManager, StyleSheet, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput } from 'react-native';
+import { I18nManager, StyleSheet, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Animated } from 'react-native';
 import { Button, Checkbox } from "react-native-paper";
 
 // App Files 
@@ -31,10 +31,11 @@ class AppSidebarComponents extends Component {
         this.state = {
             language: {},
             current_language: "en",
-            isConnected: false
+            isConnected: true 
         }
 
         this.internetState = null;
+        this.internetStateBox = new Animated.Value(0);
 
     }
 
@@ -64,11 +65,25 @@ class AppSidebarComponents extends Component {
 
     // internet connection
     internetConnectionStatus = () => {
+
+
         this.internetState = NetInfo.addEventListener(state => {
             this.setState({ isConnected: state.isConnected });
-        });
+        }); 
+
     }
 
+    internetConnectionMessageBox = ( prevProps, prevState ) => {
+        // Equivalent to useEffect, checks for state changes in isConnected
+        if (prevState.isConnected !== this.state.isConnected) {
+            Animated.timing(this.internetStateBox, {
+              toValue: this.state.isConnected ? 0 : -125, // Slide up to 0 or slide down to -100
+              duration: 300, // This can be adjusted to make the animation slower or faster
+              useNativeDriver: true,
+            }).start();
+          }
+    }
+    
     cardSlideFromLeft = ({ current, layouts }) => ({
         cardStyle: {
           transform: [
@@ -99,14 +114,28 @@ class AppSidebarComponents extends Component {
         // setup language
         await this.setupLanguage(); 
 
+        // internet connection status
+        this.internetConnectionStatus();
+
         // Screen Option
         this.screen_options();
+         
+        
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        
+        this.internetConnectionMessageBox(prevProps, prevState);
 
     }
+    
     render = () => {
+
+        
+
         return (
             <View style={{...styles.container_fluid }}> 
-
+                
                 <LinearGradient
                     // Array of colors to create the gradient from
                     colors={['#F65F6E', '#9761F7']} 
@@ -118,11 +147,11 @@ class AppSidebarComponents extends Component {
                      
                 </View>
                 <ScrollView contentContainerStyle={{...styles.container_scroll }}>
-                    
+                 
                    
-                    <View style={{backgroundColor: '#fff', padding: 20, borderRadius: 10}}>
+                    <View style={{...styles.sidebar_container}}>
                         
-                        <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', gap: 20, marginBottom: 20}}>
+                        <View style={{...styles.sidebar_header}}>
                             <AnimatedCircularProgress
                                 size={100}
                                 width={5}
@@ -132,7 +161,7 @@ class AppSidebarComponents extends Component {
                                 backgroundColor="#eee">
                                 {
                                     (fill) => (
-                                    <Text style={{fontWeight: "bold", color: "#9761F7", fontSize: 15}}>
+                                    <Text style={{...styles.circle_text}}>
                                     22%
                                     </Text>
                                     )
@@ -140,14 +169,16 @@ class AppSidebarComponents extends Component {
                             </AnimatedCircularProgress>
                             <View>
                                 
-                                <Text style={{color: "#666", fontSize: 35, marginBottom: 2, fontWeight: 'bold'}}>27MB</Text>
-                                <Text style={{...styles.label}}>Total Storage Usage</Text>
+                                <Text style={{...styles.capacity_number}}>
+                                    27GB
+                                </Text>
+                                <Text style={{...styles.label}}>{this.state.language.total_storage_usage}</Text>
                             </View>
                         </View>
 
 
-                        <View style={{borderTopColor: "#eee", borderTopWidth: 1, marginTop: 10, paddingTop: 10}}>
-                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_10}}>
+                        <View style={{...styles.sidebar_nav_item}}>
+                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
                                 <Image
                                     source={require('./../assets/icons/subscripe-icon.png')}
@@ -155,8 +186,8 @@ class AppSidebarComponents extends Component {
                                     resizeMode="cover"
                                 />
 
-                                <Text style={{fontWeight:"bold"}}>
-                                    Supscription
+                                <Text style={{...styles.bold}}>
+                                {this.state.language.supscription}
                                 </Text>
 
                             </TouchableOpacity>
@@ -164,8 +195,8 @@ class AppSidebarComponents extends Component {
 
                         
                         
-                        <View style={{borderTopColor: "#eee", borderTopWidth: 1, marginTop: 10, paddingTop: 10}}>
-                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_10}}>
+                       <View style={{...styles.sidebar_nav_item}}>
+                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
                                 <Image
                                     source={require('./../assets/icons/users.png')}
@@ -173,15 +204,19 @@ class AppSidebarComponents extends Component {
                                     resizeMode="cover"
                                 />
 
-                                <Text style={{fontWeight:"bold"}}>
-                                    Users
+                                <Text style={{...styles.bold}}>
+                                {this.state.language.mywork_team}
+                                </Text>
+
+                                <Text style={{...styles.label_right}}>
+                                    {this.state.language.add_new_user}
                                 </Text>
 
                             </TouchableOpacity>
                         </View>
 
-                        <View style={{borderTopColor: "#eee", borderTopWidth: 1, marginTop: 10, paddingTop: 10}}>
-                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_10}}>
+                        <View style={{...styles.sidebar_nav_item}}>
+                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
                                 <Image
                                     source={require('./../assets/icons/settings-icon.png')}
@@ -189,15 +224,31 @@ class AppSidebarComponents extends Component {
                                     resizeMode="cover"
                                 />
 
-                                <Text style={{fontWeight:"bold"}}>
-                                    Settings
+                                <Text style={{...styles.bold}}>
+                                {this.state.language.settings}
                                 </Text>
 
                             </TouchableOpacity>
                         </View>
 
-                        <View style={{borderTopColor: "#eee", borderTopWidth: 1, marginTop: 10, paddingTop: 10}}>
-                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_10}}>
+                        <View style={{...styles.sidebar_nav_item}}>
+                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
+
+                                <Image
+                                    source={require('./../assets/icons/log-history.png')}
+                                    style={styles.header_icon}
+                                    resizeMode="cover"
+                                />
+
+                                <Text style={{...styles.bold}}>
+                                    {this.state.language.team_log_history}
+                                </Text>
+
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={{...styles.sidebar_nav_item}}>
+                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
                                 <Image
                                     source={require('./../assets/icons/support.png')}
@@ -205,15 +256,16 @@ class AppSidebarComponents extends Component {
                                     resizeMode="cover"
                                 />
 
-                                <Text style={{fontWeight:"bold"}}>
-                                    Support
+                                <Text style={{...styles.bold}}>
+                                    {this.state.language.support} 
                                 </Text>
 
                             </TouchableOpacity>
                         </View>
+ 
 
-                        <View style={{borderTopColor: "#eee", borderTopWidth: 1, marginTop: 10, paddingTop: 10}}>
-                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_10}}>
+                        <View style={{...styles.sidebar_nav_item}}>
+                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
                                 <Image
                                     source={require('./../assets/icons/privacy.png')}
@@ -221,15 +273,15 @@ class AppSidebarComponents extends Component {
                                     resizeMode="cover"
                                 />
 
-                                <Text style={{fontWeight:"bold"}}>
-                                Privacy Policy
+                                <Text style={{...styles.bold}}>
+                                {this.state.language.privacypolicy} 
                                 </Text>
 
                             </TouchableOpacity>
                         </View>
 
-                        <View style={{borderTopColor: "#eee", borderTopWidth: 1, marginTop: 10, paddingTop: 10}}>
-                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_10}}>
+                        <View style={{...styles.sidebar_nav_item}}>
+                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
                                 <Image
                                     source={require('./../assets/icons/terms.png')}
@@ -237,15 +289,31 @@ class AppSidebarComponents extends Component {
                                     resizeMode="cover"
                                 />
 
-                                <Text style={{fontWeight:"bold"}}>
-                                Terms and Conditions
+                                <Text style={{...styles.bold}}>
+                                {this.state.language.terms_condition} 
                                 </Text>
 
                             </TouchableOpacity>
                         </View>
 
-                        <View style={{borderTopColor: "#eee", borderTopWidth: 1, marginTop: 10, paddingTop: 10}}>
-                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_10}}>
+                        <View style={{...styles.sidebar_nav_item}}>
+                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
+
+                                <Image
+                                    source={require('./../assets/icons/trash.png')}
+                                    style={styles.header_icon}
+                                    resizeMode="cover"
+                                />
+
+                                <Text style={{...styles.bold}}>
+                                    {this.state.language.delete_account} 
+                                </Text>
+
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={{...styles.sidebar_nav_item}}>
+                            <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
                                 <Image
                                     source={require('./../assets/icons/logout.png')}
@@ -253,12 +321,14 @@ class AppSidebarComponents extends Component {
                                     resizeMode="cover"
                                 />
 
-                                <Text style={{fontWeight:"bold"}}>
-                                Logout
+                                <Text style={{...styles.bold}}>
+                                    {this.state.language.logout}  
                                 </Text>
 
                             </TouchableOpacity>
                         </View>
+
+                        
 
                         
                         
@@ -267,7 +337,27 @@ class AppSidebarComponents extends Component {
                     
 
                 </ScrollView>
+                                
 
+                <Animated.View
+                style={[
+                    {...styles.flex, ...styles.absolute, ...styles.internet_state_box},
+                    { transform: [{ translateY: this.internetStateBox }], },
+                ]}
+                >
+                    <View style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
+                    
+                        <Image 
+                            source={require('./../assets/icons/internet-state.png')}
+                            style={{...styles.intenet_connection_icon}}
+                            resizeMode="cover"
+                        />
+                        <Text style={{...styles.intenet_connection_text}}>
+                            {this.state.language.internet_msg_box}
+                        </Text>
+                    </View>
+                </Animated.View>
+ 
             </View>
         )
     }

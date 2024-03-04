@@ -24,6 +24,9 @@ var styles = StyleSheet.create({
     item_center: {
         alignItems: 'center'
     }, 
+    gap_15: {
+        gap: 15
+    },
     gap_10: {
         gap: 10
     },
@@ -38,7 +41,12 @@ var styles = StyleSheet.create({
     text_left: {
         textAlign: "left"
     }, 
-
+    bold: {
+        fontWeight: "bold"
+    }, 
+    absolute: {
+        position: "absolute"
+    },
     screens: {
         flex: 1, 
         justifyContent: 'center', 
@@ -78,7 +86,7 @@ var styles = StyleSheet.create({
         paddingLeft: 20, 
         width: '100%'
     },
-
+    
     container_scroll: {
         width:'100%', 
         marginTop: 90, 
@@ -87,6 +95,12 @@ var styles = StyleSheet.create({
         paddingRight: 15,
         overflow: 'hidden',
         position:'relative'
+    },
+
+    circle_text: {
+        fontWeight: "bold", 
+        color: "#9761F7", 
+        fontSize: 15
     },
 
     wrapper: { 
@@ -140,6 +154,12 @@ var styles = StyleSheet.create({
 
     label_hlgt: {
         color: '#FF3952'  
+    },
+    
+    label_right: {
+        marginLeft: "auto", 
+        fontSize: 12, 
+        color:"tomato"
     },
 
     screen_headline: {
@@ -233,6 +253,18 @@ var styles = StyleSheet.create({
         right: 0, 
         borderRadius:5
     },
+    sidebar_container: {
+        backgroundColor: '#fff', 
+        padding: 20, 
+        borderRadius: 10
+    },
+    sidebar_header: {
+        flex: 1, 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        gap: 30, 
+        marginBottom: 20
+    },
     sidebar_bg: {
         position: 'absolute',
         left: 0,
@@ -242,8 +274,41 @@ var styles = StyleSheet.create({
     },
     sidebar: {
         backgroundColor: 'green'
-    }
+    },
+    capacity_number: {
+        color: "#666", 
+        fontSize: 35, 
+        marginBottom: 2, 
+        fontWeight: 'bold'
+    },
 
+    sidebar_nav_item:  {
+        borderTopColor: "#eee", 
+        borderTopWidth: 1, 
+        marginTop: 10, 
+        paddingTop: 10
+    },
+    internet_state_box: {
+        backgroundColor: 'tomato', 
+        bottom: -100, 
+        minHeight: 50, 
+        zIndex: 2000, 
+        width: "90%", 
+        borderRadius: 10, 
+        padding: 16
+    },
+    intenet_connection_icon: {
+        width: 35,
+        height: 35
+    },
+    intenet_connection_text: {
+        width: '100%',
+        overflow: "hidden",
+        color: "#fff",
+        fontSize: 16,
+        overflow: "hidden",
+        flexShrink: 1
+    }
 });
 
 

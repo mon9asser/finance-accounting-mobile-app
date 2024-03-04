@@ -12,8 +12,8 @@ settings
 		Tax Number
 		vat percentage
 		
-	tracking inventory
-	tracking balance
+	stock_controll
+	balance_controll
 	Printings
 		invoices
 			sales
