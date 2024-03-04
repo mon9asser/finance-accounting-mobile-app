@@ -31,7 +31,7 @@ class DashboardComponents extends Component {
         this.state = {
             language: {},
             current_language: "en",
-            isConnected: false
+            isConnected: false, 
         }
 
         this.internetState = null;
@@ -83,7 +83,7 @@ class DashboardComponents extends Component {
     
     headerLeftComponent = () => (
         <View style={{...styles.space_15_left}}>
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate("Sidebar")}>
                 <Image
                     source={require('./../assets/icons/burger-icon.png')}
                     style={styles.header_icon}
@@ -103,7 +103,9 @@ class DashboardComponents extends Component {
                         style={styles.header_icon_md}
                         resizeMode="cover"
                     />
+                    <View style={{...styles.unread_notification}}></View>
                 </TouchableOpacity>
+                
             </View> 
 
             <View>
@@ -143,16 +145,19 @@ class DashboardComponents extends Component {
             
         }) 
 
-    }
+    } 
 
     render = () => {
         
-         
-        
+          
         return (
-            <Text>
-                Dashboard
-            </Text>
+            <View>
+                <Text>
+                    Dashboard
+                </Text>
+               
+            </View>
+            
         )
     }
 

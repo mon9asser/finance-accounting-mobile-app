@@ -1,5 +1,6 @@
 import { StyleSheet, I18nManager } from "react-native"; 
  
+
 //textAlign: I18nManager.isRTL ? 'right' : 'left',
 var styles = StyleSheet.create({
     direct: {
@@ -37,6 +38,41 @@ var styles = StyleSheet.create({
         paddingRight: 25,
         flex: 1,
         width: '100%'
+    },
+
+    container_fluid: {
+        width: '100%', 
+        flexDirection: 'row',
+        justifyContent: 'center', 
+        alignItems: 'center',
+        flex: 1, 
+    },
+
+    container_fluid_bottom: {
+        justifyContent: 'flex-end', 
+        alignItems: 'stretch',
+        flex: 1, 
+    },
+
+    header_continaer: {
+        position: "absolute", 
+        top: 0, 
+        left: 0, 
+        right: 0,  
+        height: 85, 
+        paddingBottom: 15,
+        paddingLeft: 20, 
+        width: '100%'
+    },
+
+    container_scroll: {
+        width:'100%', 
+        marginTop: 90,
+        marginBottom: 90,
+        paddingLeft: 15,
+        paddingRight: 15,
+        overflow: 'hidden',
+        position:'relative'
     },
 
     wrapper: { 
@@ -172,6 +208,26 @@ var styles = StyleSheet.create({
     header_icon_md: {
         width: 20,
         height: 20 
+    },
+
+    unread_notification: {
+        width: 10, 
+        height: 10, 
+        backgroundColor: 'teal', 
+        position: 'absolute', 
+        top: 2, 
+        right: 0, 
+        borderRadius:5
+    },
+    sidebar_bg: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+    },
+    sidebar: {
+        backgroundColor: 'green'
     }
 
 });

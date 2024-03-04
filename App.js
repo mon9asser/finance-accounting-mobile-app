@@ -8,6 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';   
+
 import { StyleSheet, Text, Image, View, TouchableOpacity, SafeAreaView, AppState } from 'react-native';
 
 // App Files 
@@ -29,14 +30,18 @@ import {DashboardComponents} from './components/dashboard.js';
 import { AppSettingsComponents } from './components/settings.js';
 import { AppNotificationsComponents } from './components/notifications.js';
 
+import {AppSidebarComponents}  from './components/sidebar.js';
+import { SubscriptionComponents } from './components/subscription.js';
+
 // Functions 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator(); 
 
 const App = () => {
 
     return (
         <SafeAreaView style={styles.flex}>
           <NavigationContainer>
+
             <Stack.Navigator initialRouteName='Dashboard'>
       
               <Stack.Screen name="Home" component={HomeComponents} options={{ headerShown: false }}  />
@@ -49,8 +54,11 @@ const App = () => {
               <Stack.Screen name="AppSettings" component={AppSettingsComponents} /> 
               <Stack.Screen name="AppNotifications" component={AppNotificationsComponents} /> 
               
-            </Stack.Navigator>
-          </NavigationContainer>
+              <Stack.Screen name="Sidebar" component={AppSidebarComponents} /> 
+               
+            </Stack.Navigator> 
+          </NavigationContainer> 
+            
         </SafeAreaView>
     )
     
