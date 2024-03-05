@@ -134,7 +134,7 @@ class AppSidebarComponents extends Component {
         
 
         return (
-            <View style={{...styles.container_fluid }}> 
+            <SafeAreaView style={{...styles.chart_container}}>
                 
                 <LinearGradient
                     // Array of colors to create the gradient from
@@ -358,7 +358,7 @@ class AppSidebarComponents extends Component {
                     </View>
                 </Animated.View>
  
-            </View>
+            </SafeAreaView>
         )
     }
 

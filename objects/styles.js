@@ -265,6 +265,9 @@ var styles = StyleSheet.create({
         gap: 30, 
         marginBottom: 20
     },
+    chart_container: {  
+
+    },
     sidebar_bg: {
         position: 'absolute',
         left: 0,

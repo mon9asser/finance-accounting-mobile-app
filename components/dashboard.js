@@ -2,6 +2,7 @@
 // Default
 import React, { Component } from "react";
 import NetInfo from '@react-native-community/netinfo';
+import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';  
 
 
@@ -10,8 +11,9 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';   
-import { I18nManager, StyleSheet, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput } from 'react-native';
+import { Animated, I18nManager, StyleSheet, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
 import { Button, Checkbox } from "react-native-paper";
+import { LineChart } from "react-native-chart-kit";
 
 // App Files 
 import {config} from "./../settings/config.js" ;
@@ -31,10 +33,11 @@ class DashboardComponents extends Component {
         this.state = {
             language: {},
             current_language: "en",
-            isConnected: false, 
+            isConnected: true 
         }
 
         this.internetState = null;
+        this.internetStateBox = new Animated.Value(0);
 
     }
     
@@ -46,12 +49,12 @@ class DashboardComponents extends Component {
 
     setLanguage = (val = "en" ) => {
 
-        
         var lang = get_lang(val);
         I18nManager.forceRTL(lang.is_rtl);
         this.setState({
             language: lang
         })
+
     }
     
     
@@ -69,18 +72,55 @@ class DashboardComponents extends Component {
         });
     }
 
+    internetConnectionMessageBox = ( prevProps, prevState ) => {
+        // Equivalent to useEffect, checks for state changes in isConnected
+        if (prevState.isConnected !== this.state.isConnected) {
+            Animated.timing(this.internetStateBox, {
+              toValue: this.state.isConnected ? 0 : -125, // Slide up to 0 or slide down to -100
+              duration: 300, // This can be adjusted to make the animation slower or faster
+              useNativeDriver: true,
+            }).start();
+        }
+    }
+
     componentDidMount = async () => {
          
         // setup language
         await this.setupLanguage();
 
+        // internet connection status
+        this.internetConnectionStatus();
+
         // Apply screen and header options 
-        this.screen_options();
-
-
+        this.screen_options(); 
 
     }
     
+    componentDidUpdate(prevProps, prevState) {
+        
+        this.internetConnectionMessageBox(prevProps, prevState);
+
+    }
+
+    AnimatedBoxforInternetWarning = () => (
+            <Animated.View style={[
+                    {...styles.flex, ...styles.absolute, ...styles.internet_state_box},
+                    { transform: [{ translateY: this.internetStateBox }], },
+            ]}>
+                    <View style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
+                    
+                        <Image 
+                            source={require('./../assets/icons/internet-state.png')}
+                            style={{...styles.intenet_connection_icon}}
+                            resizeMode="cover"
+                        />
+                        <Text style={{...styles.intenet_connection_text}}>
+                            {this.state.language.internet_msg_box}
+                        </Text>
+                    </View>
+            </Animated.View>
+    )
+
     headerLeftComponent = () => (
         <View style={{...styles.space_15_left}}>
             <TouchableOpacity onPress={() => this.props.navigation.navigate("Sidebar")}>
@@ -111,7 +151,7 @@ class DashboardComponents extends Component {
             <View>
                 <TouchableOpacity onPress={() => this.props.navigation.navigate("AppSettings")}>
                     <Image
-                        source={require('./../assets/icons/settings-icon.png')}
+                        source={require('./../assets/icons/settings-icon-white.png')}
                         style={styles.header_icon_md}
                         resizeMode="cover"
                     />
@@ -145,19 +185,89 @@ class DashboardComponents extends Component {
             
         }) 
 
-    } 
+    }
 
-    render = () => {
-        
+    ChartComponents = () => (
+        <View>
           
+              <LineChart
+                data={data}
+                width={screenWidth}
+                height={220}
+                chartConfig={chartConfig}
+                withVerticalLines = {false} 
+                // verticalLabelRotation={60}
+                bezier
+                style={{
+                  marginVertical: 8,
+                  borderRadius: 0, 
+                  backgroundColor: 'transparent',
+                  padding:0,
+                  margin:0
+                }}
+              />
+          
+              
+        </View>
+    )
+
+    /*{this.AnimatedBoxforInternetWarning()}*/
+    render = () => { 
+
+        const chart_by = ["Weekly", "Monthly", "Yearly"];
+
+
         return (
-            <View>
-                <Text>
-                    Dashboard
-                </Text>
-               
-            </View>
-            
+           <SafeAreaView style={{...styles.container_fluid}}>
+
+                <ScrollView>
+                    
+                    <View>
+                        
+                        <View style={{ flex: 1, alignItems: "center", flexDirection: 'row'}}>
+                            
+                            <View style={{flex: 1, marginTop: 15}}>
+                                <SelectDropdown
+
+                                    buttonStyle={{backgroundColor: '#fff', width: Dimensions.get('window').width - 30, marginLeft: 15, marginRight: 15, flex: 1, left: 0, borderRadius: 10}}
+                                    data={chart_by}
+                                    defaultButtonText = {"Sales Period"}
+                                    renderDropdownIcon={() => {
+                                        return (
+                                            <Image
+                                                source={require('./../assets/icons/arrow-down.png')}
+                                                style={{width: 25, height: 25 }}
+                                                resizeMode="cover"
+                                            />
+                                        );
+                                    }}
+                                    onSelect={(selectedItem, index) => {
+                                        console.log(selectedItem, index)
+                                    }}
+                                    buttonTextAfterSelection={(selectedItem, index) => {
+                                        // text represented after item is selected
+                                        // if data array is an array of objects then return selectedItem.property to render after item is selected
+                                        return selectedItem
+                                    }}
+                                    rowTextForSelection={(item, index) => {
+                                        // text represented for each item in dropdown
+                                        // if data array is an array of objects then return item.property to represent item in dropdown
+                                        return item
+                                    }}
+                                />
+                            </View>
+
+                            <View style={{flex: 1}}>
+                                {this.ChartComponents()}
+                            </View>
+                        </View>
+
+                    </View>
+
+                </ScrollView>
+
+                {this.AnimatedBoxforInternetWarning()}  
+           </SafeAreaView>
         )
     }
 
