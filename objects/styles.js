@@ -1,4 +1,4 @@
-import { StyleSheet, I18nManager } from "react-native"; 
+import { StyleSheet, I18nManager, Dimensions } from "react-native"; 
  
 
 //textAlign: I18nManager.isRTL ? 'right' : 'left',
@@ -7,6 +7,10 @@ var styles = StyleSheet.create({
         color: {
             white: "#fff"
         }
+    },
+
+    colors: {
+        white: { color: "#fff" }
     },
 
     flex: {
@@ -47,6 +51,18 @@ var styles = StyleSheet.create({
     absolute: {
         position: "absolute"
     },
+    
+    dashboard_cols: {
+        flex: 1, 
+        margin: 10, 
+        //backgroundColor: "#fff", 
+        height:150, 
+        borderRadius: 15, 
+        padding: 10, 
+        justifyContent: "center", 
+        alignItems: "center"
+    },
+
     screens: {
         flex: 1, 
         justifyContent: 'center', 
@@ -176,6 +192,10 @@ var styles = StyleSheet.create({
     space_bottom_25: {
         marginBottom: 25
     },
+    
+    space_bottom_10: {
+        marginBottom: 10
+    },
 
     space_top_25: {
         marginTop: 25
@@ -199,6 +219,14 @@ var styles = StyleSheet.create({
 
     space_15_left: {
         marginLeft: 15
+    },
+
+    space_5_left: {
+        marginLeft: 5
+    },
+    
+    space_5_right: {
+        marginRight: 5
     },
 
     error_message: {
@@ -311,7 +339,21 @@ var styles = StyleSheet.create({
         fontSize: 16,
         overflow: "hidden",
         flexShrink: 1
+    },
+    dashboard_banner: {
+        backgroundColor: "#fff", 
+        marginLeft: 15, 
+        marginRight: 15, 
+        width:Dimensions.get("window").width - 30, 
+        paddingBottom: 10, 
+        paddingTop: 30, 
+        paddingLeft: 10, 
+        paddingRight: 10, 
+        borderRadius: 15, 
+        marginTop:30, 
+        marginBottom:20
     }
+
 });
 
 

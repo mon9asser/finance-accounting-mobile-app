@@ -64,3 +64,379 @@ The Next Dails Sales application is completely free to use. However, it is impor
 	To put it in perspective, the value of your contribution is akin to the price of a 250ml juice—a small investment that reaps considerable rewards for both parties.    
 
 
+
+
+
+
+
+
+
+
+
+====================================================================================
+============= Screens
+====================================================================================
+Add Branch 
+Branches 			--> connect its id with every insert for tables ( Curent branch for this device )
+Update Branch 
+----------------------------
+Add Category 
+Categories ( Products, Expenses )
+Update Category 
+----------------------------
+Add Product
+Update Product 
+Products 
+----------------------------
+Add Sales
+Update Sales 
+Sales 
+----------------------------
+Add Balance
+Update Balance 
+Balances 
+----------------------------
+Add Sales Return
+Update Sales Return 
+Sales Returns 
+----------------------------
+Add Purchase Return
+Update Purchase Return 
+Purchase Returns 
+----------------------------
+Add Purchase
+Update Purchase
+Purchases 
+----------------------------
+Add Customer
+Update Customer
+Customers 
+----------------------------
+Add Supplier
+Update Supplier
+Supplier 
+----------------------------
+Add Expense
+Update Expense
+Expenses 
+----------------------------
+Log history 
+Supscription
+Work Team 
+settings 
+support ( contact page )
+policy and privacy 
+terms and conditions  
+Dashboard
+login 
+sign up 
+reset password 
+change password 
+notifications 
+reports 
+profile for each user about his sales and logs 
+
+
+====================================================================================
+============= UML
+====================================================================================
+
+--------------------
+branches
+--------------------
+id 
+branch name 
+branch city 
+branch address 
+branch number 
+user_id 
+last_update
+date_made 
+
+
+--------------------
+users 
+--------------------
+id
+application_id
+name
+job
+email
+password
+login_type
+access_level_id
+rule_id
+registration_date
+last_login
+token
+passing_code
+app_name
+platform {}
+
+{branch_id}---- default -1 => author of all branches 
+{is_owner}----
+
+
+--------------------
+application  
+--------------------
+id
+subscription
+database_name
+company_name
+{is_expired}-------
+{package_id}----
+{user_id}----
+{vat_management} ----
+	enable 
+	Tax Number
+		vat percentage
+{currency} --- { name, short, flag }
+{tracking_balance}
+{tracking_inventory}
+
+ 
+---------------------------
+access level
+---------------------------
+id 
+local_id
+access_name (for example: admin, author, saler, ... )
+privileges [
+    {
+        module_name: "Sales",
+        module_id: 1                 // examples [notifications, 1 => sales, 2 => purchases, ets]
+        [
+            view
+            add and view his data 
+            add and view and edit his data
+            Manage all
+        ]
+    }
+]
+date_made
+date_update
+
+
+--------------------
+categories  
+--------------------
+id
+local_id
+app_name ( 0 => products, 1 => expenses ) 
+category_name
+created_by 
+updated_by  
+date_made
+date_update
+
+--------------------
+Product Prices  
+--------------------
+id
+local_id
+product_id       
+name 
+unit_name
+unit_short
+sales_price
+purchase_price 
+factor
+created_by 
+updated_by  
+date_made
+date_update
+is_default_price
+
+---------------------------
+Products
+---------------------------
+id
+local_id
+product_name
+category_id    [categories.id]
+barcode
+discount :
+    is_percentage: false
+    value
+date_made
+date_update
+
+
+
+
+
+---------------------------
+customers && Suppliers
+---------------------------
+id
+local_id
+customer_name
+phone_number
+gender
+email_address
+user_type: ( 0 => customer, 1 => supplier )
+branch_id 
+note
+image thumbnail ( default thumb image )
+date_made
+date_update
+updated_by 
+created_by
+
+
+------------------------
+payment_methods ( by default: cash - bank )
+------------------------
+id
+local_id
+payment_name
+payment_short_name
+date_made
+date_update
+updated_by 
+created_by
+
+
+------------------------
+invoice_status
+------------------------
+id
+local_id
+status_name
+status_short_name 
+date_made
+date_update
+
+
+------------------------
+sales_invoices - purchase_invoices - return_purchase_invoices - return_sales_invoices
+------------------------
+id 
+local_id
+invoice_number
+invoice_status_id   [invoice_status.id]
+payment_method_id   [payment_methods.id]
+date 
+customer_id 
+branch_id
+total
+subtotal
+discount 
+    is_percentage: false
+    value
+tax  
+    is_percentage: false
+    value
+Vat  
+    is_percentage: false
+    value
+shipping
+order_tracking_number
+date_made
+date_update
+updated_by 
+created_by
+
+
+
+------------------------
+invoices_details
+------------------------
+id 
+local_id
+doc_id  [sales_invoices.id][purchase_invoices.id][return_sales_invoices.id][return_purchase_invoices.id]
+doc_type (0 => sales_invoices, 1 => purchase_invoices, 2 => return_sales_invoices, 3 => return_purchase_invoices)
+is_out ( true => products is going out, false => product is going in )
+product_id 
+branch_id
+price 
+unit 
+unit_short
+unit_name
+quantity 
+factor
+cost
+total_cost 
+total_quantity
+discount 
+    is_percentage: false
+    value
+subtotal
+total_price
+date_made
+date_update
+updated_by 
+created_by
+
+
+------------------------
+expenses
+------------------------
+id 
+local_id
+date
+name 
+category_id    [categories.id]
+cost 
+details
+date_made
+date_update
+branch_id
+updated_by 
+created_by
+
+------------------------
+Balances
+------------------------
+id 
+local_id
+total_balance
+payment_type_id [payment_methods.id]
+date_made
+date_update
+updated_by 
+created_by
+
+
+------------------------
+log history 
+------------------------
+id 
+local_id
+doc_type 
+doc_id 
+doc_name 
+date_made 
+user_id 
+
+------------------------
+notifications
+------------------------
+id 
+doc_type 
+doc_id 
+doc_name
+details 
+user_id
+read_ids: [] // users ids who are read this notification 
+
+------------------------
+settings
+------------------------
+id 
+user_id 
+language 
+theme
+Printings
+	invoices
+		sales
+		purchase
+		returns
+	reports
+notifications		
+	notify me when a new sales is added by others
+	notify me when quantity of item is going to finish
+	notify me by a daily report 
+ 
+

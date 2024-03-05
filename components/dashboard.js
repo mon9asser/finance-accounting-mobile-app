@@ -262,9 +262,9 @@ class DashboardComponents extends Component {
 
                 <ScrollView>
                     
-                    <View onLayout={this.onLayoutChartContainer} style={{backgroundColor: "#fff", marginLeft: 15, marginRight: 15, width:Dimensions.get("window").width - 30, paddingBottom: 10, paddingTop: 30, paddingLeft: 10, paddingRight: 10, borderRadius: 15, marginTop:20, marginBottom:20}}>
+                    <View onLayout={this.onLayoutChartContainer} style={{...styles.dashboard_banner}}>
                         
-                        <View style={{ flex: 1, alignItems: "center", flexDirection: 'row'}}>
+                        <View style={{ ...styles.row, ...styles.direction_row}}>
                              
                                 <SelectDropdown
 
@@ -298,253 +298,221 @@ class DashboardComponents extends Component {
 
                         </View>
 
-                        <View style={{ flex: 1 }}>
+                        <View style={{ ...styles.flex }}>
                             {this.ChartComponents()}
                         </View>
 
                     </View>
 
+                    <View style={{...styles.flex, ...styles.space_5_left, ...styles.space_5_right}}>
 
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
+                        <View style={{...styles.flex, ...styles.direction_row}}>
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Branch</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Product </Text>
+                            </TouchableOpacity>
+                        </View> 
+
+
+                        <View style={{...styles.flex, ...styles.direction_row}}>
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Sales Invoice</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Purchase Invoice </Text>
+                            </TouchableOpacity>
+                        </View> 
+
+
+
+                        <View style={{...styles.flex, ...styles.direction_row}}>
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Purchase Return Invoice</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Sales Return Invoice </Text>
+                            </TouchableOpacity>
+                        </View> 
+
+
+
+                        <View style={{...styles.flex, ...styles.direction_row}}>
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Balance</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add New Customer</Text>
+                            </TouchableOpacity>
+                        </View> 
+
+
+
+                        <View style={{...styles.flex, ...styles.direction_row}}>
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add New Supplier</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add New Expense</Text>
+                            </TouchableOpacity>
+                        </View> 
+
+
+
+                        <View style={{...styles.flex, ...styles.direction_row}}>
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Branch</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Category </Text>
+                            </TouchableOpacity>
+                        </View> 
+
+
+
+                        <View style={{...styles.flex, ...styles.direction_row}}>
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Branch</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Category </Text>
+                            </TouchableOpacity>
+                        </View> 
+
+
+
+                        <View style={{...styles.flex, ...styles.direction_row}}>
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Branch</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require('./../assets/icons/users.png')}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Category </Text>
+                            </TouchableOpacity>
+                        </View> 
+
                     </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
-                    <View>
-                        <Text>
-                            Content
-                        </Text>
-                    </View>
+                     
 
                 </ScrollView>
 
