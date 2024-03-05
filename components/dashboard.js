@@ -33,7 +33,8 @@ class DashboardComponents extends Component {
         this.state = {
             language: {},
             current_language: "en",
-            isConnected: true 
+            isConnected: true,
+            chartContainerWidth: 0
         }
 
         this.internetState = null;
@@ -187,29 +188,68 @@ class DashboardComponents extends Component {
 
     }
 
-    ChartComponents = () => (
-        <View>
-          
-              <LineChart
-                data={data}
-                width={screenWidth}
-                height={220}
-                chartConfig={chartConfig}
-                withVerticalLines = {false} 
-                // verticalLabelRotation={60}
-                bezier
-                style={{
-                  marginVertical: 8,
-                  borderRadius: 0, 
-                  backgroundColor: 'transparent',
-                  padding:0,
-                  margin:0
-                }}
-              />
-          
-              
-        </View>
-    )
+    ChartComponents = () => {
+        
+        const data = {
+            labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+            datasets: [
+              {
+                data: [20, 45, 28, 80, 99, 43, 50],
+                screen: "xxxxxxxxxxxxxxxxxxx",
+                color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
+                  strokeWidth: 1
+                }
+            ]
+        };
+
+        const chartConfig = {
+            backgroundGradientFrom: "#ffffff",
+            backgroundGradientFromOpacity: 0,
+            backgroundGradientTo: "#ffffff",
+            backgroundGradientToOpacity: 0.1,
+            color: (opacity = 1) => `rgba(0, 0, 0, 0.25)`,  
+            strokeWidth: 1, // optional, default 3
+            barPercentage: 0.1, 
+            fillShadowGradientTo: "#ffffff",
+            fillShadowGradientFrom: "#ffffff",
+            useShadowColorFromDataset: false, // optional
+            propsForDots: {
+              r: "3",
+              strokeWidth: "0",
+              stroke: "#F65F6E",
+              fill: '#F65F6E'
+            }
+          };
+
+        return (
+        <LineChart
+            data={data}
+            width={this.state.chartContainerWidth - 30}
+            height={220}
+            chartConfig={chartConfig}
+            withVerticalLines={false}
+            // verticalLabelRotation={60}
+            bezier
+            style={{
+                flex: 1, // Added flex: 1 to fill the available space
+                marginVertical: 8,
+                borderRadius: 0, 
+                backgroundColor: 'transparent'          
+            }}
+          />
+    )}
+
+    setChartContainerWidth = (value) => {
+        this.setState({
+            chartContainerWidth: value
+        })
+    }
+
+    onLayoutChartContainer = ( event ) => {
+        const { width } = event.nativeEvent.layout;
+        this.setChartContainerWidth(width);
+
+    }
 
     /*{this.AnimatedBoxforInternetWarning()}*/
     render = () => { 
@@ -222,14 +262,14 @@ class DashboardComponents extends Component {
 
                 <ScrollView>
                     
-                    <View>
+                    <View onLayout={this.onLayoutChartContainer} style={{backgroundColor: "#fff", marginLeft: 15, marginRight: 15, width:Dimensions.get("window").width - 30, paddingBottom: 10, paddingTop: 30, paddingLeft: 10, paddingRight: 10, borderRadius: 15, marginTop:20, marginBottom:20}}>
                         
                         <View style={{ flex: 1, alignItems: "center", flexDirection: 'row'}}>
-                            
-                            <View style={{flex: 1, marginTop: 15}}>
+                             
                                 <SelectDropdown
 
-                                    buttonStyle={{backgroundColor: '#fff', width: Dimensions.get('window').width - 30, marginLeft: 15, marginRight: 15, flex: 1, left: 0, borderRadius: 10}}
+                                    buttonStyle={{backgroundColor: '#efefef', marginBottom: 15, width: this.state.chartContainerWidth - 20, marginLeft: 15, marginRight: 15, flex: 1, left: 0, borderRadius: 10}}
+                                    buttonTextStyle = {{color: "#999"}}
                                     data={chart_by}
                                     defaultButtonText = {"Sales Period"}
                                     renderDropdownIcon={() => {
@@ -254,14 +294,256 @@ class DashboardComponents extends Component {
                                         // if data array is an array of objects then return item.property to represent item in dropdown
                                         return item
                                     }}
-                                />
-                            </View>
+                                /> 
 
-                            <View style={{flex: 1}}>
-                                {this.ChartComponents()}
-                            </View>
                         </View>
 
+                        <View style={{ flex: 1 }}>
+                            {this.ChartComponents()}
+                        </View>
+
+                    </View>
+
+
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>
+                            Content
+                        </Text>
                     </View>
 
                 </ScrollView>
