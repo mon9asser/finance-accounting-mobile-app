@@ -4,8 +4,10 @@ import { Text, Image, SafeAreaView, TouchableOpacity, View, ScrollView, TextInpu
 import { Checkbox } from 'react-native-paper'; 
 
 
-// App Files
-import {add_session, get_session, delete_session} from './../objects/storage.js'
+// App Files 
+import {Usr} from './../objects/storage/user.js';
+
+var usr = new Usr();
 
 
 class HomeComponents extends Component {
@@ -20,7 +22,7 @@ class HomeComponents extends Component {
 
     sessionIsConnected = () => {
         
-        const session = get_session();
+        const session = usr.get_session();
         if( session !== null ) {
             this.props.navigation.navigate("Dashboard");
         } 

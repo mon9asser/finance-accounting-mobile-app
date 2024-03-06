@@ -15,10 +15,11 @@ import { Button } from "react-native-paper";
 // App Files 
 import {config,} from "../../settings/config.js" ;
 import {styles} from "../../objects/styles.js"; 
-import {get_setting} from "../../objects/storage.js"
-import {get_lang} from '../../objects/languages.js'
-import {add_session, get_session, delete_session } from './../../objects/storage.js'
+import {get_setting} from "./../../objects/storage/settings.js"
+import {get_lang} from '../../objects/languages.js' 
+import {Usr} from './../../objects/storage/user.js';
 
+var usr = new Usr();
 
 class LoginComponents extends Component {
 
@@ -280,12 +281,12 @@ class LoginComponents extends Component {
                 this.setPressBtn(false);
 
                 // store app and user in session
-                await add_session(
+                await usr.add_session(
                     res.data.data.application,
                     res.data.data.user
                 ); 
                 
-                var _session = await get_session();
+                var _session = await usr.get_session();
                 
                 // show successful message
                 if( _session !== null ) {

@@ -2,21 +2,93 @@ import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { generateId } from './helpers.js';
-
+import {get_lang} from './languages.js' 
 import { send_update_request_for_row } from './remote.js'; 
 
-const session = new Storage({
-    size: 30,
+ 
+
+var getting_lanugage = (val = "en" ) => { 
+    var lang = get_lang(val);  
+    return lang;
+}
+
+/* Get stoeage */
+const get_from_storage = async (storageName) => {
+
+}
+
+/* delete stoeage */
+const delete_from_storage = async () => {
+
+}
+
+/* add stoeage */
+const add_to_storage = async ( _sotrage_name, language ) => {
+    
+    var language = getting_lanugage(language);
+
+    var response = {
+        is_error: true,
+        success: false, 
+        message: language.something_error,
+        data: []
+    }
+
+    try {
+
+
+
+        await  _sotrage_name.save({
+
+        });
+
+        response.is_error = false;
+        response.success = true;
+        response.message = language.something_error;
+        return response;
+    } catch (error) {
+
+        return response
+    }
+
+}
+
+
+
+// ===================================
+// ===== Products
+// ===================================
+ 
+const categories = new Storage({
+    size: 150,
     storageBackend: AsyncStorage,
-    defaultExpires: 1000 * 60 * 60 * 24 // 1 day expiration
+    defaultExpires: null
 }); 
+
+const product_prices = new Storage({
+    size: 200,
+    storageBackend: AsyncStorage,
+    defaultExpires: null
+}); 
+
+const products = new Storage({
+    size: 400,
+    storageBackend: AsyncStorage,
+    defaultExpires: null
+}); 
+
+
+
+
+// ===================================
+// ===== Settings
+// ===================================
 
 const settings = new Storage({
     size: 30,
     storageBackend: AsyncStorage,
     defaultExpires: null
 }); 
-
 
 var add_setting = async(options) => {
 
@@ -67,6 +139,18 @@ var get_setting = async() => {
 
 }
  
+
+
+// ===================================
+// ===== Sessions
+// ===================================
+
+const session = new Storage({
+    size: 30,
+    storageBackend: AsyncStorage,
+    defaultExpires: 1000 * 60 * 60 * 24 // 1 day expiration
+}); 
+
 var add_session = async ( application, user ) => {
 
     try {
@@ -124,7 +208,7 @@ var get_session = async () => {
 
 }
 
-
+// ===================================
 
 export {
 
@@ -132,6 +216,8 @@ export {
     delete_session,
     add_session,
     get_setting,
+
+    add_to_storage
 }
 
 

@@ -7,6 +7,7 @@ const en = {
         invalid_email: "You have entered an invalid email address.",
         successful_login: "Well done! You have successfully logged in. You will be redirected to the dashboard.",
         check_internet_connection: "Something went wrong, please check your internet connection and try again.",
+        something_error: "Something went wrong, try later",
         login: "Login", 
         login_subtitle: "Please sign in to continue",
         forget_password: "Forget your password?",
