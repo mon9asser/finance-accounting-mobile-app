@@ -5,9 +5,8 @@ import { Checkbox } from 'react-native-paper';
 
 
 // App Files 
-import {Usr} from './../objects/storage/user.js';
-
-var usr = new Usr();
+import {usr} from './../objects/storage/user.js';
+ 
 
 
 class HomeComponents extends Component {

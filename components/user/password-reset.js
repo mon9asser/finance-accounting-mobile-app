@@ -269,25 +269,29 @@ class ResetPasswordComponents extends Component {
         
         
         let errorCallback = (error = null) => {
-
-
+ 
+              
             var message = '';
-
-            if( error.response != undefined ) {
-                message = this.state.language.api_connection_error;
-                
-            } else if( error.request != undefined ) {
-                message = this.state.language.api_connection_error;
-                
-                if( error.request._response ) {
-                    var ob_response = JSON.parse(error.request._response);
-                    if( ob_response.is_error) {
-                        message = ob_response.data;
-                    } 
-                }
-
+            if( error.message != undefined ) {
+                message = error.message;
             } else {
-                message = this.state.language.check_internet_connection
+
+                if( error.response != undefined ) {
+                    message = this.state.language.api_connection_error;
+                    
+                } else if( error.request != undefined ) {
+                    message = this.state.language.api_connection_error;
+                    
+                    if( error.request._response ) {
+                        var ob_response = JSON.parse(error.request._response);
+                        if( ob_response.is_error) {
+                            message = ob_response.data;
+                        } 
+                    }
+
+                } else {
+                    message = this.state.language.check_internet_connection
+                }
             }
             
             // stop activator indicator
@@ -329,12 +333,17 @@ class ResetPasswordComponents extends Component {
             }
         }
 
-        let error = (res) => {
-            errorCallback(res)
-        }
+        try {
 
-        let request = axios(axConf);
-        request.then(success, error);
+            let error = (res) => {
+                errorCallback(res)
+            }
+            
+            axios(axConf).then(success).catch(err => error(err)); 
+
+        } catch (error) {
+            errorCallback(error);
+        }
     }
 
     render = () => {

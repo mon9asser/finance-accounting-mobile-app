@@ -18,9 +18,8 @@ import {config,} from "../../settings/config.js" ;
 import {styles} from "../../objects/styles.js"; 
 import {get_setting} from "./../../objects/storage/settings.js"
 import {get_lang} from '../../objects/languages.js' 
-import {Usr } from './../../objects/storage/user.js';
-
-var usr = new Usr();
+import {usr} from './../../objects/storage/user.js';
+ 
 
 class RegisterComponents extends Component {
     
@@ -225,7 +224,7 @@ class RegisterComponents extends Component {
         })
     }
 
-    registerNewUser = () => {
+    registerNewUser = async() => {
 
         this.setNotificationBox("none")
         this.setPressBtn(true);
@@ -347,25 +346,29 @@ class RegisterComponents extends Component {
         
         
         let errorCallback = (error = null) => {
-
-
+ 
+              
             var message = '';
-
-            if( error.response != undefined ) {
-                message = this.state.language.api_connection_error;
-                
-            } else if( error.request != undefined ) {
-                message = this.state.language.api_connection_error;
-                
-                if( error.request._response ) {
-                    var ob_response = JSON.parse(error.request._response);
-                    if( ob_response.is_error) {
-                        message = ob_response.data;
-                    } 
-                }
-
+            if( error.message != undefined ) {
+                message = error.message;
             } else {
-                message = this.state.language.check_internet_connection
+
+                if( error.response != undefined ) {
+                    message = this.state.language.api_connection_error;
+                    
+                } else if( error.request != undefined ) {
+                    message = this.state.language.api_connection_error;
+                    
+                    if( error.request._response ) {
+                        var ob_response = JSON.parse(error.request._response);
+                        if( ob_response.is_error) {
+                            message = ob_response.data;
+                        } 
+                    }
+
+                } else {
+                    message = this.state.language.check_internet_connection
+                }
             }
             
             // stop activator indicator
@@ -378,7 +381,8 @@ class RegisterComponents extends Component {
             this.setNotificationMessage(message); 
         };
 
-        let success = async (res) => {
+        let success = async (res, error) => { 
+
             if(res.data.success) {
 
                 // stop activator indicator
@@ -412,11 +416,17 @@ class RegisterComponents extends Component {
             }
         }
 
-        let error = (res) => {
-            errorCallback(res)
+        try {
+
+            let error = (res) => {
+                errorCallback(res)
+            }
+            
+            axios(axConf).then(success).catch(err => error(err)); 
+
+        } catch (error) {
+            errorCallback(error);
         }
-        let request = axios(axConf);
-        request.then(success, error); 
     }
 
 

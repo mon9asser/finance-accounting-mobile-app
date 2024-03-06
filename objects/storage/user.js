@@ -22,7 +22,7 @@ class Usr {
     delete_session = async () => {
         try {
             
-            await session.save({
+            await this.session.save({
                 key: 'user',
                 data: null
             });
@@ -51,7 +51,7 @@ class Usr {
                 company_name: application.company_name 
             }
         
-            await session.save({
+            await this.session.save({
                 key: 'user',
                 data: userInfo
             });
@@ -74,7 +74,7 @@ class Usr {
             return userInfo;
 
         } catch (error) {
-
+            console.log(error);
             return null;
 
         }
@@ -82,4 +82,6 @@ class Usr {
 
 }
 
-export {Usr};
+var usr = new Usr();
+
+export {usr};
