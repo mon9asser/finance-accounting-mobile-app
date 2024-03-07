@@ -1,3 +1,7 @@
+
+// import { get_setting } from "./storage/settings";
+import { get_lang } from "./languages";
+
 const random = (min, max)  => {  
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
@@ -18,4 +22,13 @@ const generateId = () => {
     return id;
 }
 
-export { generateId };
+ 
+var get_response = () => {
+    return {
+        is_error: true, 
+        message: "",
+        data: []
+    };
+}
+
+export { generateId, get_response };

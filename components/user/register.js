@@ -389,19 +389,23 @@ class RegisterComponents extends Component {
                 this.setPressBtn(false);
 
                 // store app and user in session
-                await usr.add_session(
+                var _session = await usr.add_session(
                     res.data.data.application,
                     res.data.data.user
-                ); 
-                
-                var _session = await usr.get_session();
+                );  
                 
                 // show successful message
-                if( _session !== null ) {
+                if( _session ) {
                     this.setNotificationBox("flex")
                     this.setNotificationCssClass(styles.success_message)
                     this.setNotificationCssTextClass(styles.success_text)
                     this.setNotificationMessage(this.state.language.successful_login); 
+                } else {
+                    this.setNotificationBox("flex")
+                    this.setNotificationCssClass(styles.error_message)
+                    this.setNotificationCssTextClass(styles.error_text)
+                    this.setNotificationMessage(this.state.language.failed_to_register); 
+                    return;
                 }
 
                 // transfer use to dashboard screen after 5 seconds

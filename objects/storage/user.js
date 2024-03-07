@@ -2,8 +2,7 @@ import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { generateId } from './../helpers.js';
-import {get_lang} from './../languages.js' 
-import { send_update_request_for_row } from './../remote.js'; 
+import {get_lang} from './../languages.js'  
 
 
 class Usr {

@@ -50,23 +50,30 @@ const en = {
         dashboard_title: "Dashboard",
         app_settings: "Settings",
         app_notifications: "Notifications",
-
-
+        
         total_storage_usage: "Total Storage Usage",
-        supscription: "Supscription",
-        mywork_team: "My Work Team ",
-        add_new_user: "Add new user",
+        supscription: "Supscription.",
+        mywork_team: "My Work Team.",
+        add_new_user: "Add new user.",
         settings: "Settings",
-        team_log_history: "Team log history",
+        team_log_history: "Team log history.",
         support: "Support",
-        privacypolicy: "Privacy Policy",
-        terms_condition: "Terms and Conditions",
-        delete_account: "Delete my account",
+        privacypolicy: "Privacy Policy.",
+        terms_condition: "Terms and Conditions.",
+        delete_account: "Delete my account.",
         logout: "Logout",
-        internet_msg_box: "Oops! It Looks Like You're Offline",
+        internet_msg_box: "Oops! It Looks Like You're Offline.",
 
-        api_error: "API Errors, please check with your service provider"
+        api_error: "API Errors: please check with your service provider.",
+        user_session_expired: "Your session has expired; please log in again.",
+        saved_success: "The data has been saved successfully.",
+        save_failed: "Data saving failed; please check your phone's storage space.",
+        unexpected_error: "An unexpected error occurred, please check with your service provider.",
+        quota_exceeded: "Storage limit reached. Consider freeing up some space on your device.",
 
+        failed_to_register: "Account creation unsuccessful; something went wrong!",
+        category_exists: "Category already exists!",
+        category_doesnt_exists: "Category does not exist!",
 }
 
 

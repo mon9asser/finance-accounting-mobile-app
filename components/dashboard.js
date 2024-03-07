@@ -26,9 +26,9 @@ import {get_lang} from './../objects/languages.js';
 // apis 
 import {products} from "./../objects/storage/products.js";
 
-products.test(function(data){
+/*products.test(function(data){
     console.log(data);
-});
+});*/
 
 class DashboardComponents extends Component {
 

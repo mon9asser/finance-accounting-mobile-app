@@ -2,8 +2,7 @@ import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { generateId } from './../helpers.js';
-import {get_lang} from './../languages.js' 
-import { send_update_request_for_row } from './../remote.js'; 
+import {get_lang} from './../languages.js'  
 
 
 const settings = new Storage({
@@ -61,5 +60,13 @@ var get_setting = async() => {
 
 }
 
-
-export {get_setting, add_setting}
+var localization = async () => {
+ 
+    var {language} = await get_setting();
+    
+    var get_all = get_lang(language);     
+     
+    return get_all;
+}
+ 
+export {get_setting, add_setting, localization}

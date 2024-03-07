@@ -33,6 +33,8 @@ import { AppNotificationsComponents } from './components/notifications.js';
 import {AppSidebarComponents}  from './components/sidebar.js';
 import { SubscriptionComponents } from './components/subscription.js';
 
+import { TestComponent } from "./components/test.js";
+
 // Functions 
 const Stack = createStackNavigator(); 
 
@@ -42,8 +44,10 @@ const App = () => {
         <SafeAreaView style={styles.flex}>
           <NavigationContainer>
 
-            <Stack.Navigator initialRouteName='Dashboard'>
+            <Stack.Navigator initialRouteName='Tester'>
       
+              <Stack.Screen name="Tester" component={TestComponent}  />
+              
               <Stack.Screen name="Home" component={HomeComponents} options={{ headerShown: false }}  />
               <Stack.Screen name="Register" component={RegisterComponents} options={{ headerShown: false }}  />
               <Stack.Screen name="Login" component={LoginComponents} options={{ headerShown: false }}  />

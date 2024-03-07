@@ -1,16 +1,12 @@
 import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Categories} from "./categories"; // it already exended from A_P_I_S class 
 
-import { generateId } from '../helpers.js';
-import {get_lang} from '../languages.js' 
-import { send_update_request_for_row } from '../remote.js'; 
-import {A_P_I_S} from "./apis.js";
+class Products extends Categories {
 
-class Products extends A_P_I_S {
-
-    constructor (parnent_constructor) {
+    constructor (props) {
         
-        super(parnent_constructor);
+        super(props);
         
         this.products = {
             key: "products",
@@ -19,8 +15,7 @@ class Products extends A_P_I_S {
                 storageBackend: AsyncStorage,
                 defaultExpires: null
             })
-        }
-        
+        } 
 
         this.product_prices = {
             key: "product_prices",
@@ -29,31 +24,29 @@ class Products extends A_P_I_S {
                 storageBackend: AsyncStorage,
                 defaultExpires: null
             })
-        }; 
+        };  
 
-        this.categories = {
-            key: "categories",
-            instance: new Storage({
-                size: 220,
-                storageBackend: AsyncStorage,
-                defaultExpires: null
-            })
-        } 
+    }
+
+    add_new_category = async ( pname, ) => {
 
     }
     
     
     test = async (callback) => {
-        var response = await super.coreAsync(
-            "anydatabase",
+       /* var response = await super.coreAsync( 
             this.categories,
             {
-                local_id: "local id",
-                app_name: "app name"
-            } 
-        ); 
+                app_name: 0,
+                category_name: "Salamon Items"
+            }  
+        ); */
 
-        callback(response)
+        var response = await this.categories.instance.load({
+            key: this.categories.key
+        })
+
+        callback(response);  
     }
 
 }
