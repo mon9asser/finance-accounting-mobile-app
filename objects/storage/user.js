@@ -73,8 +73,7 @@ class Usr {
 
             return userInfo;
 
-        } catch (error) {
-            console.log(error);
+        } catch (error) { 
             return null;
 
         }

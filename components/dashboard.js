@@ -23,6 +23,12 @@ import {get_lang} from './../objects/languages.js';
 // import {add_session, get_session, delete_session } from './../objects/storage.js'
 
 
+// apis 
+import {products} from "./../objects/storage/products.js";
+
+products.test(function(data){
+    console.log(data);
+});
 
 class DashboardComponents extends Component {
 

@@ -1,0 +1,83 @@
+async insret ( mobject , data, lang) {
+       
+        // calling the current user lanugage
+        var language = get_lang(lang);
+         
+        // preparing object 
+        var response = {
+            message: language.something_error,
+            status: 0, // 0 => error, 1 => success 
+            data: []
+        };
+         
+        // check if object property is not defined 
+        if(mobject.key == undefined || mobject.instance == undefined) {
+            response.message = language.api_error
+            return response;
+        }
+        
+
+        // getting the data 
+        var current_data = [];
+        try {  
+
+            current_data = await mobject.instance.load({
+                key: mobject.key
+            }); 
+
+        } catch(error) {}
+
+        try {  
+              
+            // push the object to array 
+            current_data.push(data);
+
+            // store the data 
+            
+
+            // building the success message 
+
+            // send a response with the object 
+            return response;
+
+        } catch (error) {
+            
+            // building error object 
+            
+            // send a response with the object
+            return error;
+
+        }
+
+    }
+	
+	
+	
+	
+	for remote 
+	data_status: { 
+		locale_saved 
+		locale_updated,
+		locale_deleted
+	}
+	
+	for locale 
+	data_status: {
+		remote_saved
+		remote_updated
+		remote_deleted		
+	}
+	
+	
+	// generate an id 
+	// getting user language for response 
+	// preparing response object
+	// check if object property is not defined
+	// check if local id is passed through the param
+	// if not, generate local id for this object 
+	// store data locally and send request with this data into the remote server marked with the locale status 
+	// if server sent an error just update the data inside the locale with the remote data status 
+	// in next save just ensure that there are no any unstored data inside locally or remotely 
+	
+	
+	// So

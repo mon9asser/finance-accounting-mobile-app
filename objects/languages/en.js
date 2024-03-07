@@ -63,7 +63,9 @@ const en = {
         terms_condition: "Terms and Conditions",
         delete_account: "Delete my account",
         logout: "Logout",
-        internet_msg_box: "Oops! It Looks Like You're Offline"
+        internet_msg_box: "Oops! It Looks Like You're Offline",
+
+        api_error: "API Errors, please check with your service provider"
 
 }
 

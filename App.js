@@ -42,7 +42,7 @@ const App = () => {
         <SafeAreaView style={styles.flex}>
           <NavigationContainer>
 
-            <Stack.Navigator initialRouteName='Register'>
+            <Stack.Navigator initialRouteName='Dashboard'>
       
               <Stack.Screen name="Home" component={HomeComponents} options={{ headerShown: false }}  />
               <Stack.Screen name="Register" component={RegisterComponents} options={{ headerShown: false }}  />
