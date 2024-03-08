@@ -187,13 +187,11 @@ class Products extends Categories {
 
         var reqs  = await this.getData(this.product_prices, param_id);   
          
-        if( ! reqs.data.length && reqs.data != undefined ) {
-            response.message = language.no_records; 
-            return;
+        if(  !reqs.data.length ) { 
+            response.message = language.no_records;  
         } 
         
-        response.is_error = false; 
-        response.message = "";
+        response.is_error = false;  
         response.data = reqs.data;
         return response;
 
@@ -312,10 +310,18 @@ class Products extends Categories {
         product_name,
         category_id,
         barcode,
-        discount 
+        discount,
+        thumbnail
     } = null ) => {
 
+        // getting language
+        var language = await localization();
+
         var pro_data = {};
+
+        if(thumbnail != undefined && thumbnail != '' ) {
+            pro_data["thumbnail"] = thumbnail;
+        }
 
         if(product_name != undefined && product_name != '' ) {
             pro_data["product_name"] = product_name;
@@ -334,19 +340,139 @@ class Products extends Categories {
             if(discount.is_percentage != undefined && discount.is_percentage != '') {
                 pro_data["discount"]['is_percentage'] = discount.is_percentage
             }
-
+            if(discount.percentage != undefined && discount.percentage != '') {
+                pro_data["discount"]['percentage'] = discount.percentage
+            }
             if(discount.value != undefined && discount.value != '') {
                 pro_data["discount"]['value'] = discount.value
             }
         }
 
-        console.log(pro_data);
+        // Existing data values  
+        var response = get_response(); 
+        response.is_error = true; 
+        response.message = language.something_error;
+
+        var { data }  = await this.getData(this.products); 
+        var collected_string = `${pro_data.product_name}${pro_data.category_id}`;
+        var index = data.findIndex( x => `${x.product_name}${x.category_id}` == collected_string);
+         
+        if( index != -1 ) {
+            response.message = language.product_exists;
+            response.is_error= true; 
+            response.data = data[index];
+            return response;
+        } 
+        var asyncRes = await this.coreAsync(this.products, pro_data );
+        if( asyncRes.status == 0 ) {
+            response.data = asyncRes.case;
+            response.message = asyncRes.message;
+            response.is_error = true;
+            return response; 
+        }
+
+        response.data = asyncRes.data;
+        response.message = asyncRes.message;
+        response.is_error = false;
+
+        return response; 
+    }
+
+    delete_product = async( param_id /* {key:value}*/ ) => {
+        
+
+        // delete from all 
+        var response = await this.deleteAsync(this.products, param_id );
+        
+        return {
+            is_error: response.status,
+            data: response.data,
+            message: response.message
+        }
+
+
 
     }
 
-    delete_product = async() => {}
-    get_product_by_id = async() => {}
-    update_product = async() => {}
+    get_product_by_id = async(param_id) => {
+                
+        // getting language
+        var language = await localization(); 
+        
+        var response = get_response(); 
+        response.is_error = true; 
+        response.message = language.something_error;
+        response.data = [];
+
+        var reqs  = await this.getData(this.products, param_id);   
+         
+        if(  !reqs.data.length ) { 
+            response.message = language.no_records;  
+        } 
+        
+        response.is_error = false;  
+        response.data = reqs.data;
+        return response;
+
+    }
+
+    update_product = async(
+            param_id, 
+            {
+                product_name,
+                barcode,
+                discount,
+                thumbnail
+            } = null
+        ) => {
+            
+        var response = get_response();
+         // getting language
+         var language = await localization();
+
+         var pro_data = {};
+ 
+         if(thumbnail != undefined && thumbnail != '' ) {
+            pro_data["thumbnail"] = thumbnail;
+        }
+
+        if(product_name != undefined && product_name != '' ) {
+            pro_data["product_name"] = product_name;
+        }
+         
+         if(barcode != undefined && barcode != '' ) {
+             pro_data["barcode"] = barcode;
+         }
+ 
+         if(discount != undefined && discount != '' ) {
+             pro_data["discount"] = {};
+             if(discount.is_percentage != undefined && discount.is_percentage != '') {
+                 pro_data["discount"]['is_percentage'] = discount.is_percentage
+             }
+             if(discount.percentage != undefined && discount.percentage != '') {
+                 pro_data["discount"]['percentage'] = discount.percentage
+             }
+             if(discount.value != undefined && discount.value != '') {
+                 pro_data["discount"]['value'] = discount.value
+             }
+         }
+
+         
+        
+        var asyncRes = await this.coreAsync(this.products, pro_data, param_id );
+        if( asyncRes.status == 0 ) {
+            response.data = asyncRes.case;
+            response.message = asyncRes.message;
+            response.is_error = true;
+            return response; 
+        }
+
+        response.data = asyncRes.data;
+        response.message = asyncRes.message;
+        response.is_error = false;
+
+        return response;
+    }
     
      
 

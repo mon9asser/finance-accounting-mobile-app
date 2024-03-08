@@ -75,6 +75,7 @@ const en = {
         failed_to_register: "Account creation unsuccessful; something went wrong!",
         category_exists: "Category already exists!",
         price_exists: "Price already exists!",
+        product_exists: "Product already exists!",
         category_doesnt_exists: "Category does not exist!",
         price_doesnt_exists: "Price does not exist!",
         item_doesnt_exists: "item does not exist!",

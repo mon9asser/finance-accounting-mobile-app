@@ -7,23 +7,28 @@ var TestComponent =  () => {
  
     var addData = async () => {
 
-        var prodInstance = await ProductsInstance.create_product_price(
-            '821458877059',
-            '200 Pieces',
-            '',
-            'unit',
-            620,
-            25.99,
-            1,
-            true 
+        var prodInstance = await ProductsInstance.create_product(
+            {
+                product_name: "Nigiri Sushi",
+                category_id: 1544,
+                barcode: "14584",
+                discount: {
+                    is_percentage: true,
+                    percentage: 10 ,
+                    value: 20 
+                } 
+            }
         );
 
+        
         console.log(prodInstance);
-
     }
 
     var DeleteData = async () => {
-        var prodInstance = await ProductsInstance.delete_product_price({local_id: '18987bfgxclnbmb17099091055641942'});
+
+        var prodInstance = await ProductsInstance.delete_product({
+            local_id: '363329zhl367wex17099339394402122'
+        });
         
         prodInstance.data.forEach(x => {
             console.log( x.local_id, x.product_local_id, x.name, x.sales_price, x.is_default_price)
@@ -40,13 +45,19 @@ var TestComponent =  () => {
     }
 
     var updateData = async() => {
-        var prodInstance = await ProductsInstance.update_product_price(
-            "987458tyq79a6i7q1709908941269876",
+        var prodInstance = await ProductsInstance.update_product(
+            "743969rx4yvx34i17099340526109618",
             {
-                sales_price: 124, 
-                is_default_price: true
+                product_name: "Bana Sushi", 
+                barcode: "14584",
+                discount: {
+                    is_percentage: true,
+                    percentage: 10 ,
+                    value: 20 
+                } 
             }
-        )
+        );
+ 
 
         console.log(prodInstance);
         console.log("------------------------------------------")
@@ -54,10 +65,12 @@ var TestComponent =  () => {
 
     var getById = async() => {
         
-        var prodInstance = await ProductsInstance.get_product_price_by_id("205839nkhczt9qfd17099090834282213");
-        //console.log(prodInstance);
+        var prodInstance = await ProductsInstance.get_product_by_id({
+            local_id: "743969rx4yvx34i1709934052609618"
+        });
+        
         prodInstance.data.forEach(x => {
-            console.log( x.local_id, x.product_local_id, x.name, x.sales_price, x.is_default_price)
+            console.log( x.local_id, x.product_name)
         }); 
         console.log("------------------------------------------ Totals:" + prodInstance.data.length) 
     }

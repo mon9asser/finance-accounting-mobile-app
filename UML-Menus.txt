@@ -219,7 +219,7 @@ date_update
 
 
 --------------------
-categories  XX
+categories  xxxx
 --------------------
 id
 local_id
@@ -231,7 +231,7 @@ date_made
 date_update
 
 --------------------
-Product Prices  
+Product Prices xxxx 
 --------------------
 id
 local_id
@@ -249,15 +249,17 @@ date_update
 is_default_price
 
 ---------------------------
-Products
+Products xxxx
 ---------------------------
 id
 local_id
 product_name
 category_id    [categories.id]
 barcode
+thumbnail
 discount :
     is_percentage: false
+    percentage
     value
 date_made
 date_update
