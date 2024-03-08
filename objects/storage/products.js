@@ -32,29 +32,54 @@ class Products extends Categories {
     }
 
     create_product_price = async(
-        product_local_id,
-        name,
-        unit_name,
-        unit_short,
-        sales_price,
-        purchase_price,
-        factor,
-        is_default_price 
+        {
+            product_local_id,
+            name,
+            unit_name,
+            unit_short,
+            sales_price,
+            purchase_price,
+            factor,
+            is_default_price 
+        } = null
     ) => {
 
         // getting language
         var language = await localization();
 
-        var objectdata = {
-            product_local_id: product_local_id,
-            name:name,
-            unit_name:unit_name,
-            unit_short:unit_short,
-            sales_price: parseFloat(sales_price),
-            purchase_price: parseFloat(purchase_price),
-            factor: parseFloat(factor),
-            is_default_price: is_default_price
-        };
+        var objectdata = { };
+
+        if( product_local_id != undefined && product_local_id != '' ) {
+            objectdata["product_local_id"] = product_local_id
+        }
+
+        if( name != undefined && name != '' ) {
+            objectdata["name"] = name
+        }
+
+        if( unit_name != undefined && unit_name != '' ) {
+            objectdata["unit_name"] = unit_name
+        }
+
+        if( unit_short != undefined && unit_short != '' ) {
+            objectdata["unit_short"] = unit_short
+        }
+
+        if( sales_price != undefined && sales_price != '' ) {
+            objectdata["sales_price"] = parseFloat(sales_price)
+        }
+
+        if( purchase_price != undefined && purchase_price != '' ) {
+            objectdata["purchase_price"] = parseFloat(purchase_price)
+        }
+
+        if( factor != undefined && factor != '' ) {
+            objectdata["factor"] = parseFloat(factor)
+        }
+
+        if( is_default_price != undefined && is_default_price != '' ) {
+            objectdata["is_default_price"] = is_default_price
+        }
 
         var response = get_response(); 
         response.is_error = true; 
@@ -151,7 +176,7 @@ class Products extends Categories {
     }
 
     get_product_price_by_id = async(param_id) => {
-        xxxxxxxxxxxxxxxx
+                
         // getting language
         var language = await localization(); 
         
@@ -160,23 +185,165 @@ class Products extends Categories {
         response.message = language.something_error;
         response.data = [];
 
-        var {data}  = await this.getData(this.product_prices, param_id);   
-        
-        if( ! data.length ) {
+        var reqs  = await this.getData(this.product_prices, param_id);   
+         
+        if( ! reqs.data.length && reqs.data != undefined ) {
             response.message = language.no_records; 
             return;
         } 
         
         response.is_error = false; 
         response.message = "";
-        response.data = data;
+        response.data = reqs.data;
         return response;
 
     }
     
-    update_product_price = async() => {} 
-    get_products = async() => {}
-    create_product = async() => {}
+    update_product_price = async(
+        param_id, 
+        {
+            name,
+            unit_name,
+            unit_short,
+            sales_price,
+            purchase_price,
+            factor,
+            is_default_price,
+        } = null
+    ) => {
+
+        var param_data = {};
+        var response = get_response();
+        if( name != undefined && name != '') {
+            param_data["name"] = name;
+        }
+
+        if( unit_name != undefined && unit_name != '') {
+            param_data["unit_name"] = unit_name;
+        }
+
+        if( unit_short != undefined && unit_short != '') {
+            param_data["unit_short"] = unit_short;
+        }
+
+        if( sales_price != undefined && sales_price != '') {
+            param_data["sales_price"] = sales_price;
+        }
+
+        if( purchase_price != undefined && purchase_price != '') {
+            param_data["purchase_price"] = purchase_price;
+        }
+
+        if( factor != undefined && factor != '') {
+            param_data["factor"] = factor;
+        }
+
+        if( is_default_price != undefined && is_default_price != '') {
+            param_data["is_default_price"] = is_default_price;
+        }
+
+        // make all other prices as no primary price 
+        if(param_data.is_default_price) {
+
+            // getting the product id from this id;
+            var product_price = await this.get_product_price_by_id(param_id)
+            if(product_price.data.length) {
+                var product_id = product_price.data[0].product_local_id;
+                var all_product_prices = await await this.getData(this.product_prices, { product_local_id: product_id });   
+                if( all_product_prices.data.length ) {
+                    all_product_prices.data.map(async item => {
+
+                        if( item.is_default_price ) {
+                            item.is_default_price = false;
+                        }
+    
+                        await this.coreAsync(this.product_prices, item, {
+                            product_local_id: item.product_local_id
+                        });
+                        
+                    });
+                }
+            }
+        }
+
+        
+        var asyncRes = await this.coreAsync(this.product_prices, param_data, param_id );
+        if( asyncRes.status == 0 ) {
+            response.data = asyncRes.case;
+            response.message = asyncRes.message;
+            response.is_error = true;
+            return response; 
+        }
+
+        response.data = asyncRes.data;
+        response.message = asyncRes.message;
+        response.is_error = false;
+
+        return response;
+
+    } 
+
+
+    get_products = async() => {
+
+        // getting language
+        var language = await localization(); 
+    
+        var response = get_response(); 
+        response.is_error = true; 
+        response.message = language.something_error;
+        
+        var {data}  = await this.getData(this.products);   
+        
+        if( ! data.length ) {
+            response.message = language.no_records; 
+        } else {
+            response.message = "";
+        }
+
+        response.is_error= false; 
+        response.data = data;
+        return response; 
+
+    }
+
+
+    create_product = async({
+        product_name,
+        category_id,
+        barcode,
+        discount 
+    } = null ) => {
+
+        var pro_data = {};
+
+        if(product_name != undefined && product_name != '' ) {
+            pro_data["product_name"] = product_name;
+        }
+
+        if(category_id != undefined && category_id != '' ) {
+            pro_data["category_id"] = category_id;
+        }
+        
+        if(barcode != undefined && barcode != '' ) {
+            pro_data["barcode"] = barcode;
+        }
+
+        if(discount != undefined && discount != '' ) {
+            pro_data["discount"] = {};
+            if(discount.is_percentage != undefined && discount.is_percentage != '') {
+                pro_data["discount"]['is_percentage'] = discount.is_percentage
+            }
+
+            if(discount.value != undefined && discount.value != '') {
+                pro_data["discount"]['value'] = discount.value
+            }
+        }
+
+        console.log(pro_data);
+
+    }
+
     delete_product = async() => {}
     get_product_by_id = async() => {}
     update_product = async() => {}

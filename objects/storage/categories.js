@@ -92,15 +92,20 @@ class Categories extends A_P_I_S {
 
     }
 
-    update_category = async( category_name, app_number, local_id ) => {
+    update_category = async( local_id, {category_name, app_number} = null ) => {
         
         // getting language
         var language = await localization();
 
-        var data = {
-            category_name: category_name, 
-            app_name: app_number
-        };
+        var data = { }; 
+        // category_name = null, app_number = null
+        if( category_name != undefined && category_name !== null ) {
+            data["category_name"] = category_name
+        }
+
+        if( app_number != undefined &&  app_number !== null ) {
+            data["app_name"] = app_number
+        }
 
         var response = get_response();
         var categories = await this.getData(this.categories);

@@ -287,6 +287,16 @@ class A_P_I_S {
                 return x.local_id == id;
 
             });
+            
+            if( objectIndex == -1 ) {
+                response.message = language.no_records;
+                response.case = 0;
+                response.status = 0;
+                response.data = [];
+
+                return response;
+            }
+
             if( objectIndex != -1 ) {
 
                 Object.keys(obj_data).forEach((keyName) => {
@@ -306,6 +316,8 @@ class A_P_I_S {
                     },
                     remote_updated: remote.is_error? false: true
                 } 
+
+                
 
             }
         } else {
@@ -382,7 +394,7 @@ class A_P_I_S {
             status: 0, // 0 => error, 1 => success 
             data: []
         };
-        xxxxxxxxxxxxxxxx
+        
         try { 
 
             var get_all = await mobject.instance.load({
@@ -407,11 +419,12 @@ class A_P_I_S {
                         return true;
                     }   
                 });
-
+                
                 if( index == -1 ) {
                     response.message = language.no_records; 
                     response.data = []; 
-                    response.is_error = true; 
+                    response.case = 0; 
+                    response.status = 1; 
                     return response;
                 }
 
@@ -420,13 +433,13 @@ class A_P_I_S {
                     if( typeof param_id == 'object' ) {
                         var key = Object.keys(param_id)[0];
                         var vaue = param_id[key]; 
-                        if( item[key] != vaue ) { 
+                        if( item[key] == vaue ) { 
                             return item;
                         }
         
                     }
         
-                    if(item.local_id != param_id && typeof param_id != 'object' ) {
+                    if(item.local_id == param_id && typeof param_id != 'object' ) {
                         return item;
                     }   
         
@@ -457,7 +470,7 @@ class A_P_I_S {
             var response = {
                 message: "",
                 case: 0,
-                status: 1, // 0 => error, 1 => success 
+                status: 0, // 0 => error, 1 => success 
                 data: []
             };
 

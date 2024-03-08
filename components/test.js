@@ -8,12 +8,12 @@ var TestComponent =  () => {
     var addData = async () => {
 
         var prodInstance = await ProductsInstance.create_product_price(
-            '124554411055',
-            '30 Pieces',
+            '821458877059',
+            '200 Pieces',
             '',
             'unit',
-            151,
-            14.99,
+            620,
+            25.99,
             1,
             true 
         );
@@ -23,7 +23,7 @@ var TestComponent =  () => {
     }
 
     var DeleteData = async () => {
-        var prodInstance = await ProductsInstance.delete_product_price({product_local_id: '124554411410'});
+        var prodInstance = await ProductsInstance.delete_product_price({local_id: '18987bfgxclnbmb17099091055641942'});
         
         prodInstance.data.forEach(x => {
             console.log( x.local_id, x.product_local_id, x.name, x.sales_price, x.is_default_price)
@@ -32,27 +32,34 @@ var TestComponent =  () => {
     }
     
     var loadData = async () => {
-        var prodInstance = await ProductsInstance.get_product_prices();
+        var prodInstance = await ProductsInstance.get_products();
         prodInstance.data.forEach(x => {
-            console.log( x.local_id, x.product_local_id, x.name, x.sales_price, x.is_default_price)
+            console.log( x.local_id, x.product_name, x.barcode)
         }); 
-        console.log("------------------------------------------")
+        console.log("------------------------------------------ Count: " + prodInstance.data.length)
     }
 
     var updateData = async() => {
-         
+        var prodInstance = await ProductsInstance.update_product_price(
+            "987458tyq79a6i7q1709908941269876",
+            {
+                sales_price: 124, 
+                is_default_price: true
+            }
+        )
+
+        console.log(prodInstance);
+        console.log("------------------------------------------")
     }
 
     var getById = async() => {
         
-        var prodInstance = await ProductsInstance.get_product_price_by_id("xx94927a5c5ausvfi17098970281071037");
+        var prodInstance = await ProductsInstance.get_product_price_by_id("205839nkhczt9qfd17099090834282213");
+        //console.log(prodInstance);
         prodInstance.data.forEach(x => {
             console.log( x.local_id, x.product_local_id, x.name, x.sales_price, x.is_default_price)
         }); 
-
-        console.log("------------------------------------------")
-        console.log("------------------------------------------")
-        console.log("------------------------------------------")
+        console.log("------------------------------------------ Totals:" + prodInstance.data.length) 
     }
 
     return (
