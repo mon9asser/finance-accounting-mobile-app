@@ -67,13 +67,18 @@ const en = {
         api_error: "API Errors: please check with your service provider.",
         user_session_expired: "Your session has expired; please log in again.",
         saved_success: "The data has been saved successfully.",
+        deleted_success: "The data has been deleted successfully.",
         save_failed: "Data saving failed; please check your phone's storage space.",
         unexpected_error: "An unexpected error occurred, please check with your service provider.",
         quota_exceeded: "Storage limit reached. Consider freeing up some space on your device.",
 
         failed_to_register: "Account creation unsuccessful; something went wrong!",
         category_exists: "Category already exists!",
+        price_exists: "Price already exists!",
         category_doesnt_exists: "Category does not exist!",
+        price_doesnt_exists: "Price does not exist!",
+        item_doesnt_exists: "item does not exist!",
+        no_records: "No records found"
 }
 
 

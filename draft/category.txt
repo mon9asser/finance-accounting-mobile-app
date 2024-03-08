@@ -1,0 +1,56 @@
+
+import { View, Button, Text } from "react-native";
+import { CatInstance } from "../objects/storage/categories";
+
+var TestComponent =  () => {
+
+    var i = 0;
+    var addData = async () => {
+        var con = await CatInstance.create_category(
+            `Category Number #${i++}`,
+            0 
+        );
+        console.log(con);
+    }
+
+    var DeleteData = async () => {
+        var con = await CatInstance.delete_category("64441wa4buv90xhi17098820885821121");
+        console.log(con);
+    }
+
+    var loadData = async () => {
+       var dataar = await CatInstance.get_categories();
+        
+       dataar.data.forEach(element => {
+            console.log( element.local_id ,element.category_name);
+       }); 
+       console.log("--------------------------------------")
+    }
+
+    var updateData = async() => {
+        var con = await CatInstance.update_category(
+            "Update 1",
+            0,
+            "94089a61m2oml0b17098500056461722"
+        );
+        console.log(con);
+    }
+
+    var getById = async() => {
+        var con = await CatInstance.get_category_by_id( 
+            "845066vaz4su4f9s17098821057282659"
+        );
+        console.log(con);
+    }
+    return (
+        <View style={{flex: 1, justifyContent: 'center', alignItems:'center', gap: 50}}>
+            <Button onPress={DeleteData} title="Delete Row" />
+            <Button onPress={addData} title="Insert a new row" />
+            <Button onPress={updateData} title="Update Row" />
+            <Button onPress={loadData} title="Get All Data" />
+            <Button onPress={getById} title="Get By Id" />
+        </View>
+    );
+}
+
+export { TestComponent };

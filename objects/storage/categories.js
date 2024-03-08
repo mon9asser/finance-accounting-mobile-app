@@ -50,10 +50,9 @@ class Categories extends A_P_I_S {
         response.message = language.something_error;
         
         // check if this catgory already exists before saving and that 
-        var isFound = await this.getData(this.categories);
-        
+        var isFound = await this.getData(this.categories); 
         if(!isFound.status) {
-            response.message = language.category_exists;
+            response.message = language.category_doesnt_exists;
             response.is_error= true; 
             response.data = isFound[index];
             return response;
@@ -94,22 +93,27 @@ class Categories extends A_P_I_S {
     }
 
     update_category = async( category_name, app_number, local_id ) => {
-
+        
         // getting language
         var language = await localization();
- 
+
         var data = {
             category_name: category_name, 
             app_name: app_number
         };
 
-        var response = get_response(); 
+        var response = get_response();
+        var categories = await this.getData(this.categories);
+        
+        if(!categories.data.length) {
+            response.message = language.category_doesnt_exists;
+            response.is_error= true; 
+            response.data = [];
+            return response;
+        }
 
-        // check if this catgory already exists before saving and that 
-        var isFound = await this.getData(this.categories);
-
-        // getting current index 
-        var index = isFound.findIndex( x => x.local_id == local_id );
+        // search by id 
+        var index =  categories.data.findIndex( x => x.local_id == local_id )
         if( index == -1 ) {
             response.message = language.category_doesnt_exists;
             response.is_error= true; 
@@ -123,7 +127,7 @@ class Categories extends A_P_I_S {
             response.message = asyncRes.message;
             response.is_error = true;
             return response; 
-        } 
+        }
 
         response.data = asyncRes.data;
         response.message = asyncRes.message;
@@ -135,39 +139,38 @@ class Categories extends A_P_I_S {
     }
 
     delete_category = async ( local_id ) => {
-
+        
         // getting language
         var language = await localization();
-         
+
         var response = get_response(); 
 
         // check if this catgory already exists before saving and that 
         var d_a_t_a = await this.getData(this.categories);
+        if( ! d_a_t_a.data.length ) {
+            response.message = language.category_doesnt_exists;
+            response.is_error= true; 
+            response.data = [];
+            return response;
+        }
 
-        // getting current index 
-        var index = d_a_t_a.findIndex( x => x.local_id == local_id );
+        var index = d_a_t_a.data.findIndex( x => x.local_id == local_id );
         if( index == -1 ) {
             response.message = language.category_doesnt_exists;
             response.is_error= true; 
             response.data = [];
             return response;
-        } else {
-            d_a_t_a = d_a_t_a.filter( x => x.local_id == local_id);
-        }
-
-        var asyncRes = await this.coreAsync(this.categories, d_a_t_a, local_id );
-        if( asyncRes.status == 0 ) {
-            response.data = asyncRes.case;
-            response.message = asyncRes.message;
-            response.is_error = true;
-            return response; 
         } 
 
-        response.data = asyncRes.data;
-        response.message = asyncRes.message;
-        response.is_error = false;
+        // delete from all 
+        var response = await this.deleteAsync(this.categories, local_id );
+         
+        return {
+            is_error: response.status,
+            data: response.data,
+            message: response.message
+        }
 
-        return response;
     }
 
     get_category_by_id = async (local_id) => {
@@ -180,23 +183,31 @@ class Categories extends A_P_I_S {
        // check if this catgory already exists before saving and that 
        var d_a_t_a = await this.getData(this.categories);
 
+       if( !d_a_t_a.data.length ) {
+            response.message = language.category_doesnt_exists;
+            response.is_error= true; 
+            response.data = [];
+            return response;
+       }
+        
        // getting current index 
-        var index = d_a_t_a.findIndex( x => x.local_id == local_id );
+        var index = d_a_t_a.data.findIndex( x => x.local_id == local_id );
+         
         if( index == -1 ) {
             response.message = language.category_doesnt_exists;
             response.is_error= true; 
             response.data = [];
             return response;
         }  
-
-        response.message = language.category_doesnt_exists;
+        
+        response.message = "";
         response.is_error= false; 
-        response.data = d_a_t_a[index];
+        response.data = d_a_t_a.data[index];
         return response;
 
     }
 
-    get_categories = async() => {
+    get_categories = async( desc = false ) => {
         // getting language
         var language = await localization();
                 
@@ -205,9 +216,15 @@ class Categories extends A_P_I_S {
         // check if this catgory already exists before saving and that 
         var d_a_t_a = await this.getData(this.categories);
 
+        if( desc ) {
+            d_a_t_a.data.sort((a,b) => {
+                return new Date(b.created_date) - new Date(a.created_date);
+            });
+        }
+
         response.message = "";
         response.is_error= false; 
-        response.data = d_a_t_a;
+        response.data = d_a_t_a.data;
         return response;
 
     }
