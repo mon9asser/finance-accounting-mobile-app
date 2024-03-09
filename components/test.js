@@ -7,17 +7,8 @@ var TestComponent =  () => {
  
     var addData = async () => {
 
-        var prodInstance = await ProductsInstance.create_product(
-            {
-                product_name: "Nigiri Sushi",
-                category_id: 1544,
-                barcode: "14584",
-                discount: {
-                    is_percentage: true,
-                    percentage: 10 ,
-                    value: 20 
-                } 
-            }
+        var prodInstance = await ProductsInstance.create_category(
+            "Poultry", 0
         );
 
         

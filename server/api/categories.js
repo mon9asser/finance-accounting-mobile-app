@@ -19,17 +19,38 @@ var categoriesRouter = express.Router();
 
  
  
-categoriesRouter.post("/test", async (req, res) => {
+categoriesRouter.post("/category/create", async (req, res) => {
     
-    var database = "Shos_18825771782163833000_7foly1ajjie";
-    var document = "categories";
-    var data_object = "";
+
+    // => verify user token
+
+
+    // prepare default object
+    var response = {
+        data: [],
+        is_error: true,
+        message: language[lang].something_wrong
+    };  
+    
+    // => prepare parameters 
+    var database = req.body.database_name;
+    var model_name = req.body.model_name;
+    var data_object =  req.body.data_object; 
+
+    var param_id =  req.body.param_id; 
+    var language =  req.body.language; 
+
 
     var core = await coreInsertRowByRow(
-        database, document, data_object
+        database, 
+        model_name, 
+        data_object,
+        param_id, 
+        language
     );
 
-    res.send("Done +++")
+    res.send(core);
+
 });
 
  

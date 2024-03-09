@@ -22,7 +22,10 @@ class A_P_I_S {
 
 
         // check internet connection before requestion
-
+        console.log("+++++++++++++++++++++++++++++++");
+        console.log("Error: it doesn't contain some information, review the coreAsync callback");
+        console.log(data_object);
+        console.log("+++++++++++++++++++++++++++++++");
 
 
 
@@ -270,7 +273,40 @@ class A_P_I_S {
             }); 
         } catch (error) {}
 
-         
+        
+        // assign new properies into the main object 
+        var updateObject = {
+            application_id:user_data.application_id,
+            updated_date: Date.now(),
+            updated_by: {
+                id:  user_data.id,
+                name: user_data.name,
+                email: user_data.email 
+            }
+        };
+
+        var insertObject = {
+            application_id:user_data.application_id,
+            local_id: id,
+            updated_date: Date.now(),
+            created_date: Date.now(),
+            updated_by: {
+                id:  user_data.id,
+                name: user_data.name,
+                email: user_data.email 
+            },
+            created_by: {
+                id:  user_data.id,
+                name: user_data.name,
+                email: user_data.email 
+            }
+        };
+
+        var updateRemoteObject = {...obj_data, ...insertObject};
+        if( param_id != null ) {
+            updateRemoteObject = {...obj_data, ...updateObject};
+        }
+
         // send request to server for this record
         var remote = await this.sendRequest( user_data.database_name, mobject.key, obj_data,  param_id);
          
@@ -308,12 +344,7 @@ class A_P_I_S {
 
                 data[objectIndex] = {
                     ...data[objectIndex], 
-                    updated_date: Date.now(),
-                    updated_by: {
-                        id:  user_data.id,
-                        name: user_data.name,
-                        email: user_data.email 
-                    },
+                    ...updateObject,
                     remote_updated: remote.is_error? false: true
                 } 
 
@@ -324,19 +355,7 @@ class A_P_I_S {
             // push object data 
             var build = {
                 ...obj_data,  
-                local_id: id,
-                updated_date: Date.now(),
-                created_date: Date.now(),
-                updated_by: {
-                    id:  user_data.id,
-                    name: user_data.name,
-                    email: user_data.email 
-                },
-                created_by: {
-                    id:  user_data.id,
-                    name: user_data.name,
-                    email: user_data.email 
-                },
+                ...insertObject,
                 remote_saved: remote.is_error? false: true
             };
 

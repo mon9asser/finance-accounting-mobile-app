@@ -47,7 +47,8 @@ class Usr {
                     is_paid: application.subscription.is_paid,
                 }, 
                 database_name: application.database_name,
-                company_name: application.company_name 
+                company_name: application.company_name,
+                application_id: application.id,
             }
         
             await this.session.save({

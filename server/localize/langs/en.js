@@ -20,7 +20,13 @@ var en = {
         copy_paste_passcode: "You simply need to copy and paste the passcode provided below into the next daily sales application",
         any_concern_text: "Should you have any concerns, please do not hesitate to contact our support team. Thank you.",
         happy_selling: "Happy Selling!",
-        reset_password: "Reset password"
+        reset_password: "Reset password",
+
+        services_disabled: "The service provider has encountered an error; please contact us for assistance.",
+        updated_successfully: "Updated Successfully!",
+        update_failed: "The update process was unsuccessful!",
+        insert_error: "The data failed to save, please try later",
+        add_successfully: "The data has been added successfully."
 }
 
 
