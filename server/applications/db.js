@@ -1,7 +1,7 @@
 
 
-const {conf} = require("./../settings/config");
-const {Application} = require("./../applications/confguration");
+const {conf} = require("../settings/config");
+const {Application} = require("./confguration");
 const mongoose = require('mongoose'); 
 
 const create_connection = async (dbname, {model, schemaObject}) => {

@@ -249,8 +249,8 @@ ApplicationRouter.post("/application/create", verify_api_keys, async (req, res) 
     userObject.password = await bcrypt.hash(userObject.password, 10); 
     try {
         
-        var build = _app._id + '-' + email + '-' + database;
-        userObject.token = jwt.sign({token: build}, 'user-token-159752');
+        var build = _app._id + '-' + email + '-' + database + userObject.last_login;
+        userObject.token = jwt.sign({token: build}, 'nexy-daily-sales-#1#$%*31&528451^1%^');
         
     } catch (error) { }
 

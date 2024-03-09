@@ -1,0 +1,51 @@
+const mongoose = require('mongoose'); 
+const express = require("express"); 
+var sanitizer = require('sanitizer');
+var jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt'); 
+const nodemailer = require('nodemailer'); 
+const { create_connection } = require("./db");
+
+
+var productsRouter = express.Router();
+
+ 
+productsRouter.post("/test/add", async (req, res) => {
+    
+    var started_data = Date.now(); 
+    var databaseModel = await create_connection(
+        "montasser_13377646499418348000_avq6v50tlak", //database name
+        {
+            model:"model-name-and-go-there", //model name
+            schemaObject: { //Schema object
+                name: String,
+                age: Number
+            }
+        }    
+    )
+
+    if(!databaseModel) {
+       return res.send("you are not connected");
+    }
+    
+    var mmdel = new databaseModel({
+        name: 'Dr String',
+        age: 55
+    }); 
+    
+    await mmdel.save(); 
+    var ended_date = Date.now();
+    res.send({
+        started_data ,
+        ended_date 
+    });
+
+});
+ 
+
+productsRouter.get("/products/10 records", async (req, res) => {
+
+});
+
+
+module.exports = { productsRouter };
