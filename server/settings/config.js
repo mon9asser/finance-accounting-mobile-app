@@ -27,6 +27,15 @@ const conf = {
                
                 return `${host}:${port}/${name}`
             },
+
+            // database of subscribed users 
+            dynamicUrl: (name) => {
+                var host = conf.server.database.host;
+                var port = conf.server.database.port; 
+               
+                return `${host}:${port}/${name}`
+            },
+
             name: "nexycode",
             host: "mongodb://localhost",
             port: "27017",

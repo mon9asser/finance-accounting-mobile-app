@@ -39,7 +39,7 @@ import { TestComponent } from "./components/test.js";
 const Stack = createStackNavigator(); 
 
 const App = () => {
-
+  alert( "Event of once internet connected, upload data" );
     return (
         <SafeAreaView style={styles.flex}>
           <NavigationContainer>

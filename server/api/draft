@@ -1,0 +1,55 @@
+const mongoose = require('mongoose'); 
+const express = require("express"); 
+var sanitizer = require('sanitizer');
+var jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt'); 
+const nodemailer = require('nodemailer'); 
+
+
+
+var productsRouter = express.Router();
+
+ 
+productsRouter.post("/category/add", async (req, res) => {
+
+    try {
+        // Establish a database connection
+        const dbConnection = await mongoose.createConnection(`mongodb://localhost/dynamic-db`, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+
+        // Define a schema
+        const MaSchema = new mongoose.Schema({
+            name: String,
+            age: Number
+        });
+
+        // Create a model from the schema
+        const TestModel = dbConnection.model("TestSchema", MaSchema);
+
+        // Create a document from the model
+        const testDocument = new TestModel({
+            name: 'Moneer Matib',
+            age: 55
+        });
+
+        // Save the document to the database
+        await testDocument.save();
+
+        console.log("Document inserted successfully.");
+        res.send("Worked!");
+    } catch (err) {
+        console.error("Error inserting document:", err);
+        res.status(500).send("An error occurred");
+    }
+
+});
+ 
+
+productsRouter.get("/products/10 records", async (req, res) => {
+
+});
+
+
+module.exports = { productsRouter };

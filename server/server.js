@@ -25,8 +25,11 @@ app.use(function (req, res, next) {
 
 // => Application Router
 app.use( conf.server.api, ApplicationRouter );
+ 
 
-// => Sales App Routers 
+
+
+// => Database apis 
 app.use( conf.server.api, productsRouter );
  
 
