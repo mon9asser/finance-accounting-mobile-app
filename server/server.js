@@ -9,6 +9,7 @@ const {ApplicationRouter} = require("./applications/users.js");
 
 // routers 
 const { productsRouter } = require("./api/products.js")
+const { categoriesRouter } = require("./api/categories.js")
 
 var app = express();
 
@@ -31,7 +32,8 @@ app.use( conf.server.api, ApplicationRouter );
 
 // => Database apis 
 app.use( conf.server.api, productsRouter );
- 
+app.use( conf.server.api, categoriesRouter );
+
 
 
 

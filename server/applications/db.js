@@ -4,14 +4,23 @@ const {conf} = require("../settings/config");
 const {Application} = require("./confguration");
 const mongoose = require('mongoose'); 
 
+const flat_schema_name = ( modelName ) => {
+    
+    var model_name = modelName;
+    var hyphen_index = modelName.indexOf("-")
+    
+    if( hyphen_index != -1 ) {
+        model_name = modelName.replace(new RegExp("-", 'g'), "_")
+    }
+
+    return model_name;
+}
+
 const create_connection = async (dbname, {model, schemaObject}) => {
 
     // generate hyphens with model name
-    var model_name = model;
-    var hyphen_index = model.indexOf("-")
-    if( hyphen_index != -1 ) {
-        model_name = model.replace(new RegExp("-", 'g'), "_")
-    }
+    var model_name = flat_schema_name(model);
+    
     
     // check if this database already exists in our application 
     var db_existence = [];
@@ -45,4 +54,4 @@ const create_connection = async (dbname, {model, schemaObject}) => {
     return modelObject;
 }
 
-module.exports = { create_connection }
+module.exports = { create_connection, flat_schema_name }

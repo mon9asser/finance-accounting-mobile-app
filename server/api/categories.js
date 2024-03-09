@@ -5,7 +5,7 @@ var jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); 
 const nodemailer = require('nodemailer'); 
 const { create_connection } = require("../applications/db");
-
+const {coreInsertRowByRow} = require("../applications/core")
 
 var categoriesRouter = express.Router();
 
@@ -16,42 +16,22 @@ var categoriesRouter = express.Router();
 // add bulk data in one time 
 // update by one row 
 // update bulk data by one request 
+
  
+ 
+categoriesRouter.post("/test", async (req, res) => {
+    
+    var database = "Shos_18825771782163833000_7foly1ajjie";
+    var document = "categories";
+    var data_object = "";
 
-categoriesRouter.post("/category/update", verify_user_token, async (req, res) => {
-    
-     
-});
-categoriesRouter.post("/category/bulck-update", verify_user_token, async (req, res) => {
-    
-     
-});
+    var core = await coreInsertRowByRow(
+        database, document, data_object
+    );
 
-categoriesRouter.post("/category/insert", verify_user_token, async (req, res) => {
-    
-     
-});
-
-categoriesRouter.post("/category/bulck-insert", verify_user_token, async (req, res) => {
-    
-     
+    res.send("Done +++")
 });
 
-categoriesRouter.post("/category/:category_param", verify_user_token, async (req, res) => {
-    
-     
-});
-
-categoriesRouter.post("/category/page/:page_number/:nubmer_of_records", verify_user_token, async (req, res) => {
-    
-     
-});
-
-categoriesRouter.post("/category/all", verify_user_token, async (req, res) => {
-    
-     
-});
-  
-
+ 
 
 module.exports = { categoriesRouter };
