@@ -25,12 +25,13 @@ categoriesRouter.post("/category/create", async (req, res) => {
     // => verify user token
 
 
-    // prepare default object
+    // prepare default object 
     var response = {
-        data: [],
-        is_error: true,
-        message: language[lang].something_wrong
-    };  
+        is_error:true,
+        message: language[lang].something_wrong,
+        success: false,
+        data: []
+    };
     
     // => prepare parameters 
     var database = req.body.database_name;
