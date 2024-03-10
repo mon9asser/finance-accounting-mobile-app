@@ -2,13 +2,13 @@
 import { View, Button, Text } from "react-native";
 import { ProductsInstance } from "../objects/storage/products";
 
-var TestComponent =  () => {
+var TestComponent =  ({navigation}) => {
 
  
     var addData = async () => {
 
         var prodInstance = await ProductsInstance.create_category(
-            "Poultry", 0
+            "Fried Rice", 0
         );
 
         
@@ -73,6 +73,7 @@ var TestComponent =  () => {
             <Button onPress={updateData} title="Update Row" />
             <Button onPress={loadData} title="Get All Data" />
             <Button onPress={getById} title="Get By Id" />
+            <Button onPress={() => {navigation.navigate("Login")}} title="Login" />
         </View>
     );
 }

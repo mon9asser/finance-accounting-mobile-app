@@ -2,7 +2,7 @@ import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { generateId } from './../helpers.js';
-import {get_lang} from './../languages.js'  
+import {get_lang} from './../languages.js';  
 
 
 class Usr {
@@ -33,7 +33,7 @@ class Usr {
         }
     }
 
-    add_session = async ( application, user ) => {
+    add_session = async ( application, user ) => { 
 
         try {
             var userInfo = {
@@ -48,7 +48,7 @@ class Usr {
                 }, 
                 database_name: application.database_name,
                 company_name: application.company_name,
-                application_id: application.id,
+                application_id: application._id,
             }
         
             await this.session.save({

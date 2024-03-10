@@ -71,6 +71,8 @@ const en = {
         save_failed: "Data saving failed; please check your phone's storage space.",
         unexpected_error: "An unexpected error occurred, please check with your service provider.",
         quota_exceeded: "Storage limit reached. Consider freeing up some space on your device.",
+        
+        success_request: "Successful Request!",
 
         failed_to_register: "Account creation unsuccessful; something went wrong!",
         category_exists: "Category already exists!",

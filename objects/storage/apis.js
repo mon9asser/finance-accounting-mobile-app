@@ -3,33 +3,138 @@ import { get_lang } from "../languages";
 import {generateId} from '../helpers';
 import {get_setting} from './settings';
 import {usr} from './user';
+import axios from "axios";
+import {config} from './../../settings/config';
 
 class A_P_I_S {
     
     constructor(prop) {  
         this.prop = prop;
     }
+
+
+    axiosRequest = async ({
+        api, 
+        dataObject,
+        method,
+        headers // object
+    } = null) => {
+
+        var settings;
+ 
+
+        try{
+            settings = await get_setting();
+        } catch(error){}
+
+        var language =  get_lang(settings.language);
+
+        let options = {
+            method: method, // Can be 'get', 'put', 'delete', etc.
+            url: config.api(api), // 'api/application/login'
+            data: dataObject,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-api-public-key': config.keys.public,
+                'X-api-secret-key': config.keys.secret
+            }
+        }; 
+ 
+
+        if( headers !== undefined ) {
+            Object.keys(headers).forEach((element) => {
+                var key = element;
+                var value = headers[key];
+                options.headers[key] = value;
+            });
+        }
+
+
+        var errorCallback = (error ) => {
+            
+            var message = '';
+            if( error.message != undefined ) {
+                message = error.message;
+            } else {
+
+                if( error.response != undefined ) {
+                    message = language.api_connection_error;
+                    
+                } else if( error.request != undefined ) {
+                    message = language.api_connection_error;
+                    
+                    if( error.request._response ) {
+                        var ob_response = JSON.parse(error.request._response);
+                        if( ob_response.is_error) {
+                            message = ob_response.data;
+                        } 
+                    }
+
+                } else {
+                    message = language.check_internet_connection
+                }
+            }
+
+            return {
+                is_error:true,
+                message: message, 
+                success: false,
+                data: []
+            }
+        }
+
+        let success = async (res) => {
+            console.log("+++++++++++++++Success")
+            if(res.data.success) {
+                
+                return {
+                    is_error: false,
+                    message: language.success_request, 
+                    success: true,
+                    data: res.data
+                }
+                
+            } else {
+                
+                errorCallback(res)
+    
+            }
+        }
+
+
+        try {
+
+            let error = (res) => {
+                console.log("main error " + res);
+                // errorCallback(res)
+            }
+            let mainsuccess = (rest) => {
+                console.log(rest);
+            }
+            axios(options).then(mainsuccess).catch(err => error(err)); 
+    
+        } catch (error) {
+            errorCallback(error);
+        }
+
+    }
     
     sendRequest = async (database, document, data_object, id = null /* or {key: value} */ ) => {
-
-         
-        var objx = {
-            is_error: true, 
-            message: "",
-            data: []
-        }
+ 
         
+        var request = await this.axiosRequest({
+            api: "api/category/create", 
+            dataObject: {
+                database_name:database,
+                model_name:document,
+                data_object:data_object
+            },
+            method: "post" 
+        }); 
 
+        console.log( request.data);
+        return request;
 
-        // check internet connection before requestion
-        console.log("+++++++++++++++++++++++++++++++");
-        console.log("Error: it doesn't contain some information, review the coreAsync callback");
-        console.log(data_object);
-        console.log("+++++++++++++++++++++++++++++++");
-
-
-
-        return objx;
     }
 
     getRequest = async () => {
@@ -308,7 +413,7 @@ class A_P_I_S {
         }
 
         // send request to server for this record
-        var remote = await this.sendRequest( user_data.database_name, mobject.key, obj_data,  param_id);
+        var remote = await this.sendRequest( user_data.database_name, mobject.key, updateRemoteObject,  param_id);
          
         // case it update - if( typeof id == 'object'  ) 
         if( is_update_request && param_id != null ) {
