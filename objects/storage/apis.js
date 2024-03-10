@@ -13,22 +13,16 @@ class A_P_I_S {
     }
 
 
-    axiosRequest = async ({
-        api, 
-        dataObject,
-        method,
-        headers // object
-    } = null) => {
-
-        var settings;
- 
-
+    axiosRequest = async ({ api, dataObject, method, headers } = null) => {
         try{
             settings = await get_setting();
-        } catch(error){}
+        } catch(error){
+            
+        }
 
         var language =  get_lang(settings.language);
-
+        dataObject['language'] = settings.language;
+        
         let options = {
             method: method, // Can be 'get', 'put', 'delete', etc.
             url: config.api(api), // 'api/application/login'
@@ -39,7 +33,6 @@ class A_P_I_S {
                 'X-api-secret-key': config.keys.secret
             }
         }; 
- 
 
         if( headers !== undefined ) {
             Object.keys(headers).forEach((element) => {
@@ -49,73 +42,36 @@ class A_P_I_S {
             });
         }
 
-
-        var errorCallback = (error ) => {
-            
-            var message = '';
-            if( error.message != undefined ) {
-                message = error.message;
-            } else {
-
-                if( error.response != undefined ) {
-                    message = language.api_connection_error;
-                    
-                } else if( error.request != undefined ) {
-                    message = language.api_connection_error;
-                    
-                    if( error.request._response ) {
-                        var ob_response = JSON.parse(error.request._response);
-                        if( ob_response.is_error) {
-                            message = ob_response.data;
-                        } 
-                    }
-
-                } else {
-                    message = language.check_internet_connection
-                }
-            }
-
-            return {
-                is_error:true,
-                message: message, 
-                success: false,
-                data: []
-            }
+        var success_callback = (res) => {
+            console.log("Succ--------------------------")
+            console.log(res);
+            console.log("--------------------------")
         }
 
-        let success = async (res) => {
-            console.log("+++++++++++++++Success")
-            if(res.data.success) {
-                
-                return {
-                    is_error: false,
-                    message: language.success_request, 
-                    success: true,
-                    data: res.data
-                }
-                
-            } else {
-                
-                errorCallback(res)
-    
-            }
+        var error_callback = (error) => {
+            console.log("Err--------------------------");
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+              } else if (error.request) {
+                // The request was made but no response was received
+                // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                // http.ClientRequest in node.js
+                console.log(error.request);
+              } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log('Error', error.message);
+              }
+              console.log(error);
+            console.log("--------------------------");
         }
 
-
-        try {
-
-            let error = (res) => {
-                console.log("main error " + res);
-                // errorCallback(res)
-            }
-            let mainsuccess = (rest) => {
-                console.log(rest);
-            }
-            axios(options).then(mainsuccess).catch(err => error(err)); 
-    
-        } catch (error) {
-            errorCallback(error);
-        }
+        axios(options)
+            .then(success_callback)
+            .catch(error => error_callback(error));
 
     }
     
@@ -130,10 +86,15 @@ class A_P_I_S {
                 data_object:data_object
             },
             method: "post" 
-        }); 
+        });  
 
-        console.log( request.data);
-        return request;
+        //console.log(request);
+ 
+        return {
+            is_error: true, 
+            data: [],
+            message: ""
+        };
 
     }
 

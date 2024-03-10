@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 
 var default_properties = {
     updated_by: {
-        id: Number,
+        id: String,
         name: String,
         email: String
     },
     created_by: {
-        id: Number,
+        id: String,
         name: String,
         email: String
     },
@@ -15,7 +15,7 @@ var default_properties = {
     updated_date: Date,
     created_date: Date,
     application_id: String,
-    _id: mongoose.Schema.Types.ObjectId 
+   // _id: mongoose.Schema.Types.ObjectId 
 };
 
 

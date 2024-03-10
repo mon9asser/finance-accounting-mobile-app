@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer'); 
 const { create_connection } = require("../applications/db");
 const {coreInsertRowByRow} = require("../applications/core")
-
+const {language} = require("./../localize/language.js");
 var categoriesRouter = express.Router();
 
 // getting all data by parameter 
@@ -22,8 +22,15 @@ var categoriesRouter = express.Router();
 categoriesRouter.post("/category/create", async (req, res) => {
     
 
-    // => verify user token
+    // => verify user token 
+    
+    // => prepare parameters 
+    var database = req.body.database_name;
+    var model_name = req.body.model_name;
+    var data_object =  req.body.data_object; 
 
+    var lang =  req.body.language;  
+    var param_id =  req.body.param_id;  
 
     // prepare default object 
     var response = {
@@ -33,24 +40,15 @@ categoriesRouter.post("/category/create", async (req, res) => {
         data: []
     };
     
-    // => prepare parameters 
-    var database = req.body.database_name;
-    var model_name = req.body.model_name;
-    var data_object =  req.body.data_object; 
-
-    var param_id =  req.body.param_id; 
-    var language =  req.body.language; 
-
-
     var core = await coreInsertRowByRow(
         database, 
         model_name, 
         data_object,
         param_id, 
-        language
-    );
-
-    res.send(core);
+        lang
+    ); 
+ 
+    res.status(404).send(core);
 
 });
 

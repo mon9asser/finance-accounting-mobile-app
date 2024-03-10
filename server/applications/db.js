@@ -15,43 +15,41 @@ const flat_schema_name = ( modelName ) => {
 
     return model_name;
 }
+// Connection pool to manage multiple connections
+const connectionPool = {}; 
 
-const create_connection = async (dbname, {model, schemaObject}) => {
+const create_connection = async (dbname, { model, schemaObject }) => {
+   
+    const model_name = flat_schema_name(model);
 
-    // generate hyphens with model name
-    var model_name = flat_schema_name(model);
-    
-    
-    // check if this database already exists in our application 
-    var db_existence = [];
-    
+    // Check for the existence of the database in your application logic
     try {
-        db_existence = await Application.find({
-            database_name: dbname     
-        });
-    } catch( error ) {}
-
-    if(!db_existence.length) {
+        const dbExistence = await Application.find({ database_name: dbname });
+        if (!dbExistence.length) return false;
+    } catch (error) {
+        console.error(error);
         return false;
     }
 
-    // prepare options of database
+    // Check if a connection for this DB already exists in the pool
+    if (connectionPool[dbname]) {
+        // console.log(`Using existing connection for database: ${dbname}`);
+        return connectionPool[dbname].model(model_name, new mongoose.Schema(schemaObject));
+    }
+
+    // Prepare the URL for a new connection
     const url = conf.server.database.dynamicUrl(dbname);
-    
-    // create database connection 
-    const dbConnection = await mongoose.createConnection(url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    });
 
-    // Create Model Schema
-    const MaSchema = new mongoose.Schema(schemaObject);
+    // Create a new database connection
+    const dbConnection = await mongoose.createConnection(url);
 
-    // connect the model to database 
-    var modelObject = dbConnection.model( model_name, MaSchema);
+    // console.log(`New connection established to ${dbname}.`);
 
-    // return the model
-    return modelObject;
-}
+    // Store the connection in the pool
+    connectionPool[dbname] = dbConnection;
 
-module.exports = { create_connection, flat_schema_name }
+    // Create and return the model
+    return mongoose.models[model_name] || dbConnection.model(model_name, new mongoose.Schema(schemaObject));
+};
+
+module.exports = { create_connection, flat_schema_name };

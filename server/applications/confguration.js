@@ -2,15 +2,8 @@ const mongoose = require('mongoose');
 const { conf } = require('./../settings/config');
 
 // ${conf.database.host}:${conf.database.port}/${conf.database.name}
-mongoose.connect(conf.server.database.url(), {
-
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    connectTimeoutMS: 5000, // Adjust the timeout values as needed
-    socketTimeoutMS: 45000,
-
-});
-
+mongoose.connect(conf.server.database.url());
+  
 mongoose.Promise = global.Promise;
 
 const Schema = mongoose.Schema;

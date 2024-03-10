@@ -2,13 +2,14 @@
 import { View, Button, Text } from "react-native";
 import { ProductsInstance } from "../objects/storage/products";
 
+var i = 10;
 var TestComponent =  ({navigation}) => {
 
  
     var addData = async () => {
-
+        i++;
         var prodInstance = await ProductsInstance.create_category(
-            "Fried Rice", 0
+            `Hello world`, 0
         );
 
         
