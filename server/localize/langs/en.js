@@ -34,6 +34,7 @@ var en = {
         data_array_required: "Data of array is required!",
         data_get_success: "Data retrieved successfully",
         no_data_found: "No data found with the given information.",
+        pagination_property_required: "Pagination properties are required!"
 }
 
 

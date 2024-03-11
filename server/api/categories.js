@@ -259,7 +259,43 @@ categoriesRouter.post("/category/get", verify_user_tokens_and_keys, async (req, 
     };
 
     // work with paging query 
-    res.send("Api is work but need to add pagination")
+    if( req.body.pagination != undefined && typeof req.body.pagination == 'object' ) {
+        
+        if( ! req.body.pagination.page || ! req.body.pagination.size ) {
+            return res.send({
+                data: [],
+                is_error: true, 
+                message: localize.pagination_property_required
+            }); 
+        }
+
+        var page = parseInt(req.body.pagination.page);
+        var size = parseInt(req.body.pagination.size);
+        const skip = page > 0 ? ( ( page - 1 ) * size ) : 0;
+
+
+        try {         
+            
+            var allData = await db_connection.find(param_id)
+                         .skip(skip).limit(size);
+            return res.send({
+                paging: {
+                    current: page,
+                    rows: size,
+                    skip: skip
+                },
+                data: allData,
+                is_error: false,
+                message: localize.data_get_success 
+            });
+        } catch (error) { 
+            console.log(error);
+            response["data"] = [];
+            response["is_error"] = true;
+            response["message"] = localize.no_data_found; 
+            return res.send(response); 
+        }
+    }
 
     try {         
         var allData = await db_connection.find(param_id);

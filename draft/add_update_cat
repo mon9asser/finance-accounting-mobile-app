@@ -24,7 +24,7 @@
     "language": "en",
 
 
-    "param_id": -1 // it is not required for any reason
+    "param_id": -1 // it is not required for any reason but it cant be set asfor a spesific update 
 }
 
 

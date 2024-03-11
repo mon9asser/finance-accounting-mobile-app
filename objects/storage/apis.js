@@ -36,6 +36,8 @@ class A_P_I_S {
                 'X-api-tokens': userInfo.token  
             }
         };  
+
+        
         if( headers !== undefined ) {
             Object.keys(headers).forEach((element) => {
                 var key = element;

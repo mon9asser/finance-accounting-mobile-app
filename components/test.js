@@ -10,7 +10,7 @@ var TestComponent =  ({navigation}) => {
         
         i++;
         var prodInstance = await ProductsInstance.create_category(
-            `Salmon +- Rice Sushi`, 0
+            `Corn Flex`, 0
         ); 
 
         console.log(prodInstance);
