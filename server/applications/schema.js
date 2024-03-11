@@ -2,19 +2,19 @@ const mongoose = require('mongoose');
 
 var default_properties = {
     updated_by: {
-        id: String,
-        name: String,
-        email: String
+        id: { type: String, default: ""},
+        name: { type: String, default: ""},
+        email: { type: String, default: ""},
     },
     created_by: {
-        id: String,
-        name: String,
-        email: String
+        id: { type: String, default: ""},
+        name: { type: String, default: ""},
+        email: { type: String, default: ""},
     },
-    local_id:String,
-    updated_date: Date,
-    created_date: Date,
-    application_id: String,
+    local_id:{ type: String, default: ""},
+    updated_date: { type: Date, default: ""},
+    created_date: { type: Date, default: ""},
+    application_id: { type: String, default: ""},
    // _id: mongoose.Schema.Types.ObjectId 
 };
 
@@ -24,32 +24,32 @@ var allSchema = {
     
     categories: {
         ...default_properties,     
-        category_name: String,
-        app_name: Number
+        category_name:  { type: String, default: ""},
+        app_name:  { type: Number, default: ""},
     },
 
     product_prices: {
         ...default_properties,     
-        product_local_id:String,
-        name:String,
-        unit_name:String,
-        unit_short:String,
-        sales_price:String,
-        purchase_price: String,
-        factor: Number,
-        is_default_price: Boolean
+        product_local_id:{ type: String, default: ""},
+        name:{ type: String, default: ""},
+        unit_name:{ type: String, default: ""},
+        unit_short:{ type: String, default: ""},
+        sales_price:{ type: String, default: ""},
+        purchase_price: { type: String, default: ""},
+        factor: { type: Number, default: ""},
+        is_default_price: { type: Boolean, default: ""},
     },
 
     products: {
-        product_name: String,
-        category_id: String,
-        barcode: String,
+        product_name: { type: String, default: ""},
+        category_id: { type: String, default: ""},
+        barcode: { type: String, default: ""},
         discount: {
-            is_percentage: String,
-            percentage: String,
-            value: String
+            is_percentage: { type: String, default: ""},
+            percentage: { type: String, default: ""},
+            value: { type: String, default: ""}
         },
-        thumbnail: String,
+        thumbnail: { type: String, default: ""},
         ...default_properties,
     }
 

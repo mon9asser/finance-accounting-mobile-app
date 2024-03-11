@@ -53,31 +53,27 @@ var coreInsertRowByRow = async (database, model_schema_name, data_object, id = n
         
         // check if document is already exists 
         var finder = await db_connection.findOne(finderObject);
-        
+        console.log(finderObject);
         if( finder != null ) {
             // Update the document based on last updated date  
-            if( finder.updated_date != data_object.updated_date ) {
+            var updatedDocument = await db_connection.findOneAndUpdate(
+                {...finderObject},
+                { $set: data_object },
+                { new: true }
+            );
+            
+            if (updatedDocument) {
+                response["data"] = [];
+                response["is_error"] = false;
+                response["message"] = language[lang].updated_successfully; 
                 
-                var updatedDocument = await db_connection.findOneAndUpdate(
-                    {...finderObject},
-                    { $set: data_object },
-                    { new: true }
-                );
-
-                if (updatedDocument) {
-                    response["data"] = [];
-                    response["is_error"] = false;
-                    response["message"] = language[lang].updated_successfully; 
-                    
-                    return response; 
-                } else {
-                    response["data"] = [];
-                    response["is_error"] = true;
-                    response["message"] = language[lang].update_failed; 
-                    
-                    return response; 
-                }
-
+                return response; 
+            } else {
+                response["data"] = [];
+                response["is_error"] = true;
+                response["message"] = language[lang].update_failed; 
+                
+                return response; 
             }
 
         } else {

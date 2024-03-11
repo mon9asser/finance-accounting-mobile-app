@@ -1,0 +1,94 @@
+
+// insert and update one by one 
+{
+    "data_object": {
+        "app_name": 0,
+        "application_id": "65e0e8eda7cb22d9427aa0db",
+        "category_name": "Tuna Salad",
+        "created_by": {
+            "email": "Moun2030@gmail.com",
+            "id": "65e0e8eea7cb22d9427aa0dd",
+            "name": "Montasser"
+        },
+        "created_date": "1710152279187",
+        "local_id": "7847032z11wtqj317101522791702183z",
+        "updated_by": {
+            "email": "Moun2030@gmail.com",
+            "id": "65e0e8eea7cb22d9427aa0dd",
+            "name": "Montasser"
+        },
+        "updated_date": "1710152279187"
+    },
+    "database_name": "Eracodes_9359903545256411000_m0n0ce8jzq8",
+    "model_name": "categories",
+    "language": "en",
+
+
+    "param_id": -1 // it is not required for any reason
+}
+
+
+
+
+// insert and update bulk data 
+{
+    "data_array": [
+        {
+            "app_name": 0,
+            "application_id": "65e0e8eda7cb22d9427aa0db",
+            "category_name": "Tuna Rice Sushi",
+            "created_by": {
+                "email": "Moun2030@gmail.com",
+                "id": "65e0e8eea7cb22d9427aa0dd",
+                "name": "Montasser"
+            },
+            "created_date": "1710152279187",
+            "local_id": "7847032z11wtqj317101522791702183z",
+            "updated_by": {
+                "email": "Moun2030@gmail.com",
+                "id": "65e0e8eea7cb22d9427aa0dd",
+                "name": "Montasser"
+            },
+            "updated_date": "1710152279187"
+        }, 
+        {
+            "app_name": 0,
+            "application_id": "65e0e8eda7cb22d9427aa0db",
+            "category_name": "The new item",
+            "created_by": {
+                "email": "Moun2030@gmail.com",
+                "id": "65e0e8eea7cb22d9427aa0dd",
+                "name": "Montasser"
+            },
+            "created_date": "1710152279187",
+            "local_id": "7847032z11wtqj317101522791702183th",
+            "updated_by": {
+                "email": "Moun2030@gmail.com",
+                "id": "65e0e8eea7cb22d9427aa0dd",
+                "name": "Montasser"
+            },
+            "updated_date": "1710152279187"
+        },
+        {
+            "app_name": 0,
+            "application_id": "65e0e8eda7cb22d9427aa0db",
+            "category_name": "Fish Soupe",
+            "created_by": {
+                "email": "Moun2030@gmail.com",
+                "id": "65e0e8eea7cb22d9427aa0dd",
+                "name": "Montasser"
+            },
+            "created_date": "1710152279187",
+            "local_id": "7847032z11wtqj317101522791702183r",
+            "updated_by": {
+                "email": "Moun2030@gmail.com",
+                "id": "65e0e8eea7cb22d9427aa0dd",
+                "name": "Montasser"
+            },
+            "updated_date": "1710152279187"
+        }
+    ],
+    "database_name": "Eracodes_9359903545256411000_m0n0ce8jzq8",
+    "model_name": "categories",
+    "language": "en" 
+}

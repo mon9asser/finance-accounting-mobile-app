@@ -1,11 +1,10 @@
 
 import { get_lang } from "../languages";
 import {generateId} from '../helpers';
-import {get_setting} from './settings';
-import {usr} from './user';
+import {get_setting} from './settings'; 
 import axios from "axios";
 import {config} from './../../settings/config';
-
+import {usr} from './../../objects/storage/user'
 class A_P_I_S {
     
     constructor(prop) {  
@@ -14,11 +13,14 @@ class A_P_I_S {
 
 
     axiosRequest = async ({ api, dataObject, method, headers } = null) => {
+        console.log(dataObject);
+        var settings, userInfo;
         try{
             settings = await get_setting();
-        } catch(error){
-            
-        }
+            userInfo = await usr.get_session();
+        } catch(error){}
+
+        
 
         var language =  get_lang(settings.language);
         dataObject['language'] = settings.language;
@@ -30,10 +32,10 @@ class A_P_I_S {
             headers: {
                 'Content-Type': 'application/json',
                 'X-api-public-key': config.keys.public,
-                'X-api-secret-key': config.keys.secret
+                'X-api-secret-key': config.keys.secret,
+                'X-api-tokens': userInfo.token  
             }
-        }; 
-
+        };  
         if( headers !== undefined ) {
             Object.keys(headers).forEach((element) => {
                 var key = element;
@@ -41,45 +43,57 @@ class A_P_I_S {
                 options.headers[key] = value;
             });
         }
-
-        var success_callback = (res) => {
-            console.log("Succ--------------------------")
-            console.log(res);
-            console.log("--------------------------")
+       
+        var success_callback = (res) => { 
+            return res.data;
         }
 
         var error_callback = (error) => {
-            console.log("Err--------------------------");
-            if (error.response) {
+            
+            var message = language.something_error;
+
+            if (error.response !== undefined && error.response) {
                 // The request was made and the server responded with a status code
                 // that falls out of the range of 2xx
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
-              } else if (error.request) {
+                message = language.api_connection_error;
+                
+            } else if (error.request !== undefined &&  error.request) {
                 // The request was made but no response was received
                 // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
                 // http.ClientRequest in node.js
-                console.log(error.request);
-              } else {
+                message = language.api_connection_error; 
+                
+            } else {
                 // Something happened in setting up the request that triggered an Error
-                console.log('Error', error.message);
-              }
-              console.log(error);
-            console.log("--------------------------");
-        }
+                message = language.check_internet_connection
+            }
 
-        axios(options)
-            .then(success_callback)
-            .catch(error => error_callback(error));
+            
+            return {
+                message: message,
+                is_error: true,
+                data: []
+            };
+
+        }
+        
+        try {
+            return axios(options)
+                .then(success_callback)
+                .catch(error => error_callback(error));
+        } catch (error) {
+            return error_callback(error)
+        }
+        
 
     }
     
-    sendRequest = async (database, document, data_object, id = null /* or {key: value} */ ) => {
- 
+    sendRequest = async (database, document, data_object, id = null, apiUrl = null /* or {key: value} */ ) => {
         
+ 
+         
         var request = await this.axiosRequest({
-            api: "api/category/create", 
+            api: apiUrl, // "api/category/create", 
             dataObject: {
                 database_name:database,
                 model_name:document,
@@ -88,12 +102,12 @@ class A_P_I_S {
             method: "post" 
         });  
 
-        //console.log(request);
- 
+        console.log(request);
+         
         return {
-            is_error: true, 
-            data: [],
-            message: ""
+            is_error: request.is_error, 
+            data: request.data,
+            message: request.message
         };
 
     }
@@ -191,7 +205,7 @@ class A_P_I_S {
         }
          
         // delete from server
-        var remote = await this.deleteRequest( user_data.database_name, mobject.key,  local_id);
+        var remote = await this.deleteRequest( user_data.database_name, mobject.key, local_id);
         
         if( remote.is_error ) {
         
@@ -282,7 +296,7 @@ class A_P_I_S {
      * Update and insert data per one object 
      * locally and remotely
      */
-    async coreAsync (  mobject, obj_data,  param_id = null ) {
+    async coreAsync (  mobject, obj_data,  param_id = null, api_url = null ) {
 
         var id = param_id;
         var is_update_request = true; 
@@ -348,7 +362,8 @@ class A_P_I_S {
                 id:  user_data.id,
                 name: user_data.name,
                 email: user_data.email 
-            }
+            },
+            param_id: id
         };
 
         var insertObject = {
@@ -367,17 +382,21 @@ class A_P_I_S {
                 email: user_data.email 
             }
         };
-
+        
         var updateRemoteObject = {...obj_data, ...insertObject};
         if( param_id != null ) {
             updateRemoteObject = {...obj_data, ...updateObject};
         }
 
         // send request to server for this record
-        var remote = await this.sendRequest( user_data.database_name, mobject.key, updateRemoteObject,  param_id);
-         
+        var remote = await this.sendRequest( user_data.database_name, mobject.key, updateRemoteObject,  param_id, api_url);
+
+        
+        
         // case it update - if( typeof id == 'object'  ) 
         if( is_update_request && param_id != null ) {
+
+            
             //var objectIndex = data.findIndex( x => x.local_id == id );
             var objectIndex = data.findIndex(x => {
                 
@@ -398,9 +417,9 @@ class A_P_I_S {
 
                 return response;
             }
-
+            
             if( objectIndex != -1 ) {
-
+                
                 Object.keys(obj_data).forEach((keyName) => {
                     var value = obj_data[keyName];
                     var key  = keyName;
@@ -412,10 +431,9 @@ class A_P_I_S {
                     ...data[objectIndex], 
                     ...updateObject,
                     remote_updated: remote.is_error? false: true
-                } 
+                }  
 
                 
-
             }
         } else {
             // push object data 
@@ -435,6 +453,7 @@ class A_P_I_S {
                 key: mobject.key,
                 data: data
             }); 
+            
 
             response.message = language.saved_success;
             response.case = 0;

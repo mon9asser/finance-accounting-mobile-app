@@ -1,5 +1,6 @@
 var en = {
         access_denied: "Access Denied !",
+        missing_token: "Access Denied: Your request is missing a critical passport!",
         provide_fields: "Ensure you provide your all required field",
         additional_fields: "Additional fields are needed such as app name, platform, and version",
         invalid_email: "Invalid Email",
@@ -26,7 +27,13 @@ var en = {
         updated_successfully: "Updated Successfully!",
         update_failed: "The update process was unsuccessful!",
         insert_error: "The data failed to save, please try later",
-        add_successfully: "The data has been added successfully."
+        add_successfully: "The data has been added successfully.",
+
+        peroperties_required: "Critical Error: Every property is mandatory",
+        data_object_required: "Data of object is required!",
+        data_array_required: "Data of array is required!",
+        data_get_success: "Data retrieved successfully",
+        no_data_found: "No data found with the given information.",
 }
 
 

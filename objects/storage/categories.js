@@ -75,7 +75,10 @@ class Categories extends A_P_I_S {
             status: 0, // 0 => error, 1 => success 
             data: 
          */
-        var asyncRes = await this.coreAsync(this.categories, data );
+
+             
+        var asyncRes = await this.coreAsync(this.categories, data, null, "api/category/create" );
+        
         if( asyncRes.status == 0 ) {
             response.data = asyncRes.case;
             response.message = asyncRes.message;
@@ -96,8 +99,9 @@ class Categories extends A_P_I_S {
         
         // getting language
         var language = await localization();
-
+        
         var data = { }; 
+        
         // category_name = null, app_number = null
         if( category_name != undefined && category_name !== null ) {
             data["category_name"] = category_name
@@ -116,7 +120,7 @@ class Categories extends A_P_I_S {
             response.data = [];
             return response;
         }
-
+        
         // search by id 
         var index =  categories.data.findIndex( x => x.local_id == local_id )
         if( index == -1 ) {
@@ -126,13 +130,19 @@ class Categories extends A_P_I_S {
             return response;
         }
 
-        var asyncRes = await this.coreAsync(this.categories, data, local_id );
+        
+        
+        var asyncRes = await this.coreAsync(this.categories, data, local_id, "api/category/update" );
+        
         if( asyncRes.status == 0 ) {
+            
             response.data = asyncRes.case;
             response.message = asyncRes.message;
             response.is_error = true;
             return response; 
         }
+
+        
 
         response.data = asyncRes.data;
         response.message = asyncRes.message;

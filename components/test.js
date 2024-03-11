@@ -2,17 +2,17 @@
 import { View, Button, Text } from "react-native";
 import { ProductsInstance } from "../objects/storage/products";
 
-var i = 10;
+var i = 100;
 var TestComponent =  ({navigation}) => {
 
  
     var addData = async () => {
+        
         i++;
         var prodInstance = await ProductsInstance.create_category(
-            `Hello world`, 0
-        );
+            `Salmon +- Rice Sushi`, 0
+        ); 
 
-        
         console.log(prodInstance);
     }
 
@@ -29,29 +29,23 @@ var TestComponent =  ({navigation}) => {
     }
     
     var loadData = async () => {
-        var prodInstance = await ProductsInstance.get_products();
+        var prodInstance = await ProductsInstance.get_categories();
         prodInstance.data.forEach(x => {
-            console.log( x.local_id, x.product_name, x.barcode)
+            console.log( x.local_id, x.category_name, x.remote_saved)
         }); 
         console.log("------------------------------------------ Count: " + prodInstance.data.length)
     }
 
     var updateData = async() => {
-        var prodInstance = await ProductsInstance.update_product(
-            "743969rx4yvx34i17099340526109618",
+        var prodInstance = await ProductsInstance.update_category(
+            "61230m23fi64i22m17101166074951727",
             {
-                product_name: "Bana Sushi", 
-                barcode: "14584",
-                discount: {
-                    is_percentage: true,
-                    percentage: 10 ,
-                    value: 20 
-                } 
+                category_name: "Rice Tepenyaki Sushi" 
             }
         );
  
 
-        console.log(prodInstance);
+        //console.log(prodInstance);
         console.log("------------------------------------------")
     }
 

@@ -40,6 +40,7 @@ class Usr {
                 id: user._id,
                 name: user.name,
                 email: user.email,  
+                token: user.token,
                 subscription: {
                     is_subscribed: application.subscription.is_subscribed,
                     from_date: application.subscription.from_date,
