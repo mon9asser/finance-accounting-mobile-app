@@ -39,6 +39,9 @@ class Categories extends A_P_I_S {
             this.categories,
             {
                 
+            },
+            {
+                "local_id": "35930o3ly95uuf4e1710254135323629"
             }
         );
 

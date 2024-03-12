@@ -59,7 +59,7 @@ class A_P_I_S {
          dataObject['language'] = settings.language;
          dataObject['database_name'] = user_data.database_name;
          dataObject['model_name'] = model_name;
- 
+        
 
         let options = {
             method: method, // Can be 'get', 'put', 'delete', etc.
@@ -134,82 +134,64 @@ class A_P_I_S {
      */
     async coreAsync( mobject, obj_data, parameter_id = null ) {
         
-        var settings, user_data;
+        // getting settings and language
+        var settings, user_data, param_id, param_id_object, old_data;
         try{
             settings = await get_setting();
             user_data = await usr.get_session();
         } catch(error){}
 
         var language =  get_lang(settings.language);
-        var param_id_object = parameter_id;
-        if( parameter_id == null ) {
-            if( obj_data.local_id == undefined ) {
-                param_id_object = {
-                    local_id: generateId()
-                };
-            } else {
-
-                if(typeof obj_data.local_id == 'object') {
-                    param_id_object = { ...obj_data.local_id };
-                } else {
-                    param_id_object = { local_id: obj_data.local_id }
-                }
-
-            }
-        }  
         
-
-
-        // default needed objects 
-        if(mobject.key == undefined || mobject.instance == undefined) {
-            return {
-                is_error: true,
-                login_redirect: false, 
-                message: language.api_error,
-                data: []
-            };
-        }  
-
-        // needed givens
-        var dataObject, user_data, settings;
-        var api_uri = "api/create_update";
-        var {key, instance} =  mobject;  
-         
-        // if session is expired generate a new one  
-        if( ! Object.keys(user_data).length ) { 
-            
+        // getting user data and check for session expiration 
+        if( ! Object.keys(user_data).length ) {
             return {
                 login_redirect: true, 
                 message: language.user_session_expired, 
                 is_error: true , 
                 data: []
             };
+        }
+        
+        // checking for instance and key in mobject 
+        var {key, instance} = mobject;
+        if(key == undefined || instance == undefined) {
+            return {
+                login_redirect: false, 
+                message: language.api_error, 
+                is_error: true , 
+                data: []
+            };
+        }
+         
+        // check if parameter id is not null so store it in given variables
+        param_id = obj_data.local_id == undefined ? generateId(): obj_data.local_id; 
+        if(parameter_id != null && typeof parameter_id != 'object') {
+            param_id = parameter_id;
+        }   
+        if( typeof parameter_id == 'object' ) {
+            if( parameter_id.local_id != undefined ) {
+                param_id = parameter_id.local_id;
+            }
+        }
 
-        }  
+        param_id_object = {local_id:  param_id }
+        if(parameter_id != null && typeof parameter_id == 'object') {
+            param_id_object = {...parameter_id};
+        } 
+        
 
-        // getting data locally 
+        // getting the records from storage 
         try {
-            dataObject = await instance.load({
+            old_data = await instance.load({
                 key: key
-            });
-        } catch(error) {}
-
-
-        // case update
-        var updateObject = {
-            application_id:user_data.application_id,
-            updated_date: Date.now(),
-            updated_by: {
-                id:  user_data.id,
-                name: user_data.name,
-                email: user_data.email 
-            } 
-        };
+            }); 
+        } catch (error) {}
         
-        
-        // case insert a new record 
-        var newObject = {
+        // preparing insertion data 
+        var __object = {
             application_id:user_data.application_id,
+            local_id: param_id,
             updated_date: Date.now(),
             created_date: Date.now(),
             updated_by: {
@@ -221,9 +203,33 @@ class A_P_I_S {
                 id:  user_data.id,
                 name: user_data.name,
                 email: user_data.email 
-            },
-            local_id: param_id_object.local_id?param_id_object.local_id: generateId()
-        }; 
+            }
+        }
+
+        // build update object 
+        if( obj_data.local_id != undefined || parameter_id != null ) {
+            __object = {
+                local_id: param_id,
+                updated_date: Date.now(),
+                updated_by: {
+                    id:  user_data.id,
+                    name: user_data.name,
+                    email: user_data.email 
+                },
+            }
+        }
+        return __object;
+        // check if it is update or insert process 
+
+        // prepare data of remote server 
+
+        // send request for remote server 
+
+        // store data locally 
+
+        // update data locally 
+
+        // send response 
 
     }
 
