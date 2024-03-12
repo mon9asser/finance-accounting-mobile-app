@@ -31,18 +31,17 @@ class Categories extends A_P_I_S {
     }
 
 
-    create_update_category = async ({category_name, app_name} = null, param_id = null ) => {
+    create_update_category = async ({category_name, app_name, param_id} = null ) => {
 
         var language = await localization();
-
-        var data = {
-            category_name: category_name, 
-            app_name: app_name
-        };
         
-        var request = await this.coreAsync(this.categories, data, param_id, "api/create_update");
+        return this.coreAsync(
+            this.categories,
+            {
+                
+            }
+        );
 
-        return request;
     }
   
 

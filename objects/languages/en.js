@@ -81,7 +81,8 @@ const en = {
         category_doesnt_exists: "Category does not exist!",
         price_doesnt_exists: "Price does not exist!",
         item_doesnt_exists: "item does not exist!",
-        no_records: "No records found"
+        no_records: "No records found",
+        required_data: "Object data or array data is required!"
 }
 
 

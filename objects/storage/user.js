@@ -14,7 +14,14 @@ class Usr {
             size: 30,
             storageBackend: AsyncStorage,
             defaultExpires: 1000 * 60 * 60 * 24 // 1 day expiration
+        });  
+
+        this.long_session = new Storage({
+            size: 30,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
         }); 
+
 
     }
 
@@ -56,8 +63,14 @@ class Usr {
                 key: 'user',
                 data: userInfo
             });
+
+            await this.long_session.save({
+                key: 'user-info',
+                data: userInfo
+            });
             
             return true; 
+
         } catch (error) { 
             console.log(error);
             return false;
