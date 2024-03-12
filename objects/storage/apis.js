@@ -133,9 +133,8 @@ class A_P_I_S {
      * Core Async: Updates from local device to remote server 
      */
     async coreAsync( mobject, obj_data, parameter_id = null ) {
-        
         // getting settings and language
-        var settings, user_data, param_id, param_id_object, old_data;
+        var settings, user_data, param_id, param_id_object, old_data, is_update;
         try{
             settings = await get_setting();
             user_data = await usr.get_session();
@@ -144,7 +143,7 @@ class A_P_I_S {
         var language =  get_lang(settings.language);
         
         // getting user data and check for session expiration 
-        if( ! Object.keys(user_data).length ) {
+        if( user_data == null || ! Object.keys(user_data).length ) {
             return {
                 login_redirect: true, 
                 message: language.user_session_expired, 
@@ -163,22 +162,24 @@ class A_P_I_S {
                 data: []
             };
         }
-         
+        
         // check if parameter id is not null so store it in given variables
         param_id = obj_data.local_id == undefined ? generateId(): obj_data.local_id; 
         if(parameter_id != null && typeof parameter_id != 'object') {
             param_id = parameter_id;
         }   
-        if( typeof parameter_id == 'object' ) {
+
+        
+        if( typeof parameter_id == 'object' && parameter_id != null ) {
             if( parameter_id.local_id != undefined ) {
                 param_id = parameter_id.local_id;
             }
         }
-
+        
         param_id_object = {local_id:  param_id }
         if(parameter_id != null && typeof parameter_id == 'object') {
             param_id_object = {...parameter_id};
-        } 
+        }  
         
 
         // getting the records from storage 
@@ -218,21 +219,122 @@ class A_P_I_S {
                 },
             }
         }
-        return __object;
+        
+        
         // check if it is update or insert process 
+        var objectIndex = old_data.findIndex(x => {
+                
+            if( typeof param_id_object == 'object'  ) {
+                var key__ = Object.keys(param_id_object)[0]; 
+                return x[key__] == param_id_object[key__]; 
+            }
 
+            return x.local_id == param_id;
+
+        });
+
+        
+        if( objectIndex == -1 ) {
+            
+            // check it is not update 
+            is_update = false; 
+
+        } else {
+
+            // update an existing object 
+            is_update = true; 
+        }
+
+       
+        __object = {...__object, ...obj_data}; 
+       
+        // case it is update 
+        if( (obj_data.local_id != undefined || parameter_id != null) && is_update ) {
+            return {
+                message: language.no_records,
+                login_redirect: false, 
+                data: [], 
+                is_error: true 
+            };
+        } 
+        
         // prepare data of remote server 
-
+        var axiosOptions = { 
+            api: "api/create_update", 
+            dataObject: {
+                data_object: __object,
+                param_id: param_id_object
+            }, 
+            method: "post",  
+            model_name: key
+        };
+         
         // send request for remote server 
-
+        var request = await this.axiosRequest(axiosOptions);
+         
         // store data locally 
+        if(  objectIndex != -1 ) {
+
+           var updator = {
+
+                ...old_data[objectIndex],
+                ...__object,
+                remote_updated: request.is_error? false: true
+
+           };
+
+           old_data[objectIndex] = updator;
+
+        } else {
+
+            old_data.push({
+                ...__object, 
+                remote_saved: request.is_error? false: true
+            });
+
+        }
 
         // update data locally 
+        try {
+
+            var is_saved = instance.save({
+                key: key,
+                data: old_data
+            }); 
+
+            return {
+                message: language.saved_success,
+                data: is_saved,
+                is_error: false, 
+                login_redirect: false
+            }
+
+        } catch (error) {
+            
+            var message = language.something_error;
+
+            if(error.toString().includes('Quota exceeded')) {
+                message = language.quota_exceeded
+            } else {
+                message = language.unexpected_error 
+            }
+
+            return {
+                message: message,
+                data: [],
+                is_error: true, 
+                login_redirect: false
+            }
+
+        }
 
         // send response 
-
+        // return __object;
     }
 
+    /**
+     * Get all: Getting Updates from remote to 
+     */
 }
  
 

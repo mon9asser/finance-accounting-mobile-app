@@ -32,18 +32,32 @@ class Categories extends A_P_I_S {
 
 
     create_update_category = async ({category_name, app_name, param_id} = null ) => {
+       
+        var _object =  {
+            category_name: category_name == undefined? "": category_name ,
+            app_name: app_name == undefined? 0: app_name 
+        };
 
-        var language = await localization();
-        
-        return this.coreAsync(
-            this.categories,
-            {
-                
-            },
-            {
-                "local_id": "35930o3ly95uuf4e1710254135323629"
+        var param_value = null;
+
+        if( typeof param_id != 'object' && param_id != null ) {
+            _object = {
+                ..._object,
+                local_id: param_id
             }
+        }
+
+        if( typeof param_id == 'object' && param_id != null ) {
+            param_value = {...param_id};
+        }
+
+        var asynced = await this.coreAsync(
+            this.categories,
+            _object,
+            param_value
         );
+
+        return asynced;
 
     }
   
@@ -54,11 +68,11 @@ var CatInstance = new Categories();
 
 var callback = async() => {
     var asynced = await CatInstance.create_update_category({
-        category_name: "My Updated Category", 
+        category_name: "Ma Updated Category", 
         app_name: 999
     }, "34721poe7cbhtg9p17102065587751403");
 
-    console.log(asynced);
+    console.log(asynced); 
 }
 
 callback();
