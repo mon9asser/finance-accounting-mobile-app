@@ -9,9 +9,10 @@ var TestComponent =  ({navigation}) => {
     var addData = async () => {
         
         i++;
-        var prodInstance = await ProductsInstance.create_category(
-            `Corn Flex`, 0
-        ); 
+        var prodInstance = await ProductsInstance.create_product_price(
+            "141212df1d2f1", "mmprice",
+            "man price", "kgm", 1.25, 55.11, 1, true
+        )
 
         console.log(prodInstance);
     }

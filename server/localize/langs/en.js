@@ -34,7 +34,11 @@ var en = {
         data_array_required: "Data of array is required!",
         data_get_success: "Data retrieved successfully",
         no_data_found: "No data found with the given information.",
-        pagination_property_required: "Pagination properties are required!"
+        pagination_property_required: "Pagination properties are required!",
+
+        not_able_delete: "Unable to delete this record; please try again later.",
+        deletion_success: "The record has been successfully deleted.",
+        param_id_is_required: "param id is required!"
 }
 
 

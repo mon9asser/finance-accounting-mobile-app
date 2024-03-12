@@ -37,7 +37,7 @@ var allSchema = {
         sales_price:{ type: String, default: ""},
         purchase_price: { type: String, default: ""},
         factor: { type: Number, default: ""},
-        is_default_price: { type: Boolean, default: ""},
+        is_default_price: { type: Boolean, default: false},
     },
 
     products: {

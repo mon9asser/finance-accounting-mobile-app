@@ -4,21 +4,17 @@ var sanitizer = require('sanitizer');
 var jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); 
 const nodemailer = require('nodemailer');  
-const { create_connection, flat_schema_name } = require("../applications/db");
-const {language} = require("./../localize/language.js");
+const { create_connection, flat_schema_name } = require("../applications/db.js");
+const {language} = require("../localize/language.js");
 const { verify_user_tokens_and_keys } = require("./middleware/tokens.js")
 const {get_schema_object} = require("../applications/schema.js");
 
-var categoriesRouter = express.Router();
+var apiRouters = express.Router();
 
  
- 
-// getting data according to pages ( pagination )
-// delete data + delete bulk data 
-
- 
+  
 // add data by one row + update by one row 
-categoriesRouter.post("/category/create_update", verify_user_tokens_and_keys, async (req, res) => {
+apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res) => {
      
     // handling current language
     var current_language = req.body.language == undefined? "en": req.body.language; 
@@ -126,7 +122,7 @@ categoriesRouter.post("/category/create_update", verify_user_tokens_and_keys, as
  
 
 // Bulk insert data + bulk update
-categoriesRouter.post("/category/bulk_create_update", verify_user_tokens_and_keys, async (req, res) => {
+apiRouters.post("/bulk_create_update", verify_user_tokens_and_keys, async (req, res) => {
     
     // handling current language
     var current_language = req.body.language == undefined? "en": req.body.language; 
@@ -206,8 +202,8 @@ categoriesRouter.post("/category/bulk_create_update", verify_user_tokens_and_key
 });
 
 
-// getting all data with no parameter + with parameters 
-categoriesRouter.post("/category/get", verify_user_tokens_and_keys, async (req, res) => {
+// getting all data with no parameter + with parameters + paging
+apiRouters.post("/get", verify_user_tokens_and_keys, async (req, res) => {
     
     // handling current language
     var current_language = req.body.language == undefined? "en": req.body.language; 
@@ -250,13 +246,14 @@ categoriesRouter.post("/category/get", verify_user_tokens_and_keys, async (req, 
     // checking for param id 
     var param_id = req.body.param_id == undefined ? null: req.body.param_id;
     
-    if(typeof param_id != 'object' || param_id != null ) {
+    if(typeof param_id != 'object' && param_id != null ) {
         param_id = {
             local_id: req.body.param_id
         };
     }else if ( param_id == null ) {
         param_id = {}
     };
+ 
 
     // work with paging query 
     if( req.body.pagination != undefined && typeof req.body.pagination == 'object' ) {
@@ -312,7 +309,86 @@ categoriesRouter.post("/category/get", verify_user_tokens_and_keys, async (req, 
 
 });
 
+// delete a record + bulk deletion 
+apiRouters.post("/delete", verify_user_tokens_and_keys, async (req, res) => {
+    
+    // handling current language
+    var current_language = req.body.language == undefined? "en": req.body.language; 
+    var localize = language[current_language];
+ 
+    //preparing response object 
+    var response = {
+        is_error: true, 
+        data: [],
+        message: localize.something_wrong
+    }
+
+    // Basics Of Each API: checking for database name and model 
+    var database = req.body.database_name;
+    var model = req.body.model_name;
+    var param_id = req.body.param_id == undefined? -1: req.body.param_id;
+
+    if( database == undefined || model == undefined ) {
+        response.is_error = true;
+        response.message = localize.peroperties_required;
+        return res.send(response);
+    }
+     
+    var model_name = flat_schema_name(model);
+    var schema_object = get_schema_object(model_name);
+    
+    
+    var db_connection = await create_connection(database, {
+        model: model_name, 
+        schemaObject:schema_object
+    }); 
+    
+    if( ! db_connection ) {
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.services_disabled; 
+        return res.send(response); 
+    } 
+
+    if(req.body.param_id == undefined) {
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.param_id_is_required; 
+        return res.send(response); 
+    }
+
+    // checking for param id 
+    var param_id = req.body.param_id == undefined ? null: req.body.param_id;
+    
+    if(typeof param_id != 'object' && param_id != null ) {
+        param_id = {
+            local_id: req.body.param_id
+        };
+    }else if ( param_id == null ) {
+        param_id = {}
+    };
+    
+    
+    db_connection.deleteMany(param_id)
+    .then(()=> {
+         
+        return res.send({
+            is_error: false, 
+            data: [], 
+            message: localize.deletion_success
+        }); 
+    }).catch(error => {
+        
+        return res.send({
+            is_error: true, 
+            data: [], 
+            message: localize.not_able_delete
+        });
+
+    });
+    
+});
 
  
 
-module.exports = { categoriesRouter };
+module.exports = { apiRouters };

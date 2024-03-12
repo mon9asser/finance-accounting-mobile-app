@@ -13,7 +13,7 @@ class A_P_I_S {
 
 
     axiosRequest = async ({ api, dataObject, method, headers } = null) => {
-        console.log(dataObject);
+         
         var settings, userInfo;
         try{
             settings = await get_setting();
@@ -36,6 +36,7 @@ class A_P_I_S {
                 'X-api-tokens': userInfo.token  
             }
         };  
+ 
 
         
         if( headers !== undefined ) {
@@ -53,7 +54,7 @@ class A_P_I_S {
         var error_callback = (error) => {
             
             var message = language.something_error;
-
+            console.log(error);
             if (error.response !== undefined && error.response) {
                 // The request was made and the server responded with a status code
                 // that falls out of the range of 2xx
@@ -103,8 +104,7 @@ class A_P_I_S {
             },
             method: "post" 
         });  
-
-        console.log(request);
+ 
          
         return {
             is_error: request.is_error, 
@@ -393,7 +393,7 @@ class A_P_I_S {
         // send request to server for this record
         var remote = await this.sendRequest( user_data.database_name, mobject.key, updateRemoteObject,  param_id, api_url);
 
-        
+         
         
         // case it update - if( typeof id == 'object'  ) 
         if( is_update_request && param_id != null ) {
