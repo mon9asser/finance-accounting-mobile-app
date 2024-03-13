@@ -1,10 +1,11 @@
 
 import { get_lang } from "../languages";
 import {generateId} from '../helpers';
-import {get_setting} from './settings'; 
+import {get_setting} from '../storage/settings'; 
 import axios from "axios";
-import {config} from './../../settings/config';
-import {usr} from './../../objects/storage/user'
+import {config} from '../../settings/config';
+import {usr} from '../storage/user';
+
 class A_P_I_S {
     
     constructor(prop) {  
@@ -14,7 +15,13 @@ class A_P_I_S {
     
     // HTTP Request 
     axiosRequest = async ({ api, dataObject, method, headers, model_name } = null) => {
-          
+       /*
+        return {
+            is_error: true, 
+            data: [], 
+            message: ""
+        }; */
+        
         var settings, user_data;
         try{
             settings = await get_setting();
@@ -136,7 +143,7 @@ class A_P_I_S {
 
         // getting settings and language
         var settings, user_data, param_id, param_id_object, old_data, is_update;
-
+        
         try{
             settings = await get_setting();
             user_data = await usr.get_session();
@@ -170,7 +177,7 @@ class A_P_I_S {
         if(parameter_id != null && typeof parameter_id != 'object') {
             param_id = parameter_id;
         }   
-
+       
         
         if( typeof parameter_id == 'object' && parameter_id != null ) {
             if( parameter_id.local_id != undefined ) {
@@ -183,7 +190,7 @@ class A_P_I_S {
             param_id_object = {...parameter_id};
         }  
         
-        
+       
         // getting the records from storage 
        old_data = await this.get_data_locally(mobject);
         
@@ -242,7 +249,7 @@ class A_P_I_S {
             // update an existing object 
             is_update = true; 
         }
-
+        
        
         __object = {...__object, ...obj_data}; 
        
@@ -269,7 +276,7 @@ class A_P_I_S {
          
         // send request for remote server 
         var request = await this.axiosRequest(axiosOptions); 
-        
+         
         // store data locally 
         if(  objectIndex != -1 ) {
 
@@ -338,6 +345,7 @@ class A_P_I_S {
 
         // getting settings and language
         var settings, user_data, param_id;
+        param_id = Array.isArray(parameter_id)? parameter_id: [];
 
         try{
             settings = await get_setting();
@@ -367,13 +375,6 @@ class A_P_I_S {
             };
         }
         
-        param_id = {
-            local_id: parameter_id
-        };
-
-        if( typeof parameter_id == 'object' ) {
-            param_id = {...parameter_id};
-        }
         
         // delete data remotely 
         var request = await this.axiosRequest({ 
@@ -384,80 +385,55 @@ class A_P_I_S {
             }, 
             method: "post",  
             model_name: key
-        });
-          
-        if( request.is_error == false ) {
-
-            var old_data = await this.get_data_locally(mobject);
-
-            if( old_data.length == 0 ) {
-                return {
-                    login_redirect: false, 
-                    message: language.item_doesnt_exists, 
-                    is_error: true , 
-                    data: []
-                }
+        }); 
+        
+        /**----------------- */
+        var old_data = await this.get_data_locally(mobject);
+        
+        if( old_data.length == 0 ) {
+            return {
+                login_redirect: false, 
+                message: language.item_doesnt_exists, 
+                is_error: true , 
+                data: []
             }
-            
-            var index = old_data.findIndex( item => {
-                if( typeof param_id == 'object' ) {
-                    var key = Object.keys(param_id)[0];
-                   
-                    var vaue = param_id[key];
-    
-                    if( item[key] == vaue ) {
-                        return true;
-                    }
-    
-                }  
+        }
+         
+        var new_updates;
+        if(request.is_error == false ) {
+            new_updates = old_data.filter( item => {
+                var index = param_id.indexOf(item.local_id);
+                if( index == -1 ) {
+                    return item;
+                }
             });
-
-            if( index == -1 ) {
-                return {
-                    login_redirect: false, 
-                    message: language.item_doesnt_exists, 
-                    is_error: true , 
-                    data: []
-                }
-            }
-
-            var new_updates = old_data.filter( item => {
-                if( typeof param_id == 'object' ) {
-                    var key = Object.keys(param_id)[0];
-                   
-                    var vaue = param_id[key];
-    
-                    if( item[key] !== vaue ) {
-                        return item;
-                    }
-    
-                }  
-            });
-
-            try {
-            
-                await instance.save({
-                    key: key,
-                    data: new_updates
-                });
-                
-                return {
-                    login_redirect: false, 
-                    message: language.deleted_success, 
-                    is_error: false , 
-                    data: []
-                }
-            } catch (error) {
-                return {
-                    login_redirect: false, 
-                    message: language.something_error, 
-                    is_error: true , 
-                    data: []
-                }
-            }
-
-
         } else {
+            new_updates = old_data.map( item => {
+
+                var index = param_id.indexOf(item.local_id);
+                if( index != -1 ) {
+                    item.remote_deleted = false;
+                    return item;
+                } 
+                return item;
+            });
+        }
+
+
+        try {
+        
+            await instance.save({
+                key: key,
+                data: new_updates
+            });
+            
+            return {
+                login_redirect: false, 
+                message: language.deleted_success, 
+                is_error: false , 
+                data: []
+            }
+        } catch (error) {
             return {
                 login_redirect: false, 
                 message: language.something_error, 
@@ -465,6 +441,7 @@ class A_P_I_S {
                 data: []
             }
         }
+        /**----------------- */
          
     }
 
@@ -508,7 +485,7 @@ class A_P_I_S {
             };
         }
 
-        var filtered = []; 
+        var filtered = array_data; 
         if( consider_flags ) {
             filtered = array_data.filter( item => {
                 if( item.remote_updated == false || item.remote_saved == false ) {
@@ -576,6 +553,107 @@ class A_P_I_S {
     }
 
     /**
+     * Bulk Deletion Aync ( delete from remote then send array to delete in locally ) 
+     */
+    async bulkDeletionAsync(mobject, array_data = [], consider_flags = true) {
+        
+        if(array_data.length == 0 ) {
+            array_data = await this.get_data_locally(mobject);
+        }
+        
+        // getting settings and language
+        var settings, user_data;
+
+        try{
+            settings = await get_setting();
+            user_data = await usr.get_session();
+        } catch(error){}
+        
+        var language =  get_lang(settings.language);
+        
+        // getting user data and check for session expiration 
+        if( user_data == null || ! Object.keys(user_data).length ) {
+            return {
+                login_redirect: true, 
+                message: language.user_session_expired, 
+                is_error: true , 
+                data: []
+            };
+        }
+        
+        // checking for instance and key in mobject 
+        var {key, instance} = mobject;
+        if(key == undefined || instance == undefined) {
+            return {
+                login_redirect: false, 
+                message: language.api_error, 
+                is_error: true , 
+                data: []
+            };
+        }
+
+        var filtered = array_data; 
+        if( consider_flags ) {
+            filtered = array_data.filter( item => {
+                if( item.remote_deleted == false ) {
+                    return item;
+                }
+            });
+        }
+
+        if( filtered.length ) {
+
+            var request = await this.axiosRequest({ 
+                api: "api/bulk_deletion", 
+                dataObject: {
+                    data_array: filtered 
+                }, 
+                method: "post",  
+                model_name: key
+            });
+
+            if( request.is_error == false && request.ids != undefined ) { 
+                
+                array_data = array_data.filter(item => {
+                    var index = request.ids.findIndex( x => x.local_id == item.local_id); 
+                    if( index == -1 ) {
+                        return item;
+                    } 
+                    
+                });
+
+                try {
+                    
+                    await instance.save({
+                        key: key, 
+                        data: array_data 
+                    });  
+
+                } catch (error) {
+                    
+                    return {
+                        login_redirect: false, 
+                        message: language.something_error, 
+                        is_error: true , 
+                        data: []
+                    };
+
+                }  
+            }
+
+            return request;
+        }
+
+        return {
+            login_redirect: false, 
+            message: language.uptodate, 
+            is_error: false , 
+            data: []
+        };
+    }
+     
+    
+    /**
      * Get all: Getting Updates from remote and store it locally 
      * Optionally: Paingation ( page number and size )
      */
@@ -619,7 +697,7 @@ class A_P_I_S {
         } 
 
         filtered = array_data.filter( item => {
-            if( item.remote_updated == false || item.remote_saved == false ) {
+            if( item.remote_updated == false || item.remote_saved == false || item.remote_deleted== false ) {
                 return item;
             }
         }); 
@@ -685,6 +763,7 @@ class A_P_I_S {
         } 
 
     }
+     
 
     /**
      * Getting Data Locally

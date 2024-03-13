@@ -1,11 +1,7 @@
-import Storage from 'react-native-storage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { get_response } from './../helpers.js';
-import {A_P_I_S} from "./apis.js";
-import {localization} from "./../storage/settings.js"; 
-
-
-
+ 
+import {A_P_I_S} from "../cores/apis.js"; 
+import {Models} from "../cores/models.js"; 
+ 
 /**
  * 
  * 0 for products
@@ -17,16 +13,8 @@ class Categories extends A_P_I_S {
 
     constructor(props) {
 
-        super(props)
-        
-        this.categories = {
-            key: "categories",
-            instance: new Storage({
-                size: 220,
-                storageBackend: AsyncStorage,
-                defaultExpires: null
-            })
-        } 
+        super(props); 
+        this.Schema =  Models.categories;
 
     }
 
@@ -53,34 +41,32 @@ class Categories extends A_P_I_S {
 
         if( typeof param_id == 'object' && param_id != null ) {
             param_value = {...param_id};
-        } 
-
+        }  
           
         var asynced = await this.coreAsync(
-            this.categories,
+            this.Schema,
             _object,
             param_value
         );
-
+        
         return asynced;
 
     }
     
 
-    delete_categories = async (param_id = null ) => {
+    delete_categories = async (param_id = [] ) => {
 
-         
+        var param_value = Array.isArray(param_id) ? param_id : [];
+ 
+        // getting all data 
+        var reqs = await this.deleteAsync(this.Schema,param_value );
+
+        return reqs; 
 
     }
 
 }
  
-var CatInstance = new Categories();
+var CategoryInstance = new Categories(); 
 
-var callback = async() => {
-    alert("Treat the deletion locally if the internet is not connected and store its id in session to execute it once the internet connected")
-}
-
-callback();
-
-export { Categories, CatInstance };
+export { Categories, CategoryInstance };

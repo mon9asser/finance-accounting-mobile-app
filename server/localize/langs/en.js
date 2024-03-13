@@ -25,6 +25,7 @@ var en = {
 
         services_disabled: "The service provider has encountered an error; please contact us for assistance.",
         updated_successfully: "Updated Successfully!",
+        deleted_successfully: "Deleted Successfully!",
         update_failed: "The update process was unsuccessful!",
         insert_error: "The data failed to save, please try later",
         add_successfully: "The data has been added successfully.",
@@ -39,7 +40,9 @@ var en = {
         not_able_delete: "Unable to delete this record; please try again later.",
         deletion_success: "The record has been successfully deleted.",
         param_id_is_required: "param id is required!",
-        doesnt_exists: "Resource not found. The requested item does not exist."
+        doesnt_exists: "Resource not found. The requested item does not exist.",
+
+        array_data_required: "Array of ids is required"
 }
 
 
