@@ -23,3 +23,12 @@ var data = await CatInstance.deleteAsync(CatInstance.categories, {local_id: "716
 
 // delete locally 
 await CatInstance.categories.instance.removeItem(CatInstance.categories.key);
+
+// get async
+var data = await CatInstance.bulkGetAsync(CatInstance.categories);
+console.log(data);
+
+// update and insert bulk async 
+ var data = await CatInstance.bulkCoreAsync(CatInstance.categories);
+console.log(data);
+
