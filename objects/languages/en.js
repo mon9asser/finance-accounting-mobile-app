@@ -12,7 +12,7 @@ const en = {
         login_subtitle: "Please sign in to continue",
         forget_password: "Forget your password?",
         reset: "Reset",
-        email: "Email",
+        email: "Email", 
         password: "Password",
         confirm_password: "Confirm Password",
 
@@ -82,7 +82,11 @@ const en = {
         price_doesnt_exists: "Price does not exist!",
         item_doesnt_exists: "item does not exist!",
         no_records: "No records found",
-        required_data: "Object data or array data is required!"
+        required_data: "Object data or array data is required!",
+        doesnt_exists: "Resource not found. The requested item does not exist.",
+        uptodate: "Everything is up to date",
+
+        synchronized_data: "Data has been synchronized successfully"
 }
 
 

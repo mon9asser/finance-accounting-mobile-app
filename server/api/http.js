@@ -119,8 +119,7 @@ apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res) 
 
     } 
 });
- 
-
+  
 // Bulk insert data + bulk update
 apiRouters.post("/bulk_create_update", verify_user_tokens_and_keys, async (req, res) => {
     
@@ -162,6 +161,8 @@ apiRouters.post("/bulk_create_update", verify_user_tokens_and_keys, async (req, 
         return res.send(response); 
     } 
 
+    
+
    // checking for data array 
    if( req.body.data_array == undefined ) {
         response["data"] = [];
@@ -171,20 +172,53 @@ apiRouters.post("/bulk_create_update", verify_user_tokens_and_keys, async (req, 
     }
 
     var data_array = req.body.data_array;
+
+    var local_ids = data_array.map(item => {
+        return {
+            local_id: item.local_id
+        }
+    });
+ 
+
     //await db_connection
 
-    const bulkOps = data_array.map(item => ({
-        updateOne: {
-          filter: { local_id: item.local_id }, // Criteria to find the existing book
-          update: { $set: item }, // Update existing book or set new book details
-          upsert: true // Insert a new document if one doesn't exist
+    const bulkOps = data_array.map(item => {
+
+        if(item._id != undefined ) {
+            delete item._id
         }
-    }));
+
+        return {
+            updateOne: {
+              filter: { local_id: item.local_id }, // Criteria to find the existing book
+              update: { $set: item }, // Update existing book or set new book details
+              upsert: true // Insert a new document if one doesn't exist
+            }
+        }
+    });
+
+  
 
 
     db_connection.bulkWrite(bulkOps)
-    .then(result => {
+    .then(async result => {
 
+        // var inserted_ids = result.insertedIds == undefined? [] : Object.keys( result.insertedIds );
+        var updated = await db_connection.find({
+            $or: local_ids
+        });
+        
+        var needed_ids = updated.map( item => {
+            return {
+                id: item._id,
+                local_id: item.local_id,
+                remote_updated: true, 
+                remote_saved: true
+            };
+        });
+
+         
+        response["ids"] = needed_ids;
         response["data"] = result;
         response["is_error"] = false;
         response["message"] = localize.updated_successfully; 
@@ -285,8 +319,7 @@ apiRouters.post("/get", verify_user_tokens_and_keys, async (req, res) => {
                 is_error: false,
                 message: localize.data_get_success 
             });
-        } catch (error) { 
-            console.log(error);
+        } catch (error) {  
             response["data"] = [];
             response["is_error"] = true;
             response["message"] = localize.no_data_found; 
@@ -315,7 +348,7 @@ apiRouters.post("/delete", verify_user_tokens_and_keys, async (req, res) => {
     // handling current language
     var current_language = req.body.language == undefined? "en": req.body.language; 
     var localize = language[current_language];
- 
+    
     //preparing response object 
     var response = {
         is_error: true, 
@@ -327,6 +360,8 @@ apiRouters.post("/delete", verify_user_tokens_and_keys, async (req, res) => {
     var database = req.body.database_name;
     var model = req.body.model_name;
     var param_id = req.body.param_id == undefined? -1: req.body.param_id;
+    
+    
 
     if( database == undefined || model == undefined ) {
         response.is_error = true;
@@ -356,7 +391,7 @@ apiRouters.post("/delete", verify_user_tokens_and_keys, async (req, res) => {
         response["message"] = localize.param_id_is_required; 
         return res.send(response); 
     }
-
+    
     // checking for param id 
     var param_id = req.body.param_id == undefined ? null: req.body.param_id;
     
@@ -368,15 +403,29 @@ apiRouters.post("/delete", verify_user_tokens_and_keys, async (req, res) => {
         param_id = {}
     };
     
+
+    // check if data id is already exists 
+    var finder = await db_connection.find(param_id);
     
+    if( finder && finder.length == 0 ) {
+        return res.send({
+            is_error: false, 
+            data: [], 
+            message: localize.doesnt_exists 
+        }); 
+    }
+
     db_connection.deleteMany(param_id)
-    .then(()=> {
-         
+    .then((obRes)=> {
+        
+        console.log(obRes);
+
         return res.send({
             is_error: false, 
             data: [], 
             message: localize.deletion_success
-        }); 
+        });
+
     }).catch(error => {
         
         return res.send({

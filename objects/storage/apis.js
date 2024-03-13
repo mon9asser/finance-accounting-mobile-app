@@ -14,7 +14,7 @@ class A_P_I_S {
     
     // HTTP Request 
     axiosRequest = async ({ api, dataObject, method, headers, model_name } = null) => {
-        
+          
         var settings, user_data;
         try{
             settings = await get_setting();
@@ -133,8 +133,10 @@ class A_P_I_S {
      * Core Async: Updates from local device to remote server 
      */
     async coreAsync( mobject, obj_data, parameter_id = null ) {
+
         // getting settings and language
         var settings, user_data, param_id, param_id_object, old_data, is_update;
+
         try{
             settings = await get_setting();
             user_data = await usr.get_session();
@@ -181,13 +183,9 @@ class A_P_I_S {
             param_id_object = {...parameter_id};
         }  
         
-
+        
         // getting the records from storage 
-        try {
-            old_data = await instance.load({
-                key: key
-            }); 
-        } catch (error) {}
+       old_data = await this.get_data_locally(mobject);
         
         // preparing insertion data 
         var __object = {
@@ -249,7 +247,7 @@ class A_P_I_S {
         __object = {...__object, ...obj_data}; 
        
         // case it is update 
-        if( (obj_data.local_id != undefined || parameter_id != null) && is_update ) {
+        if( (obj_data.local_id != undefined || parameter_id != null) && is_update && objectIndex == -1 ) {
             return {
                 message: language.no_records,
                 login_redirect: false, 
@@ -270,8 +268,8 @@ class A_P_I_S {
         };
          
         // send request for remote server 
-        var request = await this.axiosRequest(axiosOptions);
-         
+        var request = await this.axiosRequest(axiosOptions); 
+        
         // store data locally 
         if(  objectIndex != -1 ) {
 
@@ -279,17 +277,18 @@ class A_P_I_S {
 
                 ...old_data[objectIndex],
                 ...__object,
-                remote_updated: request.is_error? false: true
-
+                remote_updated: request.is_error? false: true,
+                _id: request.data._id == undefined? "": request.data._id
            };
 
            old_data[objectIndex] = updator;
 
         } else {
-
+            
             old_data.push({
                 ...__object, 
-                remote_saved: request.is_error? false: true
+                remote_saved: request.is_error? false: true,
+                _id: request.data._id == undefined? "": request.data._id
             });
 
         }
@@ -333,8 +332,375 @@ class A_P_I_S {
     }
 
     /**
-     * Get all: Getting Updates from remote to 
+     * Delete Async: for two sides ( remotely and locally ) 
      */
+    async deleteAsync( mobject, parameter_id ) {
+
+        // getting settings and language
+        var settings, user_data, param_id;
+
+        try{
+            settings = await get_setting();
+            user_data = await usr.get_session();
+        } catch(error){}
+        
+        var language =  get_lang(settings.language);
+        
+        // getting user data and check for session expiration 
+        if( user_data == null || ! Object.keys(user_data).length ) {
+            return {
+                login_redirect: true, 
+                message: language.user_session_expired, 
+                is_error: true , 
+                data: []
+            };
+        }
+        
+        // checking for instance and key in mobject 
+        var {key, instance} = mobject;
+        if(key == undefined || instance == undefined) {
+            return {
+                login_redirect: false, 
+                message: language.api_error, 
+                is_error: true , 
+                data: []
+            };
+        }
+        
+        param_id = {
+            local_id: parameter_id
+        };
+
+        if( typeof parameter_id == 'object' ) {
+            param_id = {...parameter_id};
+        }
+        
+        // delete data remotely 
+        var request = await this.axiosRequest({ 
+            api: "api/delete", 
+            dataObject: {
+                data_object: {},
+                param_id: param_id
+            }, 
+            method: "post",  
+            model_name: key
+        });
+          
+        if( request.is_error == false ) {
+
+            var old_data = await this.get_data_locally(mobject);
+
+            if( old_data.length == 0 ) {
+                return {
+                    login_redirect: false, 
+                    message: language.item_doesnt_exists, 
+                    is_error: true , 
+                    data: []
+                }
+            }
+            
+            var index = old_data.findIndex( item => {
+                if( typeof param_id == 'object' ) {
+                    var key = Object.keys(param_id)[0];
+                   
+                    var vaue = param_id[key];
+    
+                    if( item[key] == vaue ) {
+                        return true;
+                    }
+    
+                }  
+            });
+
+            if( index == -1 ) {
+                return {
+                    login_redirect: false, 
+                    message: language.item_doesnt_exists, 
+                    is_error: true , 
+                    data: []
+                }
+            }
+
+            var new_updates = old_data.filter( item => {
+                if( typeof param_id == 'object' ) {
+                    var key = Object.keys(param_id)[0];
+                   
+                    var vaue = param_id[key];
+    
+                    if( item[key] !== vaue ) {
+                        return item;
+                    }
+    
+                }  
+            });
+
+            try {
+            
+                await instance.save({
+                    key: key,
+                    data: new_updates
+                });
+                
+                return {
+                    login_redirect: false, 
+                    message: language.deleted_success, 
+                    is_error: false , 
+                    data: []
+                }
+            } catch (error) {
+                return {
+                    login_redirect: false, 
+                    message: language.something_error, 
+                    is_error: true , 
+                    data: []
+                }
+            }
+
+
+        } else {
+            return {
+                login_redirect: false, 
+                message: language.something_error, 
+                is_error: true , 
+                data: []
+            }
+        }
+         
+    }
+
+    /**
+     * Upload and update the remote server with the local change
+     */
+    async bulkCoreAsync( mobject, array_data = [], consider_flags = true ) {
+
+        if(array_data.length == 0 ) {
+            array_data = await this.get_data_locally(mobject);
+        }
+        
+        // getting settings and language
+        var settings, user_data;
+
+        try{
+            settings = await get_setting();
+            user_data = await usr.get_session();
+        } catch(error){}
+        
+        var language =  get_lang(settings.language);
+        
+        // getting user data and check for session expiration 
+        if( user_data == null || ! Object.keys(user_data).length ) {
+            return {
+                login_redirect: true, 
+                message: language.user_session_expired, 
+                is_error: true , 
+                data: []
+            };
+        }
+        
+        // checking for instance and key in mobject 
+        var {key, instance} = mobject;
+        if(key == undefined || instance == undefined) {
+            return {
+                login_redirect: false, 
+                message: language.api_error, 
+                is_error: true , 
+                data: []
+            };
+        }
+
+        var filtered = []; 
+        if( consider_flags ) {
+            filtered = array_data.filter( item => {
+                if( item.remote_updated == false || item.remote_saved == false ) {
+                    return item;
+                }
+            });
+        }
+
+        if( filtered.length ) {
+
+            var request = await this.axiosRequest({ 
+                api: "api/bulk_create_update", 
+                dataObject: {
+                    data_array: filtered 
+                }, 
+                method: "post",  
+                model_name: key
+            });
+
+            if( request.is_error == false && request.ids != undefined ) { 
+                
+                array_data = array_data.map(item => {
+                    var index = request.ids.findIndex( x => x.local_id == item.local_id); 
+                    if( index != -1 ) {
+                        return {
+                            ...item, ...request.ids[index]
+                        }
+                    }
+
+                    return item;
+                });
+
+                try {
+                    
+                    await instance.save({
+                        key: key, 
+                        data: array_data 
+                    });  
+
+                } catch (error) {
+                    
+                    return {
+                        login_redirect: false, 
+                        message: language.something_error, 
+                        is_error: true , 
+                        data: []
+                    };
+
+                } 
+
+                // update the sent data with remote ids and 
+                // replace remote_saved, remote_updated with true value
+            }
+
+            return request;
+        }
+
+        return {
+            login_redirect: false, 
+            message: language.uptodate, 
+            is_error: false , 
+            data: []
+        };
+
+    }
+
+    /**
+     * Get all: Getting Updates from remote and store it locally 
+     * Optionally: Paingation ( page number and size )
+     */
+    async bulkGetAsync( mobject, paging_page = null, paging_size= null ){
+        
+        // getting settings and language
+        var settings, user_data, array_data, pagination, filtered;
+
+        if( paging_page != null && paging_size != null ) {
+            pagination = { page: paging_page, size: paging_size };
+        }
+
+        array_data = await this.get_data_locally(mobject);
+
+        try{
+            settings = await get_setting();
+            user_data = await usr.get_session();
+        } catch(error){}
+        
+        var language =  get_lang(settings.language);
+        
+        // getting user data and check for session expiration 
+        if( user_data == null || ! Object.keys(user_data).length ) {
+            return {
+                login_redirect: true, 
+                message: language.user_session_expired, 
+                is_error: true , 
+                data: []
+            };
+        }
+        
+        // checking for instance and key in mobject 
+        var {key, instance} = mobject;
+        if(key == undefined || instance == undefined) {
+            return {
+                login_redirect: false, 
+                message: language.api_error, 
+                is_error: true , 
+                data: []
+            };
+        } 
+
+        filtered = array_data.filter( item => {
+            if( item.remote_updated == false || item.remote_saved == false ) {
+                return item;
+            }
+        }); 
+
+        if( ! filtered.length ) {
+            return {
+                login_redirect: false, 
+                is_error: false,
+                data: [],
+                message: language.uptodate
+            }
+        }
+        
+        var __object = {
+            api: "api/get", 
+            dataObject: {
+                data_object: {} 
+            }, 
+            method: "post",  
+            model_name: key
+        };
+
+        if( pagination != undefined ) {
+            __object.dataObject["pagination"] = pagination; 
+        }
+        
+
+        var request = await this.axiosRequest(__object); 
+
+        if( request.is_error ) {
+            return {
+                login_redirect: false, 
+                ...request
+            }; 
+        }
+
+        var asynced = [ ...filtered, ...request.data];
+
+        try {
+            
+            await instance.save({
+                key: key,
+                data: asynced
+            });
+
+            var response = {
+                data: asynced,
+                is_error: false,
+                login_redirect: false, 
+                message: language.synchronized_data
+            };
+    
+            return response; 
+
+        } catch (error) {
+            var response = {
+                data: [],
+                is_error: true,
+                login_redirect: false, 
+                message: language.something_error
+            };
+            return response;
+        } 
+
+    }
+
+    /**
+     * Getting Data Locally
+     */
+    async get_data_locally ( mobject ) {
+
+        var array_data = []; 
+
+        try {
+            array_data = await mobject.instance.load({
+                key: mobject.key
+            }); 
+        } catch (error) {}
+
+        return array_data;
+    }
 }
  
 

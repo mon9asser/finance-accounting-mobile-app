@@ -33,6 +33,7 @@ class Categories extends A_P_I_S {
 
     create_update_category = async ({category_name, app_name, param_id} = null ) => {
        
+         
         var _object =  {
             category_name: category_name == undefined? "": category_name ,
             app_name: app_name == undefined? 0: app_name 
@@ -45,12 +46,16 @@ class Categories extends A_P_I_S {
                 ..._object,
                 local_id: param_id
             }
+            param_value = {
+                local_id: param_id
+            }
         }
 
         if( typeof param_id == 'object' && param_id != null ) {
             param_value = {...param_id};
-        }
+        } 
 
+          
         var asynced = await this.coreAsync(
             this.categories,
             _object,
@@ -60,19 +65,20 @@ class Categories extends A_P_I_S {
         return asynced;
 
     }
-  
+    
+
+    delete_categories = async (param_id = null ) => {
+
+         
+
+    }
 
 }
  
 var CatInstance = new Categories();
 
 var callback = async() => {
-    var asynced = await CatInstance.create_update_category({
-        category_name: "Ma Updated Category", 
-        app_name: 999
-    }, "34721poe7cbhtg9p17102065587751403");
-
-    console.log(asynced); 
+    alert("Treat the deletion locally if the internet is not connected and store its id in session to execute it once the internet connected")
 }
 
 callback();

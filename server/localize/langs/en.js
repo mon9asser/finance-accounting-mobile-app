@@ -38,7 +38,8 @@ var en = {
 
         not_able_delete: "Unable to delete this record; please try again later.",
         deletion_success: "The record has been successfully deleted.",
-        param_id_is_required: "param id is required!"
+        param_id_is_required: "param id is required!",
+        doesnt_exists: "Resource not found. The requested item does not exist."
 }
 
 
