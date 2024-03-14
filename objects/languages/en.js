@@ -76,6 +76,9 @@ const en = {
 
         failed_to_register: "Account creation unsuccessful; something went wrong!",
         category_exists: "Category already exists!",
+        no_categories: "No categories found",
+        no_products: "No products found",
+        no_prices: "No prices found", 
         price_exists: "Price already exists!",
         product_exists: "Product already exists!",
         category_doesnt_exists: "Category does not exist!",
@@ -86,7 +89,8 @@ const en = {
         doesnt_exists: "Resource not found. The requested item does not exist.",
         uptodate: "Everything is up to date",
 
-        synchronized_data: "Data has been synchronized successfully"
+        synchronized_data: "Data has been synchronized successfully",
+        array_data_required: "Array Data is required"
 }
 
 

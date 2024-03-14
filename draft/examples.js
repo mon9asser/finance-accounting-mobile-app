@@ -12,7 +12,10 @@ var asynced = await CatInstance.create_update_category({
     param_id: "34721poe7cbhtg9p17102065587751403"
 });
  
-
+var get = await CategoryInstance.get_categories([], {
+page: 5, size: 2
+}, true); 
+    
 // get 
 var data = await CatInstance.get_data_locally(CatInstance.categories);
 console.log(data);
@@ -32,3 +35,19 @@ console.log(data);
  var data = await CatInstance.bulkCoreAsync(CatInstance.categories);
 console.log(data);
 
+
+// Insert array of data in one time 
+await CategoryInstance.bulk_create_update([
+    {
+        category_name: "Category 1", 
+        app_name: 0
+    },
+    {
+        category_name: "Category 2", 
+        app_name: 0
+    },
+    {
+        category_name: "Category 3", 
+        app_name: 0
+    }
+])

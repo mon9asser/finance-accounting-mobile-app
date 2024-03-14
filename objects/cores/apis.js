@@ -1,10 +1,14 @@
 
+import axios from "axios";
+
 import { get_lang } from "../languages";
 import {generateId} from '../helpers';
-import {get_setting} from '../storage/settings'; 
-import axios from "axios";
+import {get_setting} from '../cores/settings'; 
 import {config} from '../../settings/config';
 import {usr} from '../storage/user';
+
+
+
 
 class A_P_I_S {
     
@@ -450,10 +454,6 @@ class A_P_I_S {
      */
     async bulkCoreAsync( mobject, array_data = [], consider_flags = true ) {
 
-        if(array_data.length == 0 ) {
-            array_data = await this.get_data_locally(mobject);
-        }
-        
         // getting settings and language
         var settings, user_data;
 
@@ -461,7 +461,8 @@ class A_P_I_S {
             settings = await get_setting();
             user_data = await usr.get_session();
         } catch(error){}
-        
+
+
         var language =  get_lang(settings.language);
         
         // getting user data and check for session expiration 
@@ -473,6 +474,57 @@ class A_P_I_S {
                 data: []
             };
         }
+
+        var old_data = await this.get_data_locally(mobject);
+
+        if(array_data.length == 0 ) {
+            array_data = old_data;
+        } else {
+            
+            // add default properties to array 
+            var mapped = array_data.map( item => {
+                
+                if( item.local_id === undefined ) {
+                    item.local_id = generateId();
+                }
+
+                if( item.application_id === undefined ) {
+                    item.application_id = user_data.application_id
+                }
+
+                if( item.updated_date === undefined ) {
+                    item.updated_date= Date.now();
+                }
+
+                if( item.created_date === undefined ) {
+                    item.created_date= Date.now();
+                }
+                 
+                if(item.created_by === undefined) {
+                    item.created_by = {
+                        email: user_data.email,
+                        id: user_data.id,
+                        name: user_data.name 
+                    };
+                }
+
+                if(item.updated_by === undefined) {
+                    item.updated_by = {
+                        email: user_data.email,
+                        id: user_data.id,
+                        name: user_data.name 
+                    };
+                } 
+
+                return item;
+
+            });
+
+            array_data = [...old_data, ...mapped];
+            
+        }
+         
+        
         
         // checking for instance and key in mobject 
         var {key, instance} = mobject;
@@ -657,7 +709,7 @@ class A_P_I_S {
      * Get all: Getting Updates from remote and store it locally 
      * Optionally: Paingation ( page number and size )
      */
-    async bulkGetAsync( mobject, paging_page = null, paging_size= null ){
+    async bulkGetAsync( mobject, async = false, paging_page = null, paging_size= null ){
         
         // getting settings and language
         var settings, user_data, array_data, pagination, filtered;
@@ -665,7 +717,7 @@ class A_P_I_S {
         if( paging_page != null && paging_size != null ) {
             pagination = { page: paging_page, size: paging_size };
         }
-
+        
         array_data = await this.get_data_locally(mobject);
 
         try{
@@ -702,7 +754,7 @@ class A_P_I_S {
             }
         }); 
 
-        if( ! filtered.length ) {
+        if( ! filtered.length && async == false) {
             return {
                 login_redirect: false, 
                 is_error: false,
@@ -764,7 +816,7 @@ class A_P_I_S {
 
     }
      
-
+    
     /**
      * Getting Data Locally
      */

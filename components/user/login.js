@@ -15,7 +15,7 @@ import { Button } from "react-native-paper";
 // App Files 
 import {config,} from "../../settings/config.js" ;
 import {styles} from "../../objects/styles.js"; 
-import {get_setting} from "./../../objects/storage/settings.js"
+import {get_setting} from "./../../objects/cores/settings.js"
 import {get_lang} from '../../objects/languages.js' 
 import {usr} from './../../objects/storage/user.js';
 

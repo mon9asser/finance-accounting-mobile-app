@@ -10,7 +10,25 @@ var Models = {
             storageBackend: AsyncStorage,
             defaultExpires: null
         })
-    }
+    },
+
+    products: {
+        key: "products",
+        instance: new Storage({
+            size: 350,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    },
+
+    prices: {
+        key: "prices",
+        instance: new Storage({
+            size: 250,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    },
  
 };
 

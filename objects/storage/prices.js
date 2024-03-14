@@ -14,26 +14,50 @@ import _ from 'lodash';
  * 
  */
 
-class Products extends A_P_I_S {
+class Prices extends A_P_I_S {
 
     constructor(props) {
 
         super(props); 
-        this.Schema =  Models.products;
+        this.Schema =  Models.prices;
 
     }
 
     /** Insert and update a record */
-    create_update = async ({product_name, category_id, barcode, discount, thumbnail, param_id} = null ) => {
+    create_update = async ({product_local_id, name, unit_name, unit_short, sales_price, purchase_price, factor, is_default_price, param_id} = null ) => {
        
          
         var _object =  {
-            product_name: product_name == undefined? "": product_name ,
-            category_id: category_id == undefined? -1: category_id, 
-            barcode: barcode == undefined? "": barcode, 
-            discount: discount == undefined? "": discount, 
-            thumbnail: thumbnail == undefined? "": thumbnail, 
+            product_local_id: product_local_id == undefined? -1: product_local_id ,
+            name: name == undefined? "": name, 
+            unit_name: unit_name == undefined? "": unit_name, 
+            unit_short: unit_short == undefined? "": unit_short, 
+            sales_price: sales_price == undefined? "": sales_price, 
+
+            purchase_price: purchase_price == undefined? "": purchase_price, 
+            factor: factor == undefined? 1: factor, 
+            is_default_price: is_default_price == undefined? false: is_default_price, 
         };
+
+        if(_object.product_local_id != -1 && _object.is_default_price ) {
+            // change old data to be false
+            var old_data = await this.get_records();
+            
+            if( old_data.length ) {
+                old_data.map(async item => {
+                    
+                    if( item.product_local_id ==  _object.product_local_id ) {
+                        item.is_default_price = false
+
+                        await this.coreAsync(
+                            this.Schema,
+                            item,
+                            item.local_id
+                        ); 
+                    } 
+                });
+            }
+        }
 
         var param_value = null;
 
@@ -50,6 +74,8 @@ class Products extends A_P_I_S {
         if( typeof param_id == 'object' && param_id != null ) {
             param_value = {...param_id};
         }  
+
+
           
         var asynced = await this.coreAsync(
             this.Schema,
@@ -57,8 +83,7 @@ class Products extends A_P_I_S {
             param_value
         );
         
-        // await this.bulkCoreAsync( this.Schema );
-
+        // await this.bulkCoreAsync( this.Schema ); 
         return asynced;
 
     }
@@ -171,7 +196,7 @@ class Products extends A_P_I_S {
                 login_redirect: false, 
                 is_error: false, 
                 data: _return,
-                message: _return.length == 0? language.no_products: ""
+                message: _return.length == 0? language.no_prices: ""
             }
 
         }  
@@ -180,13 +205,24 @@ class Products extends A_P_I_S {
             login_redirect: false, 
             is_error: false, 
             data: array_data,
-            message: language.length == 0? language.no_products: ""
+            message: language.length == 0? language.no_prices: ""
         }
     }
  
 }
  
-var ProductInstance = new Products(); 
+var PriceInstance = new Prices(); 
   
-export { Products, ProductInstance };
+ var callback = async() => {
+     
+    alert("the problem is saving only ids in remote server, also didnt update old is_default_price")
+    var records = await PriceInstance.get_records();
+    console.log(records.data);
+ };
+
+ callback();
+
+export { Prices, PriceInstance };
+
+
 

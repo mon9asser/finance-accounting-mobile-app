@@ -18,7 +18,7 @@ import { LineChart } from "react-native-chart-kit";
 // App Files 
 import {config} from "./../settings/config.js" ;
 import {styles} from "./../objects/styles.js"; 
-import {get_setting} from "./../objects/storage/settings.js";
+import {get_setting} from "./../objects/cores/settings.js";
 import {get_lang} from './../objects/languages.js'; 
 // import {add_session, get_session, delete_session } from './../objects/storage.js'
 
