@@ -2,7 +2,7 @@ import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { get_response } from './../helpers.js';
 import {A_P_I_S} from "./../cores/apis.js";
-import {localization} from "./../cores/settings.js"; 
+import {localization} from "./../storage/settings.js"; 
 import {Categories} from "./categories"; // it already exended from A_P_I_S class 
 
 class Products extends Categories {
