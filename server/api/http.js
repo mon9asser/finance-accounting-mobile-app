@@ -537,6 +537,68 @@ apiRouters.post("/delete", verify_user_tokens_and_keys, async (req, res) => {
     
 });
 
+// update all records based on keys 
+apiRouters.post("/update_by_keys", verify_user_tokens_and_keys, async (req, res) => {
+     
+    // handling current language
+    var current_language = req.body.language == undefined? "en": req.body.language; 
+    var localize = language[current_language];
  
+    //preparing response object 
+    var response = {
+        is_error: true, 
+        data: [],
+        message: localize.something_wrong
+    }
+
+    // Basics Of Each API: checking for database name and model 
+    var database = req.body.database_name;
+    var model = req.body.model_name;
+    var param_id = req.body.param_id == undefined? {}: req.body.param_id;
+
+    if( database == undefined || model == undefined ) {
+        response.is_error = true;
+        response.message = localize.peroperties_required;
+        return res.send(response);
+    }
+     
+    var model_name = flat_schema_name(model);
+    var schema_object = get_schema_object(model_name);
+    
+    
+    var db_connection = await create_connection(database, {
+        model: model_name, 
+        schemaObject:schema_object
+    }); 
+    
+    if( ! db_connection ) {
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.services_disabled; 
+        return res.send(response); 
+    } 
+
+    // checking for data object 
+    if( req.body.data_object == undefined ) {
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.data_object_required; 
+        return res.send(response); 
+    }
+
+    var data_object = req.body.data_object;
+    if( typeof param_id == 'string'  ) {
+        param_id = { local_id: param_id };
+    }
+
+    try {
+
+        await db_connection.updateMany(param_id, data_object);
+         res.send({ox: "Sucess"})
+    } catch(error) {
+        res.send({ox: "error"})
+     }
+});
+  
 
 module.exports = { apiRouters };

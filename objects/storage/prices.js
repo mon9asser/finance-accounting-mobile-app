@@ -56,6 +56,8 @@ class Prices extends A_P_I_S {
                         ); 
                     } 
                 });
+
+
             }
         }
 
@@ -214,8 +216,19 @@ class Prices extends A_P_I_S {
 var PriceInstance = new Prices(); 
   
  var callback = async() => {
-     
-    alert("the problem is saving only ids in remote server, also didnt update old is_default_price")
+    /* 
+    var ii = await PriceInstance.create_update({
+        product_local_id: "1452114",
+        name: "Price 3",
+        unit_name: "Killo",
+        unit_short: "KG",
+        sales_price: 230.00,
+        purchase_price: 110.00,
+        factor: 1,
+        is_default_price: true
+    })
+    console.log(ii); */
+    // alert("the problem is saving only ids in remote server, also didnt update old is_default_price")
     var records = await PriceInstance.get_records();
     console.log(records.data);
  };

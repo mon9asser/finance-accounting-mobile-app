@@ -28,7 +28,7 @@ var allSchema = {
         app_name:  { type: Number, default: ""},
     },
 
-    product_prices: {
+    prices: {
         ...default_properties,     
         product_local_id:{ type: String, default: ""},
         name:{ type: String, default: ""},

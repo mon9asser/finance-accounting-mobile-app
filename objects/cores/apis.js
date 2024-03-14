@@ -343,6 +343,99 @@ class A_P_I_S {
     }
 
     /**
+     * Update Async based on parameters 
+     * update a spesific key with more than one row
+     */
+    async updateAsync( mobject, data_object = {}, where_keys = {}  ) {
+        
+        // getting settings and language
+        var settings, user_data;
+        
+        try{
+            settings = await get_setting();
+            user_data = await usr.get_session();
+        } catch(error){}
+
+        var language =  get_lang(settings.language);
+        
+        // getting user data and check for session expiration 
+        if( user_data == null || ! Object.keys(user_data).length ) {
+            return {
+                login_redirect: true, 
+                message: language.user_session_expired, 
+                is_error: true , 
+                data: []
+            };
+        }
+        
+        // checking for instance and key in mobject 
+        var {key, instance} = mobject;
+        if(key == undefined || instance == undefined) {
+            return {
+                login_redirect: false, 
+                message: language.api_error, 
+                is_error: true , 
+                data: []
+            };
+        }
+        
+        if( Object.keys(data_object).length == 0 ||  Object.keys(where_keys).length == 0  ) {
+            return {
+                login_redirect: false, 
+                message: language.required_data, 
+                is_error: true , 
+                data: []
+            };
+        }
+
+        // update in remote first 
+        var request = this.axiosRequest({
+            api: "api/update_by_keys",
+            dataObject: {
+                data_object: data_object,
+                param_id: where_keys
+            }, 
+            method: "post",  
+            model_name: key
+        });
+
+        var is_updated_remotely = false; 
+        if( request.is_error == false ) {
+            is_updated_remotely = true;
+        }
+
+        var old_data = this.get_data_locally(mobject);
+        var last_update = old_data.map( item => {
+            item.remote_updated = is_updated_remotely;
+            var new_item = {...item, ...data_object};
+            return new_item;
+        });
+
+        try {
+
+            await instance.save({
+                key: key,
+                data: last_update 
+            }); 
+            
+            return {
+                message: language.saved_success,
+                data: is_saved,
+                is_error: false, 
+                login_redirect: false
+            }
+            
+        } catch (error) {
+            return {
+                message: language.something_error,
+                data: is_saved,
+                is_error: true, 
+                login_redirect: false
+            }
+        }
+    }
+    
+    /**
      * Delete Async: for two sides ( remotely and locally ) 
      */
     async deleteAsync( mobject, parameter_id ) {
