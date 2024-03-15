@@ -16,25 +16,22 @@ import _ from 'lodash';
  * 
  */
 
-class Expenses extends A_P_I_S {
+class DocumentStatus extends A_P_I_S {
 
     constructor(props) {
 
         super(props); 
-        this.Schema =  Models.expenses;
+        this.Schema =  Models.log_history;
 
     }
 
     /** Insert and update a record */
-    create_update = async ({name, category_local_id, branch_local_id, cost, details, param_id} = null ) => {
+    create_update = async ({status_name, status_short_name, param_id} = null ) => {
        
          
         var _object =  {
-            name: name == undefined? "": name ,
-            category_local_id: category_local_id == undefined? 0: category_local_id, 
-            branch_local_id: branch_local_id == undefined? 0: branch_local_id ,
-            cost: cost == undefined? 0: cost, 
-            details: details == undefined? 0: details 
+            status_short_name: status_short_name == undefined? "": status_short_name ,
+            status_name: status_name == undefined? "": status_name
         };
 
         var param_value = null;
@@ -192,6 +189,7 @@ class Expenses extends A_P_I_S {
 
 }
  
-var ExpensesInstance = new Expenses(); 
-  
-export { Expenses, ExpensesInstance };
+var DocumentStatusInstance = new DocumentStatus(); 
+ 
+ 
+export { DocumentStatus, DocumentStatusInstance };

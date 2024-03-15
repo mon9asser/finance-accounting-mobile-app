@@ -2,9 +2,9 @@
 import {A_P_I_S} from "../cores/apis.js"; 
 import {Models} from "../cores/models.js"; 
 import { get_setting} from "../cores/settings.js";
-import { get_lang } from "../languages";
+import { get_lang } from "../languages.js";
 
-import { usr } from "../storage/user.js";
+import { usr } from "./user.js";
 
 import _ from 'lodash';
 
@@ -16,25 +16,26 @@ import _ from 'lodash';
  * 
  */
 
-class Expenses extends A_P_I_S {
+class Notifications extends A_P_I_S {
 
     constructor(props) {
 
         super(props); 
-        this.Schema =  Models.expenses;
+        this.Schema =  Models.notifications;
 
     }
 
     /** Insert and update a record */
-    create_update = async ({name, category_local_id, branch_local_id, cost, details, param_id} = null ) => {
+    create_update = async ({doc_type, doc_local_id, doc_name, user_local_id, details, read_ids, param_id} = null ) => {
        
          
         var _object =  {
-            name: name == undefined? "": name ,
-            category_local_id: category_local_id == undefined? 0: category_local_id, 
-            branch_local_id: branch_local_id == undefined? 0: branch_local_id ,
-            cost: cost == undefined? 0: cost, 
-            details: details == undefined? 0: details 
+            doc_type: doc_type == undefined? "": doc_type ,
+            doc_local_id: doc_local_id == undefined? "": doc_local_id, 
+            doc_name: doc_name == undefined? "": doc_name,
+            user_local_id: user_local_id == undefined? "": user_local_id, 
+            details: details == undefined? "": details,
+            read_ids: read_ids == undefined? "": read_ids 
         };
 
         var param_value = null;
@@ -192,6 +193,8 @@ class Expenses extends A_P_I_S {
 
 }
  
-var ExpensesInstance = new Expenses(); 
-  
-export { Expenses, ExpensesInstance };
+var NotificationInstance = new Notifications(); 
+ 
+ 
+
+export { Notifications, NotificationInstance };

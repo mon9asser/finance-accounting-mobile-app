@@ -64,8 +64,44 @@ var Models = {
             storageBackend: AsyncStorage,
             defaultExpires: null
         })
-    }
- 
+    },
+
+    balances: {
+        key: "balances",
+        instance: new Storage({
+            size: 200,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    },
+
+    log_history: {
+        key: "log-history",
+        instance: new Storage({
+            size: 350,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    },
+
+    notifications: {
+        key: "notifications",
+        instance: new Storage({
+            size: 300,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    },
+
+    document_status: {
+        key: "document-status",
+        instance: new Storage({
+            size: 70,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    },
+    
 };
 
 module.exports = {Models};

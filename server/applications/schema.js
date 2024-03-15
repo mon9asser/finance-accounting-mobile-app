@@ -89,6 +89,37 @@ var allSchema = {
         ...default_properties,
     },
 
+    balances: {
+        total_balance: { type: String, default: ""},
+        payment_type_local_id: { type: String, default: ""},
+        ...default_properties,
+    },
+
+    log_history: {
+        doc_type: { type: Number, default: -1}, 
+        doc_local_id : { type: String, default: ""},
+        doc_name: { type: String, default: ""},
+        user_local_id: { type: String, default: ""},
+        ...default_properties,
+    },
+
+    notifications: {
+        doc_type: { type: Number, default: -1}, 
+        doc_local_id : { type: String, default: ""},
+        doc_name: { type: String, default: ""},
+        details: { type: String, default: ""},
+        user_local_id: { type: String, default: ""},
+        read_ids: { type: Array, default: []},
+        ...default_properties,
+    },
+
+    document_status: {
+        status_name: { type: String, default: -1}, 
+        status_short_name : { type: String, default: ""}, 
+        ...default_properties,
+    }
+
+
 }
 
 var get_schema_object = ( schema_key ) => {

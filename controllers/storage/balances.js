@@ -16,25 +16,22 @@ import _ from 'lodash';
  * 
  */
 
-class Expenses extends A_P_I_S {
+class Balances extends A_P_I_S {
 
     constructor(props) {
 
         super(props); 
-        this.Schema =  Models.expenses;
+        this.Schema =  Models.balances;
 
     }
 
     /** Insert and update a record */
-    create_update = async ({name, category_local_id, branch_local_id, cost, details, param_id} = null ) => {
+    create_update = async ({total_balance, payment_type_local_id, param_id} = null ) => {
        
          
         var _object =  {
-            name: name == undefined? "": name ,
-            category_local_id: category_local_id == undefined? 0: category_local_id, 
-            branch_local_id: branch_local_id == undefined? 0: branch_local_id ,
-            cost: cost == undefined? 0: cost, 
-            details: details == undefined? 0: details 
+            total_balance: total_balance == undefined? "": total_balance ,
+            payment_type_local_id: payment_type_local_id == undefined? "": payment_type_local_id 
         };
 
         var param_value = null;
@@ -192,6 +189,7 @@ class Expenses extends A_P_I_S {
 
 }
  
-var ExpensesInstance = new Expenses(); 
-  
-export { Expenses, ExpensesInstance };
+var BalancesInstance = new Balances(); 
+ 
+
+export { Balances, BalancesInstance };
