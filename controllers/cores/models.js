@@ -55,6 +55,15 @@ var Models = {
             storageBackend: AsyncStorage,
             defaultExpires: null
         })
+    },
+
+    expenses: {
+        key: "expenses",
+        instance: new Storage({
+            size: 300,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
     }
  
 };

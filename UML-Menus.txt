@@ -388,7 +388,7 @@ created_by
 
 
 ------------------------
-expenses
+expenses xxx
 ------------------------
 id 
 local_id

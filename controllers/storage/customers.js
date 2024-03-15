@@ -24,7 +24,7 @@ class Customers extends A_P_I_S {
     }
 
     /** Insert and update a record */
-    create_update = async ({customer_name, phone_number,gender,email_address,user_type ,branch_id,note,thumbnail, param_id} = null ) => {
+    create_update = async ({customer_name, phone_number,gender,email_address,user_type ,branch_local_id,note,thumbnail, param_id} = null ) => {
        
          
         var _object =  { 
@@ -33,7 +33,7 @@ class Customers extends A_P_I_S {
             gender: gender == undefined? "": gender ,
             email_address: email_address == undefined? "": email_address ,
             user_type : user_type == undefined? 0: user_type ,
-            branch_id: branch_id == undefined? "": branch_id ,
+            branch_local_id: branch_local_id == undefined? "": branch_local_id ,
             note: note == undefined? "": note ,
             thumbnail: thumbnail == undefined? "": thumbnail ,
         };

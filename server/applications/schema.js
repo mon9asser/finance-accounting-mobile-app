@@ -60,7 +60,7 @@ var allSchema = {
         gender: { type: String, default: ""},
         email_address: { type: String, default: ""},
         user_type: { type: Number, default: 0 }, // 0 => customer, 1 => supplier
-        branch_id: { type: String, default: ""}, 
+        branch_local_id: { type: String, default: ""}, 
         note: { type: String, default: ""},
         thumbnail: { type: String, default: ""}
     },
@@ -78,7 +78,16 @@ var allSchema = {
         payment_name: { type: String, default: "Cash"},
         payment_short_name: { type: String, default: "cash"},
         ...default_properties,
-    }
+    },
+
+    expenses: {
+        name: { type: String, default: ""},
+        category_local_id: { type: String, default: ""},
+        branch_local_id: { type: String, branch_local_id: ""},
+        cost: { type: String, default: ""},
+        details: { type: String, default: ""}, 
+        ...default_properties,
+    },
 
 }
 

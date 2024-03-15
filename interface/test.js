@@ -1,7 +1,7 @@
 
 import { View, Button, Text } from "react-native";
 import { ProductsInstance } from "../controllers/storage/products";
-import { PaymentMethodInstance } from "../controllers/storage/payment_methods";
+import { ExpensesInstance } from "../controllers/storage/expenses";
 
 var i = 100;
 var TestComponent =  ({navigation}) => {
