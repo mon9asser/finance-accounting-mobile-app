@@ -17,12 +17,11 @@ import { Button, Checkbox } from "react-native-paper";
 
 // App Files 
 import {config} from "./../settings/config.js" ;
-import {styles} from "./../objects/styles.js"; 
-import {get_setting} from "./../objects/cores/settings.js"
-import {get_lang} from './../objects/languages.js' 
+import {styles} from "./../controllers/styles.js"; 
+import {get_setting} from "./../controllers/cores/settings.js"
+import {get_lang} from './../controllers/languages.js' 
  
-
-class SubscriptionComponents extends Component {
+class AppNotificationsComponents extends Component {
 
     constructor(props) {
         
@@ -75,7 +74,7 @@ class SubscriptionComponents extends Component {
             {
               translateX: current.progress.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, layouts.screen.width],
+                outputRange: [layouts.screen.width, 0],
               }),
             },
           ],
@@ -111,7 +110,6 @@ class SubscriptionComponents extends Component {
 
 }
 
-export { SubscriptionComponents }
-
+export { AppNotificationsComponents }
 
 

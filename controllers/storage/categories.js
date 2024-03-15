@@ -179,7 +179,7 @@ class Categories extends A_P_I_S {
             login_redirect: false, 
             is_error: false, 
             data: array_data,
-            message: language.length == 0? language.no_categories: ""
+            message: array_data.length == 0 ? language.no_products: ""
         }
     }
 

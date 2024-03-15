@@ -50,6 +50,9 @@ class Usr {
                 token: user.token,
                 subscription: {
                     is_subscribed: application.subscription.is_subscribed,
+                    is_expired: application.subscription.is_expired,
+                    payment_id: application.subscription.payment_id, 
+                    package_id: application.subscription.package.package_id, 
                     from_date: application.subscription.from_date,
                     to_date: application.subscription.to_date,
                     is_paid: application.subscription.is_paid,
@@ -57,6 +60,7 @@ class Usr {
                 database_name: application.database_name,
                 company_name: application.company_name,
                 application_id: application._id,
+                settings: application.settings
             }
         
             await this.session.save({

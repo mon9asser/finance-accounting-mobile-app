@@ -17,14 +17,14 @@ import { LineChart } from "react-native-chart-kit";
 
 // App Files 
 import {config} from "./../settings/config.js" ;
-import {styles} from "./../objects/styles.js"; 
-import {get_setting} from "./../objects/cores/settings.js";
-import {get_lang} from './../objects/languages.js'; 
-// import {add_session, get_session, delete_session } from './../objects/storage.js'
+import {styles} from "./../controllers/styles.js"; 
+import {get_setting} from "./../controllers/cores/settings.js";
+import {get_lang} from './../controllers/languages.js'; 
+// import {add_session, get_session, delete_session } from './../controllers/storage.js'
 
 
 // apis 
-import {products} from "./../objects/storage/products.js";
+import {products} from "./../controllers/storage/products.js";
 
 /*products.test(function(data){
     console.log(data);

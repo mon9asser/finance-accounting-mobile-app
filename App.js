@@ -13,27 +13,27 @@ import { StyleSheet, Text, Image, View, TouchableOpacity, SafeAreaView, AppState
 
 // App Files 
 import {config} from "./settings/config.js" ;
-import {styles} from "./objects/styles.js"; 
+import {styles} from "./controllers/styles.js"; 
 
 
 // ---------------------------------
 // App Screens 
 // ---------------------------------
-import {HomeComponents} from './components/home.js';
+import {HomeComponents} from './interface/home.js';
 
-import {LoginComponents} from './components/user/login.js';
-import {ResetPasswordComponents} from './components/user/password-reset.js';
-import {RegisterComponents} from './components/user/register.js';
-import { ChangePasswordComponents } from "./components/user/password-change.js";
+import {LoginComponents} from './interface/user/login.js';
+import {ResetPasswordComponents} from './interface/user/password-reset.js';
+import {RegisterComponents} from './interface/user/register.js';
+import { ChangePasswordComponents } from "./interface/user/password-change.js";
 
-import {DashboardComponents} from './components/dashboard.js';
-import { AppSettingsComponents } from './components/settings.js';
-import { AppNotificationsComponents } from './components/notifications.js';
+import {DashboardComponents} from './interface/dashboard.js';
+import { AppSettingsComponents } from './interface/settings.js';
+import { AppNotificationsComponents } from './interface/notifications.js';
 
-import {AppSidebarComponents}  from './components/sidebar.js';
-import { SubscriptionComponents } from './components/subscription.js';
+import {AppSidebarComponents}  from './interface/sidebar.js';
+import { SubscriptionComponents } from './interface/subscription.js';
 
-import { TestComponent } from "./components/test.js";
+import { TestComponent } from "./interface/test.js";
 
 // Functions 
 const Stack = createStackNavigator(); 

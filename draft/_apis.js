@@ -4,7 +4,7 @@ import {generateId} from '../helpers';
 import {get_setting} from './settings'; 
 import axios from "axios";
 import {config} from './../../settings/config';
-import {usr} from './../../objects/storage/user'
+import {usr} from './../../controllers/storage/user'
 class A_P_I_S {
     
     constructor(prop) {  

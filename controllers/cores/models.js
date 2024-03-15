@@ -29,6 +29,33 @@ var Models = {
             defaultExpires: null
         })
     },
+
+    customers: {
+        key: "customers",
+        instance: new Storage({
+            size: 350,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    },
+
+    branches: {
+        key: "branches",
+        instance: new Storage({
+            size: 100,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    },
+
+    payment_methods: {
+        key: "payment-methods",
+        instance: new Storage({
+            size: 100,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    }
  
 };
 

@@ -28,7 +28,10 @@ let usersSchema = new Schema({
     platform: {
         platform:  { type : String , default: '' },
         version:  { type : String , default: '' }
-    } 
+    },
+
+    branch_id: { type : String , default: '*' }, // * all branches
+    is_owner: { type : Boolean , default: true },
     // device_info: {type: Object, default: {}},  // for next update
     // country_information: {type: Object, default: {}}, // for next update
 });
@@ -38,10 +41,13 @@ let applicationSchema = new Schema({
     id: { type: mongoose.Schema.Types.ObjectId },
     subscription: {
         is_subscribed:  { type : Boolean , default: false }, 
+        is_expired:  { type : Boolean , default: true }, 
+        payment_id: { type : String , default: '' },  // google api
         from_date:  { type : Date, default: ''  },
         to_date:  { type : Date, default: ''  },
         is_paid: { type : Boolean , default: false },  
         package: {
+            package_id: { type : String , default: '' },  // google api
             value: { type : String , default: '' },  
             currency: { type : String , default: '' },  
         },
@@ -49,7 +55,22 @@ let applicationSchema = new Schema({
         api_private: { type : String , default: '' },  
     },
     database_name: { type : String , default: '' },  
-    company_name: { type : String , default: '' }  
+    company_name: { type : String , default: '' },  
+
+    settings: {
+        vat_management: {
+            enable: { type : Boolean , default: false },
+            tax_number: { type : String , default: "" },
+            vat_percentage: { type : String , default: "" },
+        },
+        currency: {
+            name: { type : String , default: "US Dollar" },
+            short: { type : String , default: "USD" },
+            flag: { type : String , default: "$" }
+        },
+        tracking_balance: { type : Boolean , default: true },
+        tracking_inventory: { type : Boolean , default: true },
+    }
 });
 
 

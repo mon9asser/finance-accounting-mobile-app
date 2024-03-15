@@ -142,20 +142,22 @@ profile for each user about his sales and logs
 ====================================================================================
 
 --------------------
-branches
+branches xxx
 --------------------
 id 
+
 branch name 
 branch city 
 branch address 
 branch number 
 user_id 
+
 last_update
 date_made 
 
 
 --------------------
-users 
+users xxx
 --------------------
 id
 application_id
@@ -173,20 +175,17 @@ passing_code
 app_name
 platform {}
 
-{branch_id}---- default -1 => author of all branches 
+{branch_id}---- default * => user fo all branches 
 {is_owner}----
 
 
 --------------------
-application  
+application  xxx
 --------------------
 id
 subscription
 database_name
-company_name
-{is_expired}-------
-{package_id}----
-{user_id}----
+company_name   
 {vat_management} ----
 	enable 
 	Tax Number
@@ -200,22 +199,38 @@ company_name
 access level
 ---------------------------
 id 
-local_id
-access_name (for example: admin, author, saler, ... )
-privileges [
-    {
-        module_name: "Sales",
-        module_id: 1                 // examples [notifications, 1 => sales, 2 => purchases, ets]
-        [
-            view
-            add and view his data 
-            add and view and edit his data
-            Manage all
-        ]
-    }
+application_id 
+app_name: next_daily_sales
+access_name: admin (for example: admin, author, saler, ... )
+privilege_id: id 
+access_type: { mobile, desktop, web application, all }
+created_date
+updated_date
+created_by
+updated_by
+
+
+-----------------------------
+privileges 
+----------------------------
+application_id 
+module_name: "Sales",
+module_id: 1                 // examples [notifications, 1 => sales, 2 => purchases, ets]
+[
+    view
+    add and view his data 
+    add and view and edit his data
+    spesifics: [
+    	"edit_price",
+    	"edit_update_price", // delete and update
+    	"" when array is empty means access all
+    ]
+    Manage all
 ]
-date_made
-date_update
+created_date
+updated_date
+created_by
+updated_by
 
 
 --------------------
@@ -269,7 +284,7 @@ date_update
 
 
 ---------------------------
-customers && Suppliers
+customers && Suppliers    xxxx
 ---------------------------
 id
 local_id
@@ -288,7 +303,7 @@ created_by
 
 
 ------------------------
-payment_methods ( by default: cash - bank )
+payment-methods ( by default: cash - bank )   xxx
 ------------------------
 id
 local_id
@@ -301,7 +316,7 @@ created_by
 
 
 ------------------------
-invoice_status
+xxxxxxxxxxxxxx invoice_status
 ------------------------
 id
 local_id

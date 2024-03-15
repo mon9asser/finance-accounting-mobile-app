@@ -51,6 +51,33 @@ var allSchema = {
         },
         thumbnail: { type: String, default: ""},
         ...default_properties,
+    },
+
+    customers: {
+        ...default_properties,
+        customer_name: { type: String, default: ""},
+        phone_number: { type: String, default: ""},
+        gender: { type: String, default: ""},
+        email_address: { type: String, default: ""},
+        user_type: { type: Number, default: 0 }, // 0 => customer, 1 => supplier
+        branch_id: { type: String, default: ""}, 
+        note: { type: String, default: ""},
+        thumbnail: { type: String, default: ""}
+    },
+
+    branches: {
+        branch_name: { type: String, default: ""},
+        branch_city: { type: String, default: ""},
+        branch_address: { type: String, default: ""},
+        branch_number: { type: String, default: ""},
+        user_id: { type: String, default: ""},
+        ...default_properties,
+    }, 
+
+    payment_methods: {
+        payment_name: { type: String, default: "Cash"},
+        payment_short_name: { type: String, default: "cash"},
+        ...default_properties,
     }
 
 }

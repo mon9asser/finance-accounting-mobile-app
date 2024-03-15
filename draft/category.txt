@@ -1,6 +1,6 @@
 
 import { View, Button, Text } from "react-native";
-import { CatInstance } from "../objects/storage/categories";
+import { CatInstance } from "../controllers/storage/categories";
 
 var TestComponent =  () => {
 

@@ -14,52 +14,26 @@ import _ from 'lodash';
  * 
  */
 
-class Prices extends A_P_I_S {
+class Branches extends A_P_I_S {
 
     constructor(props) {
 
         super(props); 
-        this.Schema =  Models.prices;
+        this.Schema =  Models.customers;
 
     }
 
     /** Insert and update a record */
-    create_update = async ({product_local_id, name, unit_name, unit_short, sales_price, purchase_price, factor, is_default_price, param_id} = null ) => {
+    create_update = async ({branch_name, branch_city,branch_address,branch_number,user_id, param_id} = null ) => {
        
          
-        var _object =  {
-            product_local_id: product_local_id == undefined? -1: product_local_id ,
-            name: name == undefined? "": name, 
-            unit_name: unit_name == undefined? "": unit_name, 
-            unit_short: unit_short == undefined? "": unit_short, 
-            sales_price: sales_price == undefined? "": sales_price, 
-
-            purchase_price: purchase_price == undefined? "": purchase_price, 
-            factor: factor == undefined? 1: factor, 
-            is_default_price: is_default_price == undefined? false: is_default_price, 
+        var _object =  { 
+            branch_name: branch_name == undefined? "": branch_name ,
+            branch_city: branch_city == undefined? "": branch_city ,
+            branch_address: branch_address == undefined? "": branch_address ,
+            branch_number: branch_number == undefined? "": branch_number ,
+            user_id : user_id == undefined? "": user_id  
         };
-
-        if(_object.product_local_id != -1 && _object.is_default_price ) {
-            // change old data to be false
-            var old_data = await this.get_records();
-            
-            if( old_data.length ) {
-                old_data.map(async item => {
-                    
-                    if( item.product_local_id ==  _object.product_local_id ) {
-                        item.is_default_price = false
-
-                        await this.coreAsync(
-                            this.Schema,
-                            item,
-                            item.local_id
-                        ); 
-                    } 
-                });
-
-
-            }
-        }
 
         var param_value = null;
 
@@ -76,8 +50,6 @@ class Prices extends A_P_I_S {
         if( typeof param_id == 'object' && param_id != null ) {
             param_value = {...param_id};
         }  
-
-
           
         var asynced = await this.coreAsync(
             this.Schema,
@@ -85,7 +57,8 @@ class Prices extends A_P_I_S {
             param_value
         );
         
-        // await this.bulkCoreAsync( this.Schema ); 
+        // await this.bulkCoreAsync( this.Schema );
+
         return asynced;
 
     }
@@ -152,7 +125,9 @@ class Prices extends A_P_I_S {
         } catch(error){}
         
         var language =  get_lang(settings.language);
-        
+
+
+        var param_value = Array.isArray(param_id) ? param_id : []; 
         
         // get data from remote
         await this.bulkGetAsync(this.Schema, async);
@@ -198,7 +173,7 @@ class Prices extends A_P_I_S {
                 login_redirect: false, 
                 is_error: false, 
                 data: _return,
-                message: _return.length == 0? language.no_prices: ""
+                message: _return.length == 0? language.no_records: ""
             }
 
         }  
@@ -207,35 +182,15 @@ class Prices extends A_P_I_S {
             login_redirect: false, 
             is_error: false, 
             data: array_data,
-            message: language.length == 0? language.no_prices: ""
+            message: array_data.length == 0 ? language.no_products: ""
         }
     }
- 
+
+     
+
 }
  
-var PriceInstance = new Prices(); 
+var BranchInstance = new Branches(); 
   
- var callback = async() => {
-    /* 
-    var ii = await PriceInstance.create_update({
-        product_local_id: "1452114",
-        name: "Price 3",
-        unit_name: "Killo",
-        unit_short: "KG",
-        sales_price: 230.00,
-        purchase_price: 110.00,
-        factor: 1,
-        is_default_price: true
-    })
-    console.log(ii); */
-    // alert("the problem is saving only ids in remote server, also didnt update old is_default_price")
-    var records = await PriceInstance.get_records();
-    console.log(records.data);
- };
 
- callback();
-
-export { Prices, PriceInstance };
-
-
-
+export { Branches, BranchInstance };

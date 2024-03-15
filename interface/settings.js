@@ -1,6 +1,4 @@
 
-
-
 // Default
 import React, { Component } from "react";
 import NetInfo from '@react-native-community/netinfo';
@@ -17,11 +15,11 @@ import { Button, Checkbox } from "react-native-paper";
 
 // App Files 
 import {config} from "./../settings/config.js" ;
-import {styles} from "./../objects/styles.js"; 
-import {get_setting} from "./../objects/cores/settings.js"
-import {get_lang} from './../objects/languages.js' 
- 
-class AppNotificationsComponents extends Component {
+import {styles} from "./../controllers/styles.js"; 
+import {get_setting} from "./../controllers/cores/settings.js"
+import {get_lang} from './../controllers/languages.js'  
+
+class AppSettingsComponents extends Component {
 
     constructor(props) {
         
@@ -84,10 +82,10 @@ class AppNotificationsComponents extends Component {
     screen_options = () => {
         
         this.props.navigation.setOptions({  
-            headerStyle: {backgroundColor: "#B33771"},
+            headerStyle: {backgroundColor: "#82589F"},
             headerTitleStyle: { color: "#fff" },
             headerTintColor: "#fff",
-            headerTitle: this.state.language.app_notifications, 
+            headerTitle: this.state.language.app_settings, 
             cardStyleInterpolator: ({ current, layouts }) => this.cardSlideFromRight({ current, layouts })
         })
 
@@ -110,6 +108,4 @@ class AppNotificationsComponents extends Component {
 
 }
 
-export { AppNotificationsComponents }
-
-
+export { AppSettingsComponents }

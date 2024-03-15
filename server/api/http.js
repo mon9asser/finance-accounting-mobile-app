@@ -554,8 +554,14 @@ apiRouters.post("/update_by_keys", verify_user_tokens_and_keys, async (req, res)
     // Basics Of Each API: checking for database name and model 
     var database = req.body.database_name;
     var model = req.body.model_name;
-    var param_id = req.body.param_id == undefined? {}: req.body.param_id;
+    if( req.body.param_id == undefined) {
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.param_id_is_required; 
+        return res.send(response); 
+    }
 
+    var param_id = req.body.param_id;
     if( database == undefined || model == undefined ) {
         response.is_error = true;
         response.message = localize.peroperties_required;
@@ -590,13 +596,40 @@ apiRouters.post("/update_by_keys", verify_user_tokens_and_keys, async (req, res)
     if( typeof param_id == 'string'  ) {
         param_id = { local_id: param_id };
     }
+    
+    let search = {};
+    let keys = Object.keys(param_id);
+    keys.forEach(key => {
+        search[key] = { $gte: param_id[key] };
+    });
 
+    let new_update = {
+        $set: data_object
+    };
+    
     try {
 
-        await db_connection.updateMany(param_id, data_object);
-         res.send({ox: "Sucess"})
+        var response = await db_connection.updateMany(search, new_update);
+        if( response.acknowledged != undefined && response.acknowledged ) {
+            return res.send({
+                data: response ,
+                message: localize.updated_successfully, 
+                is_error: false 
+            });
+        } else {
+            return res.send({
+                data: "" ,
+                message: localize.insert_error, 
+                is_error: false 
+            });
+        }
+         
     } catch(error) {
-        res.send({ox: "error"})
+        return res.send({
+            data: "" ,
+            message: localize.insert_error, 
+            is_error: false 
+        });
      }
 });
   

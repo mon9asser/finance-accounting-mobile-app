@@ -1,4 +1,6 @@
 
+
+
 // Default
 import React, { Component } from "react";
 import NetInfo from '@react-native-community/netinfo';
@@ -15,11 +17,12 @@ import { Button, Checkbox } from "react-native-paper";
 
 // App Files 
 import {config} from "./../settings/config.js" ;
-import {styles} from "./../objects/styles.js"; 
-import {get_setting} from "./../objects/cores/settings.js"
-import {get_lang} from './../objects/languages.js'  
+import {styles} from "./../controllers/styles.js"; 
+import {get_setting} from "./../controllers/cores/settings.js"
+import {get_lang} from './../controllers/languages.js' 
+ 
 
-class AppSettingsComponents extends Component {
+class SubscriptionComponents extends Component {
 
     constructor(props) {
         
@@ -72,7 +75,7 @@ class AppSettingsComponents extends Component {
             {
               translateX: current.progress.interpolate({
                 inputRange: [0, 1],
-                outputRange: [layouts.screen.width, 0],
+                outputRange: [0, layouts.screen.width],
               }),
             },
           ],
@@ -82,10 +85,10 @@ class AppSettingsComponents extends Component {
     screen_options = () => {
         
         this.props.navigation.setOptions({  
-            headerStyle: {backgroundColor: "#82589F"},
+            headerStyle: {backgroundColor: "#B33771"},
             headerTitleStyle: { color: "#fff" },
             headerTintColor: "#fff",
-            headerTitle: this.state.language.app_settings, 
+            headerTitle: this.state.language.app_notifications, 
             cardStyleInterpolator: ({ current, layouts }) => this.cardSlideFromRight({ current, layouts })
         })
 
@@ -108,4 +111,7 @@ class AppSettingsComponents extends Component {
 
 }
 
-export { AppSettingsComponents }
+export { SubscriptionComponents }
+
+
+

@@ -5,7 +5,7 @@ import { Checkbox } from 'react-native-paper';
 
 
 // App Files 
-import {usr} from './../objects/storage/user.js';
+import {usr} from './../controllers/storage/user.js';
  
 
 

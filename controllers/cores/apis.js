@@ -909,6 +909,106 @@ class A_P_I_S {
 
     }
      
+    /**
+     * Update all records based in keys 
+     */
+    async async_update_all_by_keys( mobject, data_object, search_object ) {
+
+        // getting settings and language
+        var settings, user_data, array_data; 
+        
+        array_data = await this.get_data_locally(mobject);
+
+        try{
+            settings = await get_setting();
+            user_data = await usr.get_session();
+        } catch(error){}
+        
+        var language =  get_lang(settings.language);
+        
+        // getting user data and check for session expiration 
+        if( user_data == null || ! Object.keys(user_data).length ) {
+            return {
+                login_redirect: true, 
+                message: language.user_session_expired, 
+                is_error: true , 
+                data: []
+            };
+        }
+        
+        // checking for instance and key in mobject 
+        var {key, instance} = mobject;
+        if(key == undefined || instance == undefined) {
+            return {
+                login_redirect: false, 
+                message: language.api_error, 
+                is_error: true , 
+                data: []
+            };
+        } 
+
+        // update remotely 
+        var request = await this.axiosRequest({
+            api: "api/update_by_keys", 
+            dataObject: {
+                data_object: data_object,
+                param_id: search_object
+            }, 
+            method: "post",  
+            model_name: key
+        });
+
+        var remote_updated = false;
+        if( request.is_error == false ) {
+            remote_updated = true; 
+        }
+
+
+        var data_object_new = {
+            ...data_object,  
+            updated_date: Date.now(),
+            updated_by: {
+                id:  user_data.id,
+                name: user_data.name,
+                email: user_data.email 
+            }
+        }
+
+        // update locally 
+        var updated_array = array_data.map(item => {
+            // Check if the item matches all criteria in 'search_object'
+            const isMatch = Object.keys(search_object).every(key => item[key] === search_object[key]);
+            
+            // If it matches, return an updated item
+            if (isMatch) {
+                return {...item, ...data_object_new , remote_updated: ! request.is_error}; // Update the 'field' to "updated"
+            }
+            
+            // Otherwise, return the item unchanged
+            return item;
+        });
+
+        try {
+            var is_saved = instance.save({
+                key: key,
+                data: updated_array
+            }); 
+
+            return {
+                message: language.saved_success,
+                data: is_saved,
+                is_error: false, 
+                login_redirect: false
+            }
+        } catch (error) {
+            return {
+                message: language.something_error,
+                data: [],
+                is_error: true, 
+                login_redirect: false
+            }
+        }
+    }
     
     /**
      * Getting Data Locally

@@ -1,3 +1,6 @@
+
+
+
 // Default
 import React, { Component } from "react";
 import NetInfo from '@react-native-community/netinfo';
@@ -14,12 +17,12 @@ import { Button } from "react-native-paper";
 
 // App Files 
 import {config,} from "../../settings/config.js" ;
-import {styles} from "../../objects/styles.js"; 
-import {get_setting} from "./../../objects/cores/settings.js"
-import {get_lang} from '../../objects/languages.js'
+import {styles} from "../../controllers/styles.js"; 
+import {get_setting} from "./../../controllers/cores/settings.js"
+import {get_lang} from '../../controllers/languages.js'
  
 
-class ResetPasswordComponents extends Component {
+class ChangePasswordComponents extends Component {
 
     constructor(props) {
 
@@ -27,20 +30,19 @@ class ResetPasswordComponents extends Component {
 
         this.state = { 
              
-            user_email: '',
-            btnText: "",
-            
+            email:  (this.props.route.params && this.props.route.params.email)? this.props.route.params.email: "",
+            password: '',
+            confirm_password: '',
+
             notificationBox: { display: 'none' },
             notificationCssClass: {},
             notificationTextCssClass: {},
             notificationMessage: "",
 
-            isPressed: false,
+            isPressed: false, //
 
-            user_email_hlght: false,
-            passing_code_hlght: false,
-            passcode_value: '',
-            passcode_enabled: false,
+            password_hlght: false, //
+            confirm_password_hlght: false, //
 
             language: {},
             current_language: "en",
@@ -104,11 +106,6 @@ class ResetPasswordComponents extends Component {
         this.props.navigation.navigate(screen);
     }
 
-    setUserEmailHlght = (value) => {
-        this.setState({
-            user_email_hlght: value
-        })
-    }
  
 
     setPressBtn = (value) => {
@@ -117,22 +114,8 @@ class ResetPasswordComponents extends Component {
         })
     }
 
-    validateEmail = (email) => {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(email);
-    }
-
-    setPasscode = (value) => {
-        this.setState({
-            passcode_value:  value
-        })
-    }
-
-    setEnablePasscode = (value) => {
-        this.setState({
-            passcode_enabled:  value
-        })
-    }
+ 
+ 
 
     setNotificationMessage = (text) => {
         this.setState({
@@ -160,30 +143,44 @@ class ResetPasswordComponents extends Component {
         })
     }
 
-    setUserEmail = (value) => {
+    setPassword = (value) => {
         this.setState({
-            user_email: value
+            password: value
+        })
+    }
+
+    setConfirmPassword = (value) => {
+        this.setState({
+            confirm_password: value
+        })
+    }
+
+    setPasswordHlght = (value) => {
+        this.setState({
+            password_hlght: value
+        })
+    }
+
+    setConfirmPasswordHlght = (value) => {
+        this.setState({
+            confirm_password_hlght: value
         })
     } 
 
-    setPasscodeHlght = (value) => { 
-        this.setState({
-            passing_code_hlght: value
-        }); 
+    validateEmail = (email) => {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
     }
-
-    generateToVerificationCode = () => {
-        this.setState({
-            btnText: this.state.language.verify_passcode
-        })
-    }
-
 
     submitRequest  = () => {
-
+         
         this.setNotificationBox("none")
         this.setPressBtn(true); 
         
+        if( this.state.email == '') {
+            setTimeout(() => this.props.navigation.navigate("Login"), 1200)
+        }
+
         if(! this.state.isConnected) {
             
             this.setNotificationBox("flex")
@@ -199,21 +196,33 @@ class ResetPasswordComponents extends Component {
             alert(this.state.language.validate_login_access);
             return;
         }
-
-        var user_email = this.state.user_email.trim();
+        var user_email = this.state.email.trim();
+        var password = this.state.password.trim();
+        var confirm_password = this.state.confirm_password.trim(); 
         var language = this.state.current_language
 
         var data = { 
             email: user_email,
+            password: password,
             language: language
         }; 
+ 
 
-        if( user_email == '' ) {
-            this.setUserEmailHlght(true);
+        if( password == '' ) {
+            this.setPasswordHlght(true);
         }
 
+        if( confirm_password == '' ) {
+            this.setConfirmPasswordHlght(true);
+        }
+
+
+
         if ( 
-            user_email == '' 
+            user_email == '' ||
+            password == '' ||
+            confirm_password == ''
+
         ) {
 
             this.setPressBtn(false);
@@ -226,8 +235,7 @@ class ResetPasswordComponents extends Component {
         }
 
         if(! this.validateEmail(user_email) ) {
-            this.setPressBtn(false);
-            this.setUserEmailHlght(true);
+            this.setPressBtn(false); 
             this.setNotificationBox("flex")
             this.setNotificationCssClass(styles.error_message)
             this.setNotificationCssTextClass(styles.error_text)
@@ -235,38 +243,28 @@ class ResetPasswordComponents extends Component {
             return;
         }  
 
+        if( password !== confirm_password ) {
+            this.setPasswordHlght(true);
+            this.setConfirmPasswordHlght(true);
+            this.setPressBtn(false);
+            this.setNotificationBox("flex")
+            this.setNotificationCssClass(styles.error_message)
+            this.setNotificationCssTextClass(styles.error_text)
+            this.setNotificationMessage(this.state.language.passwords_dont_match);
+            return;
+        }
+
+
         var axConf = {
             method: 'post', // Can be 'get', 'put', 'delete', etc.
-            url: config.api('api/application/reset'),
+            url: config.api('api/application/change-password'),
             data: data,
             headers: {
                 'Content-Type': 'application/json',
                 'X-api-public-key': config.keys.public,
                 'X-api-secret-key': config.keys.secret
             }
-        };
-
-        if( this.state.passcode_enabled ) {
-             
-            var passcode = this.state.passcode_value.trim();
-            if (passcode === "") {
-                 
-                this.setNotificationBox("flex")
-                this.setNotificationCssClass(styles.error_message)
-                this.setNotificationCssTextClass(styles.error_text)
-                this.setNotificationMessage(this.state.language.required_passcode);
-
-                this.setPressBtn(false);  
-                return;  
-            } 
-
-            axConf.url = config.api('api/application/passcode-verify'),
-            data.passcode = passcode;
-            axConf.data = data;
-
-        }
-
-        
+        };     
         
         let errorCallback = (error = null) => {
  
@@ -314,17 +312,12 @@ class ResetPasswordComponents extends Component {
                 this.setNotificationBox("flex")
                 this.setNotificationCssClass(styles.success_message)
                 this.setNotificationCssTextClass(styles.success_text)
-                this.setNotificationMessage(res.data.data.message); 
+                this.setNotificationMessage(res.data.data); 
                 
-                if( ! this.state.passcode_enabled ) {
-                    this.setEnablePasscode(true);
-                    this.generateToVerificationCode();
-                } else {
-                   this.setNotificationBox("none");
-                   this.props.navigation.navigate("ChangePassword", {
-                        email: this.state.user_email
-                   }); 
-                } 
+                setTimeout(() => {
+                    this.redirect_to('Login'); 
+                }, 1000);
+
 
             } else {
                 
@@ -358,32 +351,23 @@ class ResetPasswordComponents extends Component {
                     <View style={styles.row}>
 
                         <View style={{...styles.space_bottom_25}}>
-                            <Text style={styles.screen_headline}> {localizer.reset_my_password}</Text>
-                            <Text style={styles.screen_subheadline}> {localizer.passcode_msg} </Text>
+                            <Text style={styles.screen_headline}> {localizer.change_password} </Text>
+                            <Text style={{...styles.screen_subheadline, ...styles.text_center}}>{localizer.change_password_label}</Text>
                         </View>
                         
-                        <View style={{borderColor:(this.state.user_email_hlght) ? 'red': '#eee', ...styles.input, ...styles.space_top_15}}>
+                        <View style={{borderColor:(this.state.password_hlght) ? 'red': '#eee', ...styles.input, ...styles.space_top_15}}>
                             <TextInput onChangeText={(value) => {
-                                this.setUserEmail(value);
-                                this.setUserEmailHlght(false)
-                            }} placeholder={localizer.email}  style={{...styles.input_field}} />
-                        </View>
+                                this.setPassword(value);
+                                this.setPasswordHlght(false);
+                            }} placeholder={localizer.password}  style={{...styles.input_field}} />
+                        </View> 
 
-                        <View style={{ borderColor:(this.state.passing_code_hlght) ? 'red': '#eee',  display:(this.state.passcode_enabled)? "flex": "none", ...styles.input, ...styles.space_top_15}}>
+                        <View style={{borderColor:(this.state.confirm_password_hlght) ? 'red': '#eee', ...styles.input, ...styles.space_top_15}}>
                             <TextInput onChangeText={(value) => {
-                                this.setPasscode(value);
-                                this.setPasscodeHlght(false)
-                            }} placeholder={localizer.passcode} style={{...styles.input_field}} />
+                                this.setConfirmPassword(value);
+                                this.setConfirmPasswordHlght(false);
+                            }} placeholder={localizer.confirm_password}  style={{...styles.input_field}} />
                         </View>  
-
-                        <View style={{...styles.space_top_15, ...styles.direction_row, ...styles.text_left}}>
-                            <Text style={{...styles.label}}>
-                                {localizer.remember_password} {" "}
-                            </Text>
-                            <TouchableOpacity onPress={() => this.redirect_to("Login")}>
-                                <Text style={{...styles.label_hlgt}}>{localizer.login}</Text>
-                            </TouchableOpacity>
-                        </View>
 
                         <View style={{ ...styles.wrapper, ...this.state.notificationBox, ...this.state.notificationCssClass, ...styles.space_top_25}}>
                             <Text style={this.state.notificationTextCssClass}>{this.state.notificationMessage}</Text>
@@ -394,29 +378,9 @@ class ResetPasswordComponents extends Component {
                                     this.state.isPressed ?
                                     <ActivityIndicator color={styles.direct.color.white} />
                                     :
-                                   
-                                    <Text style={styles.buttonText}> 
-                                        {
-                                            ( this.state.btnText == '' ) ?
-                                            localizer.passcode_req_btn
-                                            :
-                                            this.state.btnText
-                                        }
-                                     </Text>
+                                    <Text style={styles.buttonText}>{localizer.save_new_password}</Text>
                                 } 
-                        </Button>
-
-                        <TouchableOpacity style={{...styles.space_top_10, ...styles.checkbox_container }}>
-                             
-                            <View style={{ ...styles.row, ...styles.direction_row }}>
-                                <Text style={{ ...styles.label }}>
-                                    { localizer.do_not_have_an_account }{" "}
-                                </Text>
-                                <TouchableOpacity onPress={() => navigation.navigate("Register")} style={{ ...styles.label_hlgt }}>
-                                    <Text style={{...styles.label_hlgt}}> {localizer.register}</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </TouchableOpacity>    
+                        </Button>   
 
                     </View>
 
@@ -430,4 +394,5 @@ class ResetPasswordComponents extends Component {
 }
 
 
-export { ResetPasswordComponents }
+export { ChangePasswordComponents }
+ 

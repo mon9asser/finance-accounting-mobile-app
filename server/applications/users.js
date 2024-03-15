@@ -538,4 +538,7 @@ ApplicationRouter.post("/application/passcode-verify", verify_api_keys, async (r
     
 });
 
+// subscripe api ( google api and apple store api )
+
+
 module.exports =  { ApplicationRouter };
