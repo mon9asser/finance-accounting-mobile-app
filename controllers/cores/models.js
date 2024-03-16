@@ -101,6 +101,15 @@ var Models = {
             defaultExpires: null
         })
     },
+
+    expired_at: {
+        key: "expired-at",
+        instance: new Storage({
+            size: 50,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    }
     
 };
 

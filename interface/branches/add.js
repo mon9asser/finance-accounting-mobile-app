@@ -18,9 +18,12 @@ import { LineChart } from "react-native-chart-kit";
 // App Files 
 import {config} from "./../../settings/config.js" ;
 import {styles} from "./../../controllers/styles.js"; 
-import {get_setting} from "./../../controllers/cores/settings.js";
+import {get_setting, add_last_session_form, get_last_session_form, delete_session_form} from "./../../controllers/cores/settings.js";
 import {get_lang} from './../../controllers/languages.js'; 
 
+// Controller 
+import { BranchInstance } from "./../../controllers/storage/branches.js"
+ 
 class AddNewBranchComponents extends Component {
     
     constructor(props){
@@ -34,7 +37,21 @@ class AddNewBranchComponents extends Component {
 
             default_color: "#6c5ce7",
 
-            branch_name: ""
+            branch_name: "", 
+            branch_country:"", 
+            branch_city: "", 
+            branch_address: "", 
+            branch_number: "", 
+            note: "", 
+
+            branch_name_hlgt: false, 
+
+            notificationBox: { display: 'none' },
+            notificationCssClass: {},
+            notificationTextCssClass: {},
+            notificationMessage: "",
+
+            isPressed: false,
         }
 
         this.internetState = null;
@@ -42,18 +59,50 @@ class AddNewBranchComponents extends Component {
 
     } 
 
+    setNotificationMessage = (text) => {
+        this.setState({
+            notificationMessage: text
+        })
+    }
+
+    setNotificationBox = (value) => {
+        this.setState({
+            notificationBox: {
+                display: value
+            }
+        })
+    }
+    
+    setNotificationCssClass = (cssObject) => {
+        this.setState({
+            notificationCssClass: cssObject
+        })
+    }
+
+    setNotificationCssTextClass = (cssObject) => {
+        this.setState({
+            notificationTextCssClass: cssObject
+        })
+    }
+
     setCurrentLanguage = (lang = "en") => {
         this.setState({
             current_language: lang
         })
     } 
 
+    setPressBtn = (value) => {
+        this.setState({
+            isPressed: value
+        })
+    }
+
     setLanguage = (val = "en" ) => {
 
         var lang = get_lang(val);
         I18nManager.forceRTL(lang.is_rtl);
         this.setState({
-            language: lang
+            language: {...lang.add_branch_screen, ...lang.labels}
         })
 
     }
@@ -130,7 +179,7 @@ class AddNewBranchComponents extends Component {
             headerStyle: {backgroundColor: this.state.default_color}, 
             headerTitleStyle: { color: "#fff" },
             headerTintColor: '#fff',
-            headerTitle: this.state.language.add_branch_screen.title, 
+            headerTitle: this.state.language.title, 
             // headerLeft: () => this.headerLeftComponent(), 
             // headerRight: () => this.headerRightComponent()
             
@@ -142,56 +191,185 @@ class AddNewBranchComponents extends Component {
         this.setState({
             branch_name: value
         })
+    } 
+
+    setBranchCountry (value) {
+        this.setState({
+            branch_country: value
+        })
+    } 
+
+    setBranchCity (value) {
+        this.setState({
+            branch_city: value
+        })
+    } 
+
+    setBranchNumber (value) {
+        this.setState({
+            branch_number: value
+        })
+    } 
+    
+    setBranchAddress (value) {
+        this.setState({
+            branch_address: value
+        })
+    } 
+
+    setBranchNote (value) {
+        this.setState({
+            note: value
+        })
+    }  
+
+    saveData = async () => {
+        this.setNotificationBox("none")
+        this.setPressBtn(true); 
+
+        if( this.state.isPressed ) {
+            alert(this.state.language.btn_clicked_twice);
+            return;
+        }
+
+        var obj_data = { 
+            branch_name: this.state.branch_name, 
+            branch_country: this.state.branch_country, 
+            branch_city: this.state.branch_city, 
+            branch_address: this.state.branch_address, 
+            branch_number: this.state.branch_number,  
+            note: this.state.note
+        }; 
+
+         
+
+        if ( this.state.branch_name == '') {
+            this.setPressBtn(false);
+            this.setNameHlght(true);
+            this.setNotificationBox("flex")
+            this.setNotificationCssClass(styles.error_message);
+            this.setNotificationCssTextClass(styles.error_text)
+            this.setNotificationMessage(this.state.language.branch_name_required);
+
+            return;
+        }
+
+        var response = await BranchInstance.create_update({ ...obj_data });
+        
+        // case redirect order 
+        if( response.login_redirect ) {
+            this.setPressBtn(false);
+            this.setNameHlght(true);
+            this.setNotificationBox("flex")
+            this.setNotificationCssClass(styles.error_message);
+            this.setNotificationCssTextClass(styles.error_text)
+            this.setNotificationMessage(response.message);
+
+            setTimeout(async () => {
+                
+                var add = await add_last_session_form({
+                    name: "add-new-branch",
+                    data_object: obj_data
+                });
+
+                var getter = await get_last_session_form("add-new-branch");
+                console.log(getter);
+
+                //this.props.navigation.navigate("Login");
+            }, 1500);
+            return;
+        }
+
+        // show error 
+        if( response.is_error ) {
+            this.setPressBtn(false);
+            this.setNameHlght(true);
+            this.setNotificationBox("flex")
+            this.setNotificationCssClass(styles.error_message);
+            this.setNotificationCssTextClass(styles.error_text)
+            this.setNotificationMessage(response.message);
+
+            return;
+        }
+
+        // it is saved successfully 
+        this.setPressBtn(false);
+        this.setNameHlght(true);
+        this.setNotificationBox("flex")
+        this.setNotificationCssClass(styles.success_message);
+        this.setNotificationCssTextClass(styles.success_text)
+        this.setNotificationMessage(response.message);
+        await delete_session_form();
+        setTimeout(() => {
+            this.props.navigation.navigate("Branches");
+        }, 1500);
+    }
+
+    setNameHlght = (value) => {
+        this.setState({
+            branch_name_hlgt: value
+        })
     }
 
     render() {
         
-         alert("Problem")
 
         return  (
             <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>
  
-                 <ScrollView contentContainerStyle={{...styles.container,  ...styles.min_heigh_650}}>
+                 <ScrollView contentContainerStyle={{...styles.container,  ...styles.min_heigh_680}}>
                     <KeyboardAvoidingView  style={{ ...styles.flex, ...styles.space_top_15 , ...styles.space_bottom_25 }}>
-                        <View style={{...styles.input_color_1, ...styles.space_top_15}}>
+                        <View style={{ borderColor:(this.state.branch_name_hlgt) ? 'red': '#eee', ...styles.input_color_no_border, ...styles.space_top_15}}>
                             <TextInput onChangeText={(value) => {
                                 this.setBranchName(value); 
-                            }} placeholder={this.state.language.add_branch_screen.title}  style={{...styles.input_field}} />
+                                this.setNameHlght(false);
+                            }} placeholder={this.state.language.branch_name}  style={{...styles.input_field}} />
                         </View>
                          
                         <View style={{...styles.input_color_1, ...styles.space_top_15}}>
                             <TextInput onChangeText={(value) => {
-                                this.setBranchName(value); 
-                            }} placeholder={this.state.language.add_branch_screen.title}  style={{...styles.input_field}} />
+                                this.setBranchCountry(value); 
+                            }} placeholder={this.state.language.branch_country_name}  style={{...styles.input_field}} />
                         </View>
 
                         <View style={{...styles.input_color_1, ...styles.space_top_15}}>
                             <TextInput onChangeText={(value) => {
-                                this.setBranchName(value); 
-                            }} placeholder={"Branch City Name"}  style={{...styles.input_field}} />
+                                this.setBranchCity(value); 
+                            }} placeholder={this.state.language.branch_city_name}  style={{...styles.input_field}} />
                         </View>
 
                         <View style={{...styles.input_color_1, ...styles.space_top_15}}>
                             <TextInput onChangeText={(value) => {
-                                this.setBranchName(value); 
-                            }} placeholder={"Branch Address"}  style={{...styles.input_field}} />
+                                this.setBranchAddress(value); 
+                            }} placeholder={this.state.language.branch_address_name}  style={{...styles.input_field}} />
                         </View>
 
                         <View style={{...styles.input_color_1, ...styles.space_top_15}}>
                             <TextInput onChangeText={(value) => {
-                                this.setBranchName(value); 
-                            }} placeholder={"Branch Number"}  style={{...styles.input_field}} />
+                                this.setBranchNumber(value); 
+                            }} placeholder={this.state.language.branch_number}  style={{...styles.input_field}} />
                         </View>
                         <View style={{...styles.textarea, ...styles.space_top_15 }}>
                             <TextInput multiline={true} numberOfLines={10} onChangeText={(value) => {
-                                this.setBranchName(value); 
-                            }} placeholder={"Note"}  style={{...styles.textarea_field}} />
+                                this.setBranchNote(value);  
+                            }} placeholder={this.state.language.branch_note}  style={{...styles.textarea_field}} />
                         </View>
+                        
+                        <View style={{ ...styles.wrapper, ...this.state.notificationBox, ...this.state.notificationCssClass, ...styles.space_top_25}}>
+                            <Text style={this.state.notificationTextCssClass}>{this.state.notificationMessage}</Text>
+                        </View> 
                     </KeyboardAvoidingView >
+                
+
                     <View style={{...styles.space_bottom_25}}>
-                            <Button style={{...styles.default_btn, backgroundColor:this.state.default_color }}>
-                                <Text style={{color:styles.direct.color.white, ...styles.size.medium}}>Save</Text> 
-                            </Button>
+                        <Button onPress={this.saveData} style={{...styles.default_btn, backgroundColor:this.state.default_color }}>
+                            {
+                                this.state.isPressed ?
+                                <ActivityIndicator color={styles.direct.color.white} />
+                                :
+                                <Text style={{color:styles.direct.color.white, ...styles.size.medium}}> {this.state.language.save} </Text> 
+                            }
+                        </Button>
                     </View>
                      
                  </ScrollView>

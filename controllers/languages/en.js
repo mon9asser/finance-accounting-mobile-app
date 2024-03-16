@@ -2,6 +2,11 @@ const en = {
 
         is_rtl: false,
 
+        labels: {
+                save: "Save",
+
+                btn_clicked_twice: "Please wait while the data is being saved."
+        }, 
 
         add_branch_screen: {
                 title: "Add New Branch",
@@ -10,7 +15,8 @@ const en = {
                 branch_city_name: "Branch city name",
                 branch_address_name: "Branch address",
                 branch_number: "Branch number",
-                branch_note: "Note"        
+                branch_note: "Note",
+                branch_name_required: "Branch name is required!"        
         },
 
         validate_login_access: "Please wait while we validate your login access.",

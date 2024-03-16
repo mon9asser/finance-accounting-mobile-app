@@ -197,6 +197,7 @@ class LoginComponents extends Component {
             app_name: app_name,
             language: language
         }; 
+        
         if( user_email == '' ) {
             this.setUserEmailHlght(true);
         }
@@ -345,7 +346,7 @@ class LoginComponents extends Component {
                         <View style={{borderColor:(this.state.user_email_hlght) ? 'red': '#eee', ...styles.input, ...styles.space_top_15}}>
                             <TextInput onChangeText={(value) => {
                                 this.setUserEmail(value);
-                                this.setUserEmailHlght(false)
+                                this.setUserEmailHlght(false);
                             }} placeholder={localizer.email}  style={{...styles.input_field}} />
                         </View>
 

@@ -20,6 +20,10 @@ var styles = StyleSheet.create({
         minHeight: 650 
     },
 
+    min_heigh_680: {
+        minHeight: 680 
+    },
+
     flex: {
         flex: 1
     },
@@ -172,16 +176,27 @@ var styles = StyleSheet.create({
         flex: 1
     },
 
-    input_color_1: {
-        backgroundColor:'#fff', 
-        borderColor: "#ddd",
+    input_color_no_border: {
+        backgroundColor:'#fff',  
         maxHeight: 55, 
         paddingLeft:15, 
         paddingRight:15, 
         width: '100%', 
         borderRadius: 10,  
         borderWidth: 1,   
-        flex: 1,
+        marginBottom: 5,
+        flex: 1 
+    }, 
+
+    input_color_1: {
+        backgroundColor:'#fff', 
+        borderColor: "#eee",
+        maxHeight: 55, 
+        paddingLeft:15, 
+        paddingRight:15, 
+        width: '100%', 
+        borderRadius: 10,  
+        borderWidth: 1,   
         marginBottom: 5,
         flex: 1 
     },
@@ -189,7 +204,7 @@ var styles = StyleSheet.create({
     textarea: {
         backgroundColor:'#fff',
         borderWidth: 1, 
-        borderColor: "#ddd",
+        borderColor: "#eee",
         maxHeight: 100, 
         paddingLeft:15, 
         paddingRight:15, 

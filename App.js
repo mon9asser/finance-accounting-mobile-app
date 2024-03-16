@@ -40,6 +40,7 @@ import {AppSidebarComponents}  from './interface/sidebar.js';
 import { SubscriptionComponents } from './interface/subscription.js';
 
 import { TestComponent } from "./interface/test.js";
+import { BranchesComponents } from "./interface/branches/all.js";
 
 // Functions 
 const Stack = createStackNavigator(); 
@@ -255,6 +256,7 @@ const App = () => {
               
               {/* Screen */}
               <Stack.Screen name="add-new-branch" component={AddNewBranchComponents}  />
+              <Stack.Screen name="Branches" component={BranchesComponents} />
               
             </Stack.Navigator> 
           </NavigationContainer> 

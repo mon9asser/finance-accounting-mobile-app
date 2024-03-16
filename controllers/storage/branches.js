@@ -24,7 +24,7 @@ class Branches extends A_P_I_S {
     }
 
     /** Insert and update a record */
-    create_update = async ({branch_name, branch_country, branch_city,branch_address,branch_number,user_id, note, param_id} = null ) => {
+    create_update = async ({branch_name, branch_country, branch_city,branch_address,branch_number, note, param_id} = null ) => {
        
          
         var _object =  { 
@@ -33,8 +33,7 @@ class Branches extends A_P_I_S {
             note: note == undefined? "": note ,
             branch_city: branch_city == undefined? "": branch_city ,
             branch_address: branch_address == undefined? "": branch_address ,
-            branch_number: branch_number == undefined? "": branch_number ,
-            user_id : user_id == undefined? "": user_id  
+            branch_number: branch_number == undefined? "": branch_number  
         };
 
         var param_value = null;
