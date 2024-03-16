@@ -24,11 +24,13 @@ class Branches extends A_P_I_S {
     }
 
     /** Insert and update a record */
-    create_update = async ({branch_name, branch_city,branch_address,branch_number,user_id, param_id} = null ) => {
+    create_update = async ({branch_name, branch_country, branch_city,branch_address,branch_number,user_id, note, param_id} = null ) => {
        
          
         var _object =  { 
             branch_name: branch_name == undefined? "": branch_name ,
+            branch_country: branch_country == undefined? "": branch_country ,
+            note: note == undefined? "": note ,
             branch_city: branch_city == undefined? "": branch_city ,
             branch_address: branch_address == undefined? "": branch_address ,
             branch_number: branch_number == undefined? "": branch_number ,

@@ -2,6 +2,17 @@ const en = {
 
         is_rtl: false,
 
+
+        add_branch_screen: {
+                title: "Add New Branch",
+                branch_name: "Branch name",
+                branch_country_name: "Branch country name",
+                branch_city_name: "Branch city name",
+                branch_address_name: "Branch address",
+                branch_number: "Branch number",
+                branch_note: "Note"        
+        },
+
         validate_login_access: "Please wait while we validate your login access.",
         required_inputs: "Please make sure that you have filled in all the required information.",
         invalid_email: "You have entered an invalid email address.",

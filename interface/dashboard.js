@@ -22,7 +22,7 @@ import {get_setting} from "./../controllers/cores/settings.js";
 import {get_lang} from './../controllers/languages.js'; 
 // import {add_session, get_session, delete_session } from './../controllers/storage.js'
 
- 
+
 
 class DashboardComponents extends Component {
     
@@ -306,210 +306,28 @@ class DashboardComponents extends Component {
                     <View style={{...styles.flex, ...styles.space_5_left, ...styles.space_5_right}}>
 
                         <View style={{...styles.flex, ...styles.direction_row}}>
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-branch")} style={{backgroundColor: "#6c5ce7", ...styles.dashboard_cols}}>
                                 <View style={{...styles.space_bottom_10}}>
                                     <Image 
-                                        source={require('./../assets/icons/users.png')}
+                                        source={require("./../assets/icons/add-new-branch.png")}
                                         style={{...styles.intenet_connection_icon}}
                                         resizeMode="cover"
                                     />
                                 </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Branch</Text>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add New Branch</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
+                            <TouchableOpacity style={{backgroundColor: "#e17055", ...styles.dashboard_cols}}>
                                 <View style={{...styles.space_bottom_10}}>
                                     <Image 
-                                        source={require('./../assets/icons/users.png')}
+                                        source={require("./../assets/icons/add-new-prdouct.png")}
                                         style={{...styles.intenet_connection_icon}}
                                         resizeMode="cover"
                                     />
                                 </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Product </Text>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add New Product </Text>
                             </TouchableOpacity>
-                        </View> 
-
-
-                        <View style={{...styles.flex, ...styles.direction_row}}>
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
-                                <View style={{...styles.space_bottom_10}}>
-                                    <Image 
-                                        source={require('./../assets/icons/users.png')}
-                                        style={{...styles.intenet_connection_icon}}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Sales Invoice</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
-                                <View style={{...styles.space_bottom_10}}>
-                                    <Image 
-                                        source={require('./../assets/icons/users.png')}
-                                        style={{...styles.intenet_connection_icon}}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Purchase Invoice </Text>
-                            </TouchableOpacity>
-                        </View> 
-
-
-
-                        <View style={{...styles.flex, ...styles.direction_row}}>
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
-                                <View style={{...styles.space_bottom_10}}>
-                                    <Image 
-                                        source={require('./../assets/icons/users.png')}
-                                        style={{...styles.intenet_connection_icon}}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Purchase Return Invoice</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
-                                <View style={{...styles.space_bottom_10}}>
-                                    <Image 
-                                        source={require('./../assets/icons/users.png')}
-                                        style={{...styles.intenet_connection_icon}}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Sales Return Invoice </Text>
-                            </TouchableOpacity>
-                        </View> 
-
-
-
-                        <View style={{...styles.flex, ...styles.direction_row}}>
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
-                                <View style={{...styles.space_bottom_10}}>
-                                    <Image 
-                                        source={require('./../assets/icons/users.png')}
-                                        style={{...styles.intenet_connection_icon}}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Balance</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
-                                <View style={{...styles.space_bottom_10}}>
-                                    <Image 
-                                        source={require('./../assets/icons/users.png')}
-                                        style={{...styles.intenet_connection_icon}}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Add New Customer</Text>
-                            </TouchableOpacity>
-                        </View> 
-
-
-
-                        <View style={{...styles.flex, ...styles.direction_row}}>
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
-                                <View style={{...styles.space_bottom_10}}>
-                                    <Image 
-                                        source={require('./../assets/icons/users.png')}
-                                        style={{...styles.intenet_connection_icon}}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Add New Supplier</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
-                                <View style={{...styles.space_bottom_10}}>
-                                    <Image 
-                                        source={require('./../assets/icons/users.png')}
-                                        style={{...styles.intenet_connection_icon}}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Add New Expense</Text>
-                            </TouchableOpacity>
-                        </View> 
-
-
-
-                        <View style={{...styles.flex, ...styles.direction_row}}>
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
-                                <View style={{...styles.space_bottom_10}}>
-                                    <Image 
-                                        source={require('./../assets/icons/users.png')}
-                                        style={{...styles.intenet_connection_icon}}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Branch</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
-                                <View style={{...styles.space_bottom_10}}>
-                                    <Image 
-                                        source={require('./../assets/icons/users.png')}
-                                        style={{...styles.intenet_connection_icon}}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Category </Text>
-                            </TouchableOpacity>
-                        </View> 
-
-
-
-                        <View style={{...styles.flex, ...styles.direction_row}}>
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
-                                <View style={{...styles.space_bottom_10}}>
-                                    <Image 
-                                        source={require('./../assets/icons/users.png')}
-                                        style={{...styles.intenet_connection_icon}}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Branch</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
-                                <View style={{...styles.space_bottom_10}}>
-                                    <Image 
-                                        source={require('./../assets/icons/users.png')}
-                                        style={{...styles.intenet_connection_icon}}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Category </Text>
-                            </TouchableOpacity>
-                        </View> 
-
-
-
-                        <View style={{...styles.flex, ...styles.direction_row}}>
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
-                                <View style={{...styles.space_bottom_10}}>
-                                    <Image 
-                                        source={require('./../assets/icons/users.png')}
-                                        style={{...styles.intenet_connection_icon}}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Branch</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{backgroundColor: "tomato", ...styles.dashboard_cols}}>
-                                <View style={{...styles.space_bottom_10}}>
-                                    <Image 
-                                        source={require('./../assets/icons/users.png')}
-                                        style={{...styles.intenet_connection_icon}}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Category </Text>
-                            </TouchableOpacity>
-                        </View> 
-
+                        </View>   
                     </View>
                      
 

@@ -13,12 +13,22 @@ var styles = StyleSheet.create({
         white: { color: "#fff" }
     },
 
+    min_heigh_500: {
+        minHeight: 500 
+    },
+    min_heigh_650: {
+        minHeight: 650 
+    },
+
     flex: {
         flex: 1
     },
 
     direction_row: {
         flexDirection: 'row'
+    },
+    direction_col: {
+        flexDirection: 'column' 
     },
     
     conten_center: {
@@ -48,6 +58,21 @@ var styles = StyleSheet.create({
     bold: {
         fontWeight: "bold"
     }, 
+    
+    size: {
+        small: {
+            fontSize: 14
+        }, 
+    
+        medium: {
+            fontSize: 16
+        },
+
+        large: {
+            fontSize: 18
+        },
+    },
+
     absolute: {
         position: "absolute"
     },
@@ -143,10 +168,38 @@ var styles = StyleSheet.create({
         paddingRight:15, 
         width: '100%', 
         borderRadius: 10,  
-        borderWidth: 1,  
-        backgroundColor: '#f1f1f1',
+        borderWidth: 1,   
         flex: 1
     },
+
+    input_color_1: {
+        backgroundColor:'#fff', 
+        borderColor: "#ddd",
+        maxHeight: 55, 
+        paddingLeft:15, 
+        paddingRight:15, 
+        width: '100%', 
+        borderRadius: 10,  
+        borderWidth: 1,   
+        flex: 1,
+        marginBottom: 5,
+        flex: 1 
+    },
+
+    textarea: {
+        backgroundColor:'#fff',
+        borderWidth: 1, 
+        borderColor: "#ddd",
+        maxHeight: 100, 
+        paddingLeft:15, 
+        paddingRight:15, 
+        width: '100%', 
+        borderRadius: 10,  
+        borderWidth: 1,   
+        flex: 1,
+        marginBottom: 5,
+        flex: 1 
+    }, 
 
     input_field: {
         textAlign: I18nManager.isRTL ? 'right' : 'left',
@@ -154,6 +207,16 @@ var styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         height: '100%' 
+    },
+
+    textarea_field: {
+        textAlign: I18nManager.isRTL ? 'right' : 'left',  
+        height: "100%", // Set height
+        justifyContent: "flex-start", 
+        paddingTop: 15,
+        width: '100%', // Full width
+        textAlignVertical: 'top', // Align text to top
+        borderRadius: 5, // Optional: if you want rounded corners
     },
 
     checkbox_container: {
@@ -256,6 +319,12 @@ var styles = StyleSheet.create({
         textAlign:"center"
     },
 
+    default_btn: {
+        width: '100%', 
+        padding: 5, 
+        borderRadius: 5
+    },
+
     primary_button: {
         width: '100%', 
         padding: 3, 
@@ -287,11 +356,11 @@ var styles = StyleSheet.create({
         borderRadius: 10
     },
     sidebar_header: {
-        flex: 1, 
+        marginTop: 50, 
         flexDirection: 'row', 
         alignItems: 'center', 
-        gap: 30, 
-        marginBottom: 20
+        gap: 20, 
+        marginBottom: 10
     },
     chart_container: {  
 
@@ -308,16 +377,22 @@ var styles = StyleSheet.create({
     },
     capacity_number: {
         color: "#666", 
-        fontSize: 35, 
+        fontSize: 25, 
         marginBottom: 2, 
         fontWeight: 'bold'
     },
-
+    sidebar_list_container : {
+        width: "100%", 
+        marginTop: 25,
+        paddingLeft: 25,
+        paddingRight: 25
+    },
     sidebar_nav_item:  {
         borderTopColor: "#eee", 
         borderTopWidth: 1, 
         marginTop: 10, 
-        paddingTop: 10
+        paddingTop: 10, 
+        width:'100%', 
     },
     internet_state_box: {
         backgroundColor: 'tomato', 
@@ -329,8 +404,9 @@ var styles = StyleSheet.create({
         padding: 16
     },
     intenet_connection_icon: {
-        width: 35,
-        height: 35
+        width: 45,
+        height: 45,
+        marginBottom: 1
     },
     intenet_connection_text: {
         width: '100%',

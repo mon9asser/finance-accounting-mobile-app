@@ -67,10 +67,11 @@ var allSchema = {
 
     branches: {
         branch_name: { type: String, default: ""},
+        branch_country: { type: String, default: ""},
         branch_city: { type: String, default: ""},
         branch_address: { type: String, default: ""},
-        branch_number: { type: String, default: ""},
-        user_id: { type: String, default: ""},
+        branch_number: { type: String, default: ""}, 
+        note: { type: String, default: ""}, 
         ...default_properties,
     }, 
 
