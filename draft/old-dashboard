@@ -22,10 +22,20 @@ import {get_setting} from "./../controllers/cores/settings.js";
 import {get_lang} from './../controllers/languages.js'; 
 // import {add_session, get_session, delete_session } from './../controllers/storage.js'
 
+
+// apis 
+import {products} from "./../controllers/storage/products.js";
+
  
+}
+
+/*products.test(function(data){
+    console.log(data);
+});*/
+
 
 class DashboardComponents extends Component {
-    
+
     constructor(props){
         
         super(props);
@@ -40,8 +50,8 @@ class DashboardComponents extends Component {
         this.internetState = null;
         this.internetStateBox = new Animated.Value(0);
 
-    } 
-
+    }
+    
     setCurrentLanguage = (lang = "en") => {
         this.setState({
             current_language: lang
@@ -124,7 +134,7 @@ class DashboardComponents extends Component {
 
     headerLeftComponent = () => (
         <View style={{...styles.space_15_left}}>
-            <TouchableOpacity onPress={() => this.props.navigation.openDrawer()}>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate("Sidebar")}>
                 <Image
                     source={require('./../assets/icons/burger-icon.png')}
                     style={styles.header_icon}
@@ -250,9 +260,10 @@ class DashboardComponents extends Component {
         this.setChartContainerWidth(width);
 
     }
-     
+
+    /*{this.AnimatedBoxforInternetWarning()}*/
     render = () => { 
- 
+
         const chart_by = ["Weekly", "Monthly", "Yearly"];
 
 
@@ -518,8 +529,8 @@ class DashboardComponents extends Component {
                 {this.AnimatedBoxforInternetWarning()}  
 
                 
-           </SafeAreaView> );    
-        
+           </SafeAreaView>
+        )
     }
 
 }
