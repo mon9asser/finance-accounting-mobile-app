@@ -352,8 +352,8 @@ var styles = StyleSheet.create({
     },
 
     header_icon_md: {
-        width: 20,
-        height: 20 
+        width: 25,
+        height: 25 
     },
 
     unread_notification: {

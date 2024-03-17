@@ -246,6 +246,9 @@ var DrawerDashboardComponents = () => {
 
 const App = () => {
    
+    var [language, setLanguage] = useState({});
+    localization().then(res => setLanguage(res));
+
     return (
         <SafeAreaView style={styles.flex}>
           <NavigationContainer> 
@@ -255,9 +258,9 @@ const App = () => {
               <Stack.Screen name="MainPage" options={{ headerShown: false }}   component={DrawerDashboardComponents}  />
               
               {/* Screen */}
-              <Stack.Screen name="add-new-branch"  component={AddNewBranchComponents}  />
+              <Stack.Screen name="add-new-branch"  component={AddNewBranchComponents} initialParams={{ langs: language }} />
               
-              <Stack.Screen name="Branches" component={BranchesComponents} />
+              <Stack.Screen name="Branches" component={BranchesComponents} initialParams={{ langs: language }}/>
               <Stack.Screen name="Login" component={LoginComponents} />
               
             </Stack.Navigator> 

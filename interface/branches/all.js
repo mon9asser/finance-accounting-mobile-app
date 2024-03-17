@@ -2,6 +2,7 @@
 // Default
 import React, { Component } from "react";
 import NetInfo from '@react-native-community/netinfo';
+// import Device from 'react-native-device-info';
 import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';  
 
@@ -81,15 +82,24 @@ class BranchesComponents extends Component {
         })
     }
  
-    setLanguage = (val = "en" ) => {
+    setLanguage = ( lang ) => {
 
-        var lang = get_lang(val);
         I18nManager.forceRTL(lang.is_rtl);
         this.setState({
             language: {...lang.branches_screen, ...lang.labels}
-        })
+        });
 
     }
+
+     // Setup Language
+     setup_params = () => {
+
+        // var {language}  = await get_setting(); 
+        // this.setCurrentLanguage(language); 
+        this.setLanguage(this.props.route.params.langs); 
+        
+    }
+
 
     setCurrentLanguage = (lang = "en") => {
         this.setState({
@@ -123,7 +133,7 @@ class BranchesComponents extends Component {
     componentDidMount = async () => {
          
         // setup language
-        await this.setupLanguage();
+        await this.setup_params();
 
         // internet connection status
         this.internetConnectionStatus();
@@ -168,21 +178,74 @@ class BranchesComponents extends Component {
             headerTintColor: '#fff',
             headerTitle: this.state.language.title, 
             // headerLeft: () => this.headerLeftComponent(), 
-            // headerRight: () => this.headerRightComponent()
+            headerRight: () => this.headerRightComponent()
             
         }) 
 
     }
 
+    headerRightComponent = () => {
+        return (
+            <View style={{...styles.space_15_right}}>
+                <TouchableOpacity style={{...styles.flex, ...styles.direction_row, ...styles.item_center}} onPress={() => this.props.navigation.navigate("add-new-branch")}>
+                    <Image
+                        source={require('./../../assets/icons/add-new-btn-white.png')}
+                        style={styles.header_icon_md}
+                        resizeMode="cover"
+                    /> 
+                   
+                </TouchableOpacity>
+            </View>
+        );
+    }
 
+    Item = () => {
+        
+        return (
+           <View style={{ ...styles.container_fluid, ...styles.direction_col, ...styles.gap_15, ...styles.container_scroll}}>
+                 <TouchableOpacity onPress={() => this.selectThisItem(key)}  style={{borderWidth: 1, gap: 15, marginBottom: 20, padding: 15, flexDirection: "row", borderColor: ( false? "red" : "#dfdfdf"), backgroundColor: ( false? "#ffe9e9" : "transparent"), borderRadius: 10}}>
+                     
+                    <View style={{flexDirection: 'column', height: 100, justifyContent: 'center',  flex: 1}}>
+                        <View style={{flex: 1}}>
+                            <Text style={{fontSize: 18, fontWeight: "bold"}}>
+                                Teppanyaki Sushi
+                            </Text> 
+                        </View>
 
-    render = () => {
-         
+                        <View style={{flex: 1}}>
+                            <Text style={{color:"grey"}}>
+                                Sales: 12,500
+                            </Text> 
+                        </View>
+                        <View style={{flex: 1, flexDirection:'row', justifyContent: 'space-between'}}>
+                            <Text style={{color:"grey", marginTop: 5, flexShrink: 0}}>
+                            Tel: 0544040915
+                            </Text>
+                            <View style={{...styles.direction_row, ...styles.gap_15}}>
+                                <TouchableOpacity  onPress={() => this.editThisItem(55)}>
+                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>
+                                        View Details
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity  onPress={() => this.editThisItem(55)}>
+                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>
+                                        Edit
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        
+                    </View>
+                </TouchableOpacity>
+           </View>
+        );
+
+    }
+
+    render (){ 
         return (
             <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>
-                <View>
-                    <Text>Data</Text>
-                </View>
+                <this.Item /> 
             </SafeAreaView>
         );
     }

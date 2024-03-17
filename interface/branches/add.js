@@ -61,6 +61,13 @@ class AddNewBranchComponents extends Component {
 
     } 
 
+    setColorDefault = (value) => {
+         
+        this.setState({
+            default_color: value
+        })
+    }
+
     setNotificationMessage = (text) => {
         this.setState({
             notificationMessage: text
@@ -99,22 +106,23 @@ class AddNewBranchComponents extends Component {
         })
     }
 
-    setLanguage = (val = "en" ) => {
-
-        var lang = get_lang(val);
+    setLanguage = (lang ) => {
+ 
         I18nManager.forceRTL(lang.is_rtl);
         this.setState({
             language: {...lang.add_branch_screen, ...lang.labels}
-        })
+        });
 
     }
     
     
     // Setup Language
-    setupLanguage = async() => {
-        var {language}  = await get_setting(); 
-        this.setCurrentLanguage(language);
-        this.setLanguage(language);
+    setup_params = () => {
+
+        // var {language}  = await get_setting(); 
+        // this.setCurrentLanguage(language); 
+        this.setLanguage(this.props.route.params.langs); 
+        
     }
 
     // internet connection
@@ -155,7 +163,7 @@ class AddNewBranchComponents extends Component {
     componentDidMount = async () => {
          
         // setup language
-        await this.setupLanguage();
+        this.setup_params();
 
         // internet connection status
         this.internetConnectionStatus();
@@ -193,8 +201,7 @@ class AddNewBranchComponents extends Component {
             </Animated.View>
     )
 
-    screen_options = () => {
-        
+    screen_options = () => { 
         // Screen Options 
         this.props.navigation.setOptions({
 
@@ -347,6 +354,8 @@ class AddNewBranchComponents extends Component {
     render() {
         
 
+         
+
         return  (
             <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>
  
@@ -422,7 +431,7 @@ class AddNewBranchComponents extends Component {
                 
 
                     <View style={{...styles.space_bottom_25}}>
-                        <Button onPress={this.saveData} style={{...styles.default_btn, backgroundColor:this.state.default_color }}>
+                        <Button onPress={this.saveData} style={{...styles.default_btn, backgroundColor: this.state.default_color }}>
                             {
                                 this.state.isPressed ?
                                 <ActivityIndicator color={styles.direct.color.white} />
