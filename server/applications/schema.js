@@ -93,6 +93,7 @@ var allSchema = {
     balances: {
         total_balance: { type: String, default: ""},
         payment_type_local_id: { type: String, default: ""},
+        branch_local_id: { type: String, default: ""},
         ...default_properties,
     },
 

@@ -96,19 +96,20 @@ var add_last_session_form = async({name, data_object} = null) => {
 }
 
 
-var get_last_session_form = async(name) => {
+var get_last_session_form = async( object_property ) => {
 
     try {
 
         var form_data = await Models.expired_at.instance.load({
             key: Models.expired_at.key
         });
+ 
 
-        if( ! Object.key(form_data).length || form_data[name] == undefined ) {
+        if( ! Object.keys(form_data).length || form_data.name == undefined || form_data.name != object_property ) {
             return null; 
         }
         
-        return form_data[name]; 
+        return form_data.data_object; 
 
     } catch (error) {
         return null;

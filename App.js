@@ -255,8 +255,10 @@ const App = () => {
               <Stack.Screen name="MainPage" options={{ headerShown: false }}   component={DrawerDashboardComponents}  />
               
               {/* Screen */}
-              <Stack.Screen name="add-new-branch" component={AddNewBranchComponents}  />
+              <Stack.Screen name="add-new-branch"  component={AddNewBranchComponents}  />
+              
               <Stack.Screen name="Branches" component={BranchesComponents} />
+              <Stack.Screen name="Login" component={LoginComponents} />
               
             </Stack.Navigator> 
           </NavigationContainer> 

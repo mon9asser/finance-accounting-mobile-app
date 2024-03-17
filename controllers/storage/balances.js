@@ -26,11 +26,12 @@ class Balances extends A_P_I_S {
     }
 
     /** Insert and update a record */
-    create_update = async ({total_balance, payment_type_local_id, param_id} = null ) => {
+    create_update = async ({total_balance, payment_type_local_id, branch_local_id, param_id} = null ) => {
        
          
         var _object =  {
             total_balance: total_balance == undefined? "": total_balance ,
+            branch_local_id: branch_local_id == undefined? "": branch_local_id, 
             payment_type_local_id: payment_type_local_id == undefined? "": payment_type_local_id 
         };
 

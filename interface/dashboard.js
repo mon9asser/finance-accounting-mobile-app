@@ -257,7 +257,7 @@ class DashboardComponents extends Component {
 
 
         return (
-           <SafeAreaView style={{...styles.container_fluid}}>
+           <SafeAreaView style={{...styles.container_fluid, backgroundColor: "#fff"}}>
 
                 <ScrollView>
                     
@@ -302,6 +302,7 @@ class DashboardComponents extends Component {
                         </View>
 
                     </View>
+                    
 
                     <View style={{...styles.flex, ...styles.space_5_left, ...styles.space_5_right}}>
 
@@ -315,7 +316,7 @@ class DashboardComponents extends Component {
                                     />
                                 </View>
                                 <Text style={{...styles.bold, ...styles.colors.white}}>Add New Branch</Text>
-                            </TouchableOpacity>
+                            </TouchableOpacity> 
 
                             <TouchableOpacity style={{backgroundColor: "#e17055", ...styles.dashboard_cols}}>
                                 <View style={{...styles.space_bottom_10}}>
@@ -327,7 +328,35 @@ class DashboardComponents extends Component {
                                 </View>
                                 <Text style={{...styles.bold, ...styles.colors.white}}>Add New Product </Text>
                             </TouchableOpacity>
+                            
                         </View>   
+
+
+                        <View style={{...styles.flex, ...styles.direction_row}}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Branches")} style={{backgroundColor: "#6c5ce7", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require("./../assets/icons/add-new-branch.png")}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Branches</Text>
+                            </TouchableOpacity> 
+
+                            <TouchableOpacity style={{backgroundColor: "#e17055", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require("./../assets/icons/add-new-prdouct.png")}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add New Product </Text>
+                            </TouchableOpacity>
+                            
+                        </View>
+
                     </View>
                      
 

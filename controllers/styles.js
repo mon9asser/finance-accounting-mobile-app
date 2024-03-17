@@ -431,18 +431,20 @@ var styles = StyleSheet.create({
         overflow: "hidden",
         flexShrink: 1
     },
-    dashboard_banner: {
-        backgroundColor: "#fff", 
+    dashboard_banner: { 
         marginLeft: 15, 
         marginRight: 15, 
         width:Dimensions.get("window").width - 30, 
         paddingBottom: 10, 
         paddingTop: 30, 
-        paddingLeft: 10, 
-        paddingRight: 10, 
+        paddingLeft: 5, 
+        paddingRight: 5, 
         borderRadius: 15, 
         marginTop:30, 
-        marginBottom:20
+        marginBottom:30,
+
+        borderWidth: 5, 
+        borderColor: "#eee",  
     }
 
 });

@@ -8,6 +8,10 @@ const en = {
                 btn_clicked_twice: "Please wait while the data is being saved."
         }, 
 
+        branches_screen: {
+                title: "Branches"
+        },
+
         add_branch_screen: {
                 title: "Add New Branch",
                 branch_name: "Branch name",

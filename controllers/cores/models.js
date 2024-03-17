@@ -113,4 +113,4 @@ var Models = {
     
 };
 
-module.exports = {Models};
+export {Models};

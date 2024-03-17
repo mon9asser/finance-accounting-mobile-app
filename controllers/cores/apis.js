@@ -19,12 +19,17 @@ class A_P_I_S {
     
     // HTTP Request 
     axiosRequest = async ({ api, dataObject, method, headers, model_name } = null) => {
-       /*
-        return {
-            is_error: true, 
-            data: [], 
-            message: ""
-        }; */
+        
+        // disable internet 
+        if( ! config.enable_remote_server_apis ) {
+
+            return {
+                is_error: true, 
+                data: [], 
+                message: ""
+            };  
+        
+        }
         
         var settings, user_data;
         try{

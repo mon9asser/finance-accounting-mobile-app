@@ -23,7 +23,9 @@ import {get_lang} from './../../controllers/languages.js';
 
 // Controller 
 import { BranchInstance } from "./../../controllers/storage/branches.js"
- 
+import { usr } from "../../controllers/storage/user.js";
+
+
 class AddNewBranchComponents extends Component {
     
     constructor(props){
@@ -133,6 +135,23 @@ class AddNewBranchComponents extends Component {
         }
     }
 
+    restore_data_to_fields = async () => {
+
+
+        var session_ = await get_last_session_form("add-new-branch"); 
+        if( session_ == null ) {
+            return; 
+        }
+
+        this.setBranchName(session_.branch_name);
+        this.setBranchCountry(session_.branch_country);
+        this.setBranchCity(session_.branch_city);
+        this.setBranchAddress(session_.branch_address);
+        this.setBranchNumber(session_.branch_number);
+        this.setBranchNote(session_.note);
+
+    }
+
     componentDidMount = async () => {
          
         // setup language
@@ -143,6 +162,9 @@ class AddNewBranchComponents extends Component {
 
         // Apply screen and header options 
         this.screen_options(); 
+
+        // add data to fields if session already expired before 
+        this.restore_data_to_fields();
 
     }
     
@@ -223,14 +245,22 @@ class AddNewBranchComponents extends Component {
         })
     }  
 
+    deleteSession = async () => {
+        await usr.delete_session();
+    }
+
     saveData = async () => {
+
         this.setNotificationBox("none")
         this.setPressBtn(true); 
+        
 
         if( this.state.isPressed ) {
             alert(this.state.language.btn_clicked_twice);
             return;
         }
+
+        await delete_session_form();
 
         var obj_data = { 
             branch_name: this.state.branch_name, 
@@ -259,7 +289,7 @@ class AddNewBranchComponents extends Component {
         // case redirect order 
         if( response.login_redirect ) {
             this.setPressBtn(false);
-            this.setNameHlght(true);
+            
             this.setNotificationBox("flex")
             this.setNotificationCssClass(styles.error_message);
             this.setNotificationCssTextClass(styles.error_text)
@@ -272,18 +302,14 @@ class AddNewBranchComponents extends Component {
                     data_object: obj_data
                 });
 
-                var getter = await get_last_session_form("add-new-branch");
-                console.log(getter);
-
-                //this.props.navigation.navigate("Login");
+                this.props.navigation.navigate("Login", { redirect_to: "add-new-branch" });
             }, 1500);
             return;
         }
 
         // show error 
         if( response.is_error ) {
-            this.setPressBtn(false);
-            this.setNameHlght(true);
+            this.setPressBtn(false); 
             this.setNotificationBox("flex")
             this.setNotificationCssClass(styles.error_message);
             this.setNotificationCssTextClass(styles.error_text)
@@ -293,14 +319,21 @@ class AddNewBranchComponents extends Component {
         }
 
         // it is saved successfully 
-        this.setPressBtn(false);
-        this.setNameHlght(true);
+        this.setPressBtn(false); 
         this.setNotificationBox("flex")
         this.setNotificationCssClass(styles.success_message);
         this.setNotificationCssTextClass(styles.success_text)
         this.setNotificationMessage(response.message);
         await delete_session_form();
+
         setTimeout(() => {
+            this.setBranchName("");
+            this.setBranchCountry("");
+            this.setBranchCity("");
+            this.setBranchAddress("");
+            this.setBranchNumber("");
+            this.setBranchNote("");
+
             this.props.navigation.navigate("Branches");
         }, 1500);
     }
@@ -320,39 +353,66 @@ class AddNewBranchComponents extends Component {
                  <ScrollView contentContainerStyle={{...styles.container,  ...styles.min_heigh_680}}>
                     <KeyboardAvoidingView  style={{ ...styles.flex, ...styles.space_top_15 , ...styles.space_bottom_25 }}>
                         <View style={{ borderColor:(this.state.branch_name_hlgt) ? 'red': '#eee', ...styles.input_color_no_border, ...styles.space_top_15}}>
-                            <TextInput onChangeText={(value) => {
+                            <TextInput 
+                            onChangeText={(value) => {
                                 this.setBranchName(value); 
                                 this.setNameHlght(false);
-                            }} placeholder={this.state.language.branch_name}  style={{...styles.input_field}} />
+                            }} 
+                            value={this.state.branch_name}
+                            placeholder={this.state.language.branch_name}  
+                            style={{...styles.input_field}} />
                         </View>
                          
                         <View style={{...styles.input_color_1, ...styles.space_top_15}}>
-                            <TextInput onChangeText={(value) => {
+                            <TextInput 
+                            onChangeText={async (value) => {
                                 this.setBranchCountry(value); 
-                            }} placeholder={this.state.language.branch_country_name}  style={{...styles.input_field}} />
+                                //await this.deleteSession();
+                            }} 
+                            value={this.state.branch_country}
+                            placeholder={this.state.language.branch_country_name}  
+                            style={{...styles.input_field}} />
                         </View>
 
                         <View style={{...styles.input_color_1, ...styles.space_top_15}}>
-                            <TextInput onChangeText={(value) => {
+                            <TextInput 
+                            onChangeText={(value) => {
                                 this.setBranchCity(value); 
-                            }} placeholder={this.state.language.branch_city_name}  style={{...styles.input_field}} />
+                            }} 
+                            value={this.state.branch_city}
+                            placeholder={this.state.language.branch_city_name}  
+                            style={{...styles.input_field}} />
                         </View>
 
                         <View style={{...styles.input_color_1, ...styles.space_top_15}}>
-                            <TextInput onChangeText={(value) => {
+                            <TextInput 
+                            onChangeText={(value) => {
                                 this.setBranchAddress(value); 
-                            }} placeholder={this.state.language.branch_address_name}  style={{...styles.input_field}} />
+                            }} 
+                            value={this.state.branch_address}
+                            placeholder={this.state.language.branch_address_name}  
+                            style={{...styles.input_field}} />
                         </View>
 
                         <View style={{...styles.input_color_1, ...styles.space_top_15}}>
-                            <TextInput onChangeText={(value) => {
+                            <TextInput 
+                            onChangeText={(value) => {
                                 this.setBranchNumber(value); 
-                            }} placeholder={this.state.language.branch_number}  style={{...styles.input_field}} />
+                            }} 
+                            value={this.state.branch_number}
+                            placeholder={this.state.language.branch_number}  
+                            style={{...styles.input_field}} />
                         </View>
                         <View style={{...styles.textarea, ...styles.space_top_15 }}>
-                            <TextInput multiline={true} numberOfLines={10} onChangeText={(value) => {
+                            <TextInput 
+                            multiline={true} 
+                            numberOfLines={10} 
+                            onChangeText={(value) => {
                                 this.setBranchNote(value);  
-                            }} placeholder={this.state.language.branch_note}  style={{...styles.textarea_field}} />
+                            }} 
+                            value={this.state.note}
+                            placeholder={this.state.language.branch_note}  
+                            style={{...styles.textarea_field}} />
                         </View>
                         
                         <View style={{ ...styles.wrapper, ...this.state.notificationBox, ...this.state.notificationCssClass, ...styles.space_top_25}}>

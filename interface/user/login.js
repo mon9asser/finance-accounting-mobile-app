@@ -301,9 +301,19 @@ class LoginComponents extends Component {
                     this.setNotificationMessage(this.state.language.successful_login); 
                 }
 
+                
+                
+
                 // transfer use to dashboard screen after 5 seconds
                 setTimeout(() => {
+                    
                     this.setNotificationBox("none");
+
+                    if( this.props.route.params.redirect_to !== undefined ) {
+                        this.redirect_to(this.props.route.params.redirect_to);
+                        return;
+                    }
+
                     this.redirect_to('Dashboard'); 
                 }, 500);
 
@@ -331,7 +341,7 @@ class LoginComponents extends Component {
 
         var { navigation } = this.props;
         var localizer  = this.state.language; 
-
+         
         return (
             <SafeAreaView style={styles.screens}>
                 <View style={styles.container}>
