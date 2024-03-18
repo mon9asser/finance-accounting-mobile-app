@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 
 var config = {
     
-    enable_remote_server_apis: true, 
+    enable_remote_server_apis: true,  
     application: {
         name: 'next_daily_sales',
         platform: Platform.OS,

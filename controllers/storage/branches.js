@@ -19,7 +19,7 @@ class Branches extends A_P_I_S {
     constructor(props) {
 
         super(props); 
-        this.Schema =  Models.customers;
+        this.Schema =  Models.branches;
 
     }
 

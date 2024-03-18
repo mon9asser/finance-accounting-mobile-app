@@ -9,8 +9,7 @@ import axios from 'axios';
 // Distruct 
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';   
+
 import { Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
 import { Button, Checkbox } from "react-native-paper"; 
 import { LineChart } from "react-native-chart-kit";
@@ -342,7 +341,7 @@ class AddNewBranchComponents extends Component {
             this.setBranchNote("");
 
             this.props.navigation.navigate("Branches");
-        }, 1500);
+        }, 3000);
     }
 
     setNameHlght = (value) => {

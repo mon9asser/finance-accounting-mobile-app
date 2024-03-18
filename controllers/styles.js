@@ -203,16 +203,72 @@ var styles = StyleSheet.create({
         paddingLeft:15, 
         paddingRight:15,  
         borderRadius: 10,  
-        borderWidth: 1,   
-        marginBottom: 5, 
+        borderWidth: 1,    
         flex: 1 , 
         flexDirection: "row",  
-        width: "100%"
+        width: "100%", 
     }, 
     space_left_right: {
         marginLeft: 15,
         marginRight: 15
     },
+    delete_btn_outlined: {
+        container: {
+            borderColor:'#fe6464',
+            borderWidth: 1,
+            borderRadius: 8,
+            flex: 1,  
+           justifyContent: "center"
+        },
+        text: {
+            color: '#fe6464',
+            fontSize: 14, 
+            fontWeight: 'bold'
+        }
+    },
+
+    delete_btn_bg: {
+        container: {
+            backgroundColor:'#fe6464',
+            borderRadius: 8,
+            flex: 1,  
+           justifyContent: "center"
+        },
+        text: {
+            color: '#fff',
+            fontSize: 16, 
+            fontWeight: 'bold'
+        }
+    },   
+
+    add_btn_outlined: {
+        container: {
+            borderColor:'#399872',
+            borderRadius: 8,
+            borderWidth: 1,
+            flex: 1,  
+           justifyContent: "center"
+        },
+        text: {
+            color: '#399872',
+            fontSize: 14, 
+            fontWeight: 'bold'
+        }
+    },
+
+    add_btn_bg: {
+        container: {
+            backgroundColor:'#399872',
+            borderRadius: 8,
+            flex: 1,  
+           justifyContent: "center"
+        },
+        text: {
+            color: '#fff',
+            fontSize: 14, 
+            fontWeight: 'bold'
+        }
+    },    
 
     input_color_1: {
         backgroundColor:'#fff', 

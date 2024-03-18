@@ -10,10 +10,11 @@ import axios from 'axios';
 // Distruct 
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';   
-import { Button, Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
-import { Checkbox } from "react-native-paper"; 
+import { NavigationEvents  } from '@react-navigation/native';   
+
+import { FlatList,TouchableHighlight, Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
+import { Checkbox, Button, Provider as PaperProvider, DefaultTheme } from "react-native-paper"; 
+ 
 import { LineChart } from "react-native-chart-kit";
 
 // App Files 
@@ -45,6 +46,9 @@ class BranchesComponents extends Component {
             notificationMessage: "",
 
             isPressed: false,
+            select_all: false, 
+
+            loaded_for_first_time: false, 
 
             // scroll load new data 
             branches: [],
@@ -56,6 +60,20 @@ class BranchesComponents extends Component {
         this.internetStateBox = new Animated.Value(0);
 
     } 
+
+    setDataLoaded = (value) => {
+        this.setState({
+            loaded_for_first_time: value
+        })
+    }
+
+    setCheckOnBox = () => {
+         
+        this.setState({
+            select_all: ! this.state.select_all
+        });
+        
+    }
 
     setBranches = (value) => {
         this.setState({
@@ -130,6 +148,29 @@ class BranchesComponents extends Component {
         }
     }
 
+    get_branches = async() => {
+        
+        var reqs = await BranchInstance.get_records([], {
+            page: 1,
+            size: 5
+        }, true );
+
+
+        if( reqs.login_redirect ) {
+            this.props.navigation.navigate( "Login", { redirect_to: "Branches" });
+        }
+
+        if( reqs.is_error ) {
+            return;
+        }
+
+        this.setDataLoaded(true); 
+
+        // get last 5 or whatever size to our local storage from remote 
+        this.setBranches(reqs.data); 
+
+    }
+
     componentDidMount = async () => {
          
         // setup language
@@ -141,6 +182,22 @@ class BranchesComponents extends Component {
         // Apply screen and header options 
         this.screen_options();  
 
+        // getting a data
+        
+        await this.get_branches(); 
+        this.focusListener = this.props.navigation.addListener('focus', async () => {
+            // This code will be executed when the screen is focused
+            await this.get_branches(); 
+        });
+      
+
+    }
+
+    componentWillUnmount() {
+        if (this.focusListener) {
+            this.focusListener.remove();
+        }
+      
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -150,22 +207,22 @@ class BranchesComponents extends Component {
     }
 
     AnimatedBoxforInternetWarning = () => (
-            <Animated.View style={[
-                    {...styles.flex, ...styles.absolute, ...styles.internet_state_box},
-                    { transform: [{ translateY: this.internetStateBox }], },
-            ]}>
-                    <View style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
-                    
-                        <Image 
-                            source={require('./../../assets/icons/internet-state.png')}
-                            style={{...styles.intenet_connection_icon}}
-                            resizeMode="cover"
-                        />
-                        <Text style={{...styles.intenet_connection_text}}>
-                            {this.state.language.internet_msg_box}
-                        </Text>
-                    </View>
-            </Animated.View>
+        <Animated.View style={[
+            {...styles.flex, ...styles.absolute, ...styles.internet_state_box},
+            { transform: [{ translateY: this.internetStateBox }], },
+        ]}>
+                <View style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
+                
+                    <Image 
+                        source={require('./../../assets/icons/internet-state.png')}
+                        style={{...styles.intenet_connection_icon}}
+                        resizeMode="cover"
+                    />
+                    <Text style={{...styles.intenet_connection_text}}>
+                        {this.state.language.internet_msg_box}
+                    </Text>
+                </View>
+        </Animated.View>
     )
 
     screen_options = () => {
@@ -199,31 +256,35 @@ class BranchesComponents extends Component {
         );
     }
 
-    Item = () => {
+    Item = (item) => {
         
         return (
-           <View style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15}}>
-                 <TouchableOpacity onPress={() => this.selectThisItem(key)}  style={{borderWidth: 1, gap: 15, marginBottom: 10, padding: 15, flexDirection: "row", borderColor: ( false? "red" : "#dfdfdf"), backgroundColor: ( false? "#ffe9e9" : "#f9f9f9"), borderRadius: 10}}>
+           <View key={item.data.index } style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15}}>
+                 <TouchableOpacity onPress={() => this.selectThisItem(key)}  style={{borderWidth: 1, gap: 15, marginBottom: 15, padding: 15, flexDirection: "row", borderColor: ( false? "red" : "#f9f9f9"), backgroundColor: ( false? "#ffe9e9" : "#f9f9f9"), borderRadius: 10}}>
                      
                     <View style={{flexDirection: 'column', height: 60, justifyContent: 'center',  flex: 1}}>
-                            <View style={{flex: 1}}>
-                                <Text style={{fontSize: 18, fontWeight: "bold"}}>
-                                    Teppanyaki Sushi
+                            <View style={{flex: 1, flexDirection: "row", gap: 5, alignItems: "center"}}>
+                                <Image 
+                                    source={require("./../../assets/icons/location.png")}
+                                    style={{width: 22, height: 22}}
+                                /> 
+                                <Text style={{fontSize: 16, color: "#222", fontWeight: "normal"}}>
+                                    {item.data.item.branch_name}
                                 </Text> 
                             </View>
 
                             <View style={{ flexDirection:'row', justifyContent: 'space-between'}}>
                                 <Text style={{color:"grey"}}>
-                                    Sales: 12,500
+                                {item.data.item.branch_city}
                                 </Text>  
                                 <View style={{...styles.direction_row, ...styles.gap_15}}>
                                     <TouchableOpacity>
-                                        <Text style={{color: "#0B4BAA", fontWeight: "bold"}}> 
+                                        <Text style={{color: "#666", fontWeight: "normal"}}> 
                                             View Details
                                         </Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity>
-                                        <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>
+                                        <Text style={{color: "#666", fontWeight: "normal"}}>
                                             Edit
                                         </Text>
                                     </TouchableOpacity>
@@ -232,34 +293,7 @@ class BranchesComponents extends Component {
                     </View> 
                 </TouchableOpacity>    
 
-                <TouchableOpacity onPress={() => this.selectThisItem(key)}  style={{borderWidth: 1, gap: 15, marginBottom: 10, padding: 15, flexDirection: "row", borderColor: ( false? "red" : "#dfdfdf"), backgroundColor: ( false? "#ffe9e9" : "transparent"), borderRadius: 10}}>
-                     
-                    <View style={{flexDirection: 'column', height: 60, justifyContent: 'center',  flex: 1}}>
-                            <View style={{flex: 1}}>
-                                <Text style={{fontSize: 18, fontWeight: "bold"}}>
-                                    Teppanyaki Sushi
-                                </Text> 
-                            </View>
-
-                            <View style={{ flexDirection:'row', justifyContent: 'space-between'}}>
-                                <Text style={{color:"grey"}}>
-                                    Sales: 12,500
-                                </Text>  
-                                <View style={{...styles.direction_row, ...styles.gap_15}}>
-                                    <TouchableOpacity>
-                                        <Text style={{color: "#0B4BAA", fontWeight: "bold"}}> 
-                                            View Details
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity>
-                                        <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>
-                                            Edit
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View> 
-                    </View> 
-                </TouchableOpacity>  
+                  
            </View>
 
            
@@ -267,17 +301,70 @@ class BranchesComponents extends Component {
 
     }
 
-    render (){ 
+
+    HeaderComponent = () => {
         return (
-            <SafeAreaView style={{...styles.container_top, ...styles.direction_col, backgroundColor: styles.direct.color.white, paddingTop: 20 }}>
-                <View style={{...styles.direction_row, height:60, alignItems:"center", paddingRight: 15}}>
-                    <View style={{  borderColor:'#eee',  ...styles.search_inputs, ...styles.space_top_15, ...styles.space_left_right}}>
-                        <TextInput placeholder={"Filter by name, phone number"} style={{...styles.input_field}} />
-                    </View>
-                    <Button title="Search" />
+            <View style={{ width: "100%", overflow:"hidden", flexDirection: "column",gap: 15}}>
+                
+                <View style={{  borderColor:'#eee',  ...styles.search_inputs, ...styles.space_top_15,justifyContent: "space-between", alignItems: "center", marginBottom: 15}}>
+                    <TextInput placeholder={"Filter by name, phone number"} style={{...styles.input_field}} />
+                    <Button>
+                        <Text>Filter</Text>
+                    </Button>
                 </View>
-                <View style={{flex:1, paddingLeft: 15, paddingRight: 15, paddingTop: 25}}>
-                    <this.Item /> 
+
+                <TouchableOpacity onPress={ this.setCheckOnBox } style={{flexDirection: "row", justifyContent: "left", alignItems: "center", backgroundColor: '#f9f9f9', borderRadius: 5, padding: 5, marginBottom: 15}}>
+                    <Checkbox status={this.state.select_all ? 'checked' : 'unchecked'} />
+                    <Text>Select all branches</Text>                                
+                </TouchableOpacity>
+                
+            </View>
+        );
+    }
+
+    render (){ 
+ 
+
+        return (
+            <SafeAreaView style={{...styles.container_top, ...styles.direction_col, backgroundColor: styles.direct.color.white }}>
+                
+                 
+                <View style={{ flex: 1, width: "100%", padding:15}}>
+                    {
+                        this.state.branches.length ?
+                        <FlatList
+                            data={this.state.branches}
+                            renderItem={ (item) => <this.Item data={item}/>}
+                            keyExtractor={item => item.id}
+                            ListHeaderComponent={()=><this.HeaderComponent/>}
+                            //ListFooterComponent={()=><Text>1231312</Text>}
+                        />
+                        : 
+                        <View style={{width: "100%",  alignContent: "center", alignItems: "center", padding: 10, borderRadius: 3, flex: 1, justifyContent: "center"}}>
+                            {
+                                ( this.state.loaded_for_first_time )?
+                                <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>No records have been found. Please click the button below to add a new one.</Text>
+                                :
+                                <ActivityIndicator color={this.state.default_color} size={"large"}></ActivityIndicator>
+                            }                            
+                        </View>
+                    }
+                </View>
+
+                <View style={{ width: "100%", flexDirection: "row", height:50, paddingLeft: 15,paddingRight: 15, gap: 15}}>
+                    
+                    {
+                        this.state.branches.length ?
+                        <Button mode="outlined" style={{...styles.delete_btn_outlined.container, ...styles.flex}}>
+                            <Text style={{...styles.delete_btn_outlined.text}}>Delete</Text> 
+                        </Button> 
+                        : "" 
+                    }
+                    
+                    <Button mode="contained" onPress={() => this.props.navigation.navigate("add-new-branch")} style={{...styles.add_btn_bg.container, backgroundColor: this.state.default_color, ...styles.flex}}>
+                        <Text style={{...styles.add_btn_bg.text}}>Add new branch</Text> 
+                    </Button> 
+                     
                 </View>
             </SafeAreaView>
         );
