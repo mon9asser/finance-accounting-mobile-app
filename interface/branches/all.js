@@ -12,8 +12,8 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';   
-import { Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
-import { Button, Checkbox } from "react-native-paper"; 
+import { Button, Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
+import { Checkbox } from "react-native-paper"; 
 import { LineChart } from "react-native-chart-kit";
 
 // App Files 
@@ -202,50 +202,83 @@ class BranchesComponents extends Component {
     Item = () => {
         
         return (
-           <View style={{ ...styles.container_fluid, ...styles.direction_col, ...styles.gap_15, ...styles.container_scroll}}>
-                 <TouchableOpacity onPress={() => this.selectThisItem(key)}  style={{borderWidth: 1, gap: 15, marginBottom: 20, padding: 15, flexDirection: "row", borderColor: ( false? "red" : "#dfdfdf"), backgroundColor: ( false? "#ffe9e9" : "transparent"), borderRadius: 10}}>
+           <View style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15}}>
+                 <TouchableOpacity onPress={() => this.selectThisItem(key)}  style={{borderWidth: 1, gap: 15, marginBottom: 10, padding: 15, flexDirection: "row", borderColor: ( false? "red" : "#dfdfdf"), backgroundColor: ( false? "#ffe9e9" : "#f9f9f9"), borderRadius: 10}}>
                      
-                    <View style={{flexDirection: 'column', height: 100, justifyContent: 'center',  flex: 1}}>
-                        <View style={{flex: 1}}>
-                            <Text style={{fontSize: 18, fontWeight: "bold"}}>
-                                Teppanyaki Sushi
-                            </Text> 
-                        </View>
-
-                        <View style={{flex: 1}}>
-                            <Text style={{color:"grey"}}>
-                                Sales: 12,500
-                            </Text> 
-                        </View>
-                        <View style={{flex: 1, flexDirection:'row', justifyContent: 'space-between'}}>
-                            <Text style={{color:"grey", marginTop: 5, flexShrink: 0}}>
-                            Tel: 0544040915
-                            </Text>
-                            <View style={{...styles.direction_row, ...styles.gap_15}}>
-                                <TouchableOpacity  onPress={() => this.editThisItem(55)}>
-                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>
-                                        View Details
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity  onPress={() => this.editThisItem(55)}>
-                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>
-                                        Edit
-                                    </Text>
-                                </TouchableOpacity>
+                    <View style={{flexDirection: 'column', height: 60, justifyContent: 'center',  flex: 1}}>
+                            <View style={{flex: 1}}>
+                                <Text style={{fontSize: 18, fontWeight: "bold"}}>
+                                    Teppanyaki Sushi
+                                </Text> 
                             </View>
-                        </View>
-                        
-                    </View>
-                </TouchableOpacity>
+
+                            <View style={{ flexDirection:'row', justifyContent: 'space-between'}}>
+                                <Text style={{color:"grey"}}>
+                                    Sales: 12,500
+                                </Text>  
+                                <View style={{...styles.direction_row, ...styles.gap_15}}>
+                                    <TouchableOpacity>
+                                        <Text style={{color: "#0B4BAA", fontWeight: "bold"}}> 
+                                            View Details
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity>
+                                        <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>
+                                            Edit
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View> 
+                    </View> 
+                </TouchableOpacity>    
+
+                <TouchableOpacity onPress={() => this.selectThisItem(key)}  style={{borderWidth: 1, gap: 15, marginBottom: 10, padding: 15, flexDirection: "row", borderColor: ( false? "red" : "#dfdfdf"), backgroundColor: ( false? "#ffe9e9" : "transparent"), borderRadius: 10}}>
+                     
+                    <View style={{flexDirection: 'column', height: 60, justifyContent: 'center',  flex: 1}}>
+                            <View style={{flex: 1}}>
+                                <Text style={{fontSize: 18, fontWeight: "bold"}}>
+                                    Teppanyaki Sushi
+                                </Text> 
+                            </View>
+
+                            <View style={{ flexDirection:'row', justifyContent: 'space-between'}}>
+                                <Text style={{color:"grey"}}>
+                                    Sales: 12,500
+                                </Text>  
+                                <View style={{...styles.direction_row, ...styles.gap_15}}>
+                                    <TouchableOpacity>
+                                        <Text style={{color: "#0B4BAA", fontWeight: "bold"}}> 
+                                            View Details
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity>
+                                        <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>
+                                            Edit
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View> 
+                    </View> 
+                </TouchableOpacity>  
            </View>
+
+           
         );
 
     }
 
     render (){ 
         return (
-            <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>
-                <this.Item /> 
+            <SafeAreaView style={{...styles.container_top, ...styles.direction_col, backgroundColor: styles.direct.color.white, paddingTop: 20 }}>
+                <View style={{...styles.direction_row, height:60, alignItems:"center", paddingRight: 15}}>
+                    <View style={{  borderColor:'#eee',  ...styles.search_inputs, ...styles.space_top_15, ...styles.space_left_right}}>
+                        <TextInput placeholder={"Filter by name, phone number"} style={{...styles.input_field}} />
+                    </View>
+                    <Button title="Search" />
+                </View>
+                <View style={{flex:1, paddingLeft: 15, paddingRight: 15, paddingTop: 25}}>
+                    <this.Item /> 
+                </View>
             </SafeAreaView>
         );
     }

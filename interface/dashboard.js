@@ -352,7 +352,7 @@ class DashboardComponents extends Component {
                                         resizeMode="cover"
                                     />
                                 </View>
-                                <Text style={{...styles.bold, ...styles.colors.white}}>Add New Product </Text>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Products </Text>
                             </TouchableOpacity>
                             
                         </View>

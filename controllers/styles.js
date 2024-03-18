@@ -107,10 +107,18 @@ var styles = StyleSheet.create({
         width: '100%'
     },
 
-    container_fluid: {
+    container_fluid: { 
         width: '100%', 
         flexDirection: 'row',
         justifyContent: 'center', 
+        alignItems: 'center',
+        flex: 1, 
+    },
+
+    container_top: { 
+        width: '100%', 
+        flexDirection: 'row',
+        justifyContent: 'flex-start', 
         alignItems: 'center',
         flex: 1, 
     },
@@ -187,6 +195,24 @@ var styles = StyleSheet.create({
         marginBottom: 5,
         flex: 1 
     }, 
+
+
+    search_inputs: {
+        backgroundColor:'#fff',  
+        height: 55, 
+        paddingLeft:15, 
+        paddingRight:15,  
+        borderRadius: 10,  
+        borderWidth: 1,   
+        marginBottom: 5, 
+        flex: 1 , 
+        flexDirection: "row",  
+        width: "100%"
+    }, 
+    space_left_right: {
+        marginLeft: 15,
+        marginRight: 15
+    },
 
     input_color_1: {
         backgroundColor:'#fff', 
