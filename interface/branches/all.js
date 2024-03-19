@@ -150,11 +150,23 @@ class BranchesComponents extends Component {
 
     get_branches = async() => {
         
-        var reqs = await BranchInstance.get_records([], {
-            page: 1,
-            size: 5
-        }, true );
+        if( this.state.loading ) {
+            return;
+        } 
+        this.setLoading(true);
 
+        var reqs = await BranchInstance.get_records([], {
+            page: this.state.pageNumber,
+            size: 7
+        }, true ); 
+        
+        if( reqs.data.length ) {
+            
+            var new_data = [...this.state.branches, ...reqs.data];
+            this.setBranches(new_data);
+        }
+        console.log(this.state.pageNumber);
+        this.setPageNumber( this.state.pageNumber + 1);
 
         if( reqs.login_redirect ) {
             this.props.navigation.navigate( "Login", { redirect_to: "Branches" });
@@ -165,6 +177,7 @@ class BranchesComponents extends Component {
         }
 
         this.setDataLoaded(true); 
+        this.setLoading(false);
 
         // get last 5 or whatever size to our local storage from remote 
         this.setBranches(reqs.data); 
@@ -173,6 +186,8 @@ class BranchesComponents extends Component {
 
     componentDidMount = async () => {
          
+        var reqs = await BranchInstance.get_records( ); 
+        console.log(reqs);
         // setup language
         await this.setup_params();
 
@@ -185,7 +200,8 @@ class BranchesComponents extends Component {
         // getting a data
         
         await this.get_branches(); 
-        this.focusListener = this.props.navigation.addListener('focus', async () => {
+
+        this.unsubscribeFocusListener = this.props.navigation.addListener('focus', async () => {
             // This code will be executed when the screen is focused
             await this.get_branches(); 
         });
@@ -193,10 +209,8 @@ class BranchesComponents extends Component {
 
     }
 
-    componentWillUnmount() {
-        if (this.focusListener) {
-            this.focusListener.remove();
-        }
+    componentWillUnmount() { 
+        this.unsubscribeFocusListener(); 
       
     }
 
@@ -258,8 +272,10 @@ class BranchesComponents extends Component {
 
     Item = (item) => {
         
+        
+
         return (
-           <View key={item.data.index } style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15}}>
+           <View key={item.data.index} style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15}}>
                  <TouchableOpacity onPress={() => this.selectThisItem(key)}  style={{borderWidth: 1, gap: 15, marginBottom: 15, padding: 15, flexDirection: "row", borderColor: ( false? "red" : "#f9f9f9"), backgroundColor: ( false? "#ffe9e9" : "#f9f9f9"), borderRadius: 10}}>
                      
                     <View style={{flexDirection: 'column', height: 60, justifyContent: 'center',  flex: 1}}>
@@ -335,8 +351,13 @@ class BranchesComponents extends Component {
                         <FlatList
                             data={this.state.branches}
                             renderItem={ (item) => <this.Item data={item}/>}
-                            keyExtractor={item => item.id}
+                            keyExtractor={(item, index) => index.toString()} 
                             ListHeaderComponent={()=><this.HeaderComponent/>}
+                            onEndReached={() => this.get_branches()}
+                            onEndReachedThreshold={0.5}
+                            ListFooterComponent={() => this.state.loading ? <ActivityIndicator />: ""}
+
+
                             //ListFooterComponent={()=><Text>1231312</Text>}
                         />
                         : 

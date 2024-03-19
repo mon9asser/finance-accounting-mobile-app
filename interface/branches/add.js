@@ -341,7 +341,7 @@ class AddNewBranchComponents extends Component {
             this.setBranchNote("");
 
             this.props.navigation.navigate("Branches");
-        }, 3000);
+        }, 1500);
     }
 
     setNameHlght = (value) => {
