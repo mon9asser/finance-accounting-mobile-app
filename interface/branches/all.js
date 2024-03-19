@@ -48,7 +48,7 @@ class BranchesComponents extends Component {
             isPressed: false,
             select_all: false, 
 
-            loaded_for_first_time: false, 
+            loaded_for_first_time: true, 
 
             // scroll load new data 
             branches: [],
@@ -159,17 +159,21 @@ class BranchesComponents extends Component {
     }
 
     // get more data every while pages 
-    load_more = async() => {
+    load_more = async( change_page = true ) => {
         
-        if(this.state.loading) return;
+        if( change_page ) {
+        
+            if(this.state.loading) return;
 
-        this.setPageNumber( this.state.pageNumber + 1 );  
-        this.setLoading(true); 
+            this.setPageNumber( this.state.pageNumber + 1 );  
+            this.setLoading(true);
+        } 
 
         var reqs = await BranchInstance.get_records([], {
             page: this.state.pageNumber,
             size: this.state.number_of_records
         }, true ); 
+ 
 
        
         if(reqs.is_error) {
@@ -179,7 +183,8 @@ class BranchesComponents extends Component {
 
         var is_duplicated = this.is_duplicate_id(reqs.data);
         
-        if( is_duplicated ) {
+        if( is_duplicated ) { 
+
             
             this.setLoading(false); 
             
@@ -189,6 +194,7 @@ class BranchesComponents extends Component {
 
             return; 
         }
+
 
         if( reqs.data && reqs.data.length ) {
             this.setState(prevState => ({
@@ -207,9 +213,24 @@ class BranchesComponents extends Component {
             size: this.state.number_of_records
         }, true ); 
           
+ 
         if( reqs.login_redirect ) {
             this.props.navigation.navigate( "Login", { redirect_to: "Branches" });
         }
+
+        var is_duplicated = this.is_duplicate_id(reqs.data);
+        
+        if( is_duplicated ) {
+            
+            this.setLoading(false); 
+            
+            this.setState({
+                show_text: this.state.language.no_more_records
+            });
+
+            return; 
+        }
+        
 
         if( reqs.is_error ) {
             return;
@@ -238,17 +259,33 @@ class BranchesComponents extends Component {
         // getting a data 
         await this.get_branches(); 
 
-        this.unsubscribeFocusListener = this.props.navigation.addListener('focus', async () => {
+        /*
+        this.unsubscribeFocusListener = this.props.navigation.addListener('focus', () => {
             // This code will be executed when the screen is focused
-            await this.get_branches(); 
-        });
+            
+            if( this.props.route.params.last_update  ) {
+                var new_data;
+                var new_object = this.props.route.params.last_update.data;
+                var index = this.state.branches.findIndex( x => x.local_id == new_object.local_id);
+                console.log( "xxxxx : " + index, this.state.branches.length)
+                if( index == -1 ) {
+                    new_data = [new_object, ...this.state.branches];
+                } else {
+                    
+                    this.state.branches[index] = new_object;
+                    new_data = this.state.branches;
+                }
+
+                this.setBranches(new_data);
+            }
+            
+        }); */
       
 
     }
 
     componentWillUnmount() { 
-        this.unsubscribeFocusListener(); 
-      
+        // this.unsubscribeFocusListener(); 
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -336,7 +373,7 @@ class BranchesComponents extends Component {
                                             View Details
                                         </Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity onPress={() => this.props.navigation.navigate("edit-branch", {item: item.data.item, all: this})}>
                                         <Text style={{color: "#666", fontWeight: "normal"}}>
                                             Edit
                                         </Text>
@@ -388,7 +425,7 @@ class BranchesComponents extends Component {
                         <FlatList
                             data={this.state.branches}
                             renderItem={ (item) => <this.Item data={item}/>}
-                            keyExtractor={(item, index) => item.local_id.toString()} 
+                            keyExtractor={(item, index) => index.toString()} 
                             onEndReached={() => this.load_more()}
                            // onEndReachedThreshold={0.5} 
                             ListHeaderComponent={ <this.HeaderComponent /> }

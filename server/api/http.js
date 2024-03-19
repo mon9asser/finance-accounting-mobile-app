@@ -328,7 +328,7 @@ apiRouters.post("/bulk_deletion", verify_user_tokens_and_keys, async (req, res) 
 
 // getting all data with no parameter + with parameters + paging
 apiRouters.post("/get", verify_user_tokens_and_keys, async (req, res) => {
-    
+   
     // handling current language
     var current_language = req.body.language == undefined? "en": req.body.language; 
     var localize = language[current_language];
@@ -359,6 +359,12 @@ apiRouters.post("/get", verify_user_tokens_and_keys, async (req, res) => {
         model: model_name, 
         schemaObject:schema_object
     }); 
+    
+    return res.send({
+        is_error: true, 
+        data: [],
+        message: ""
+    })
     
     if( ! db_connection ) {
         response["data"] = [];
@@ -419,6 +425,7 @@ apiRouters.post("/get", verify_user_tokens_and_keys, async (req, res) => {
 
     try {         
         var allData = await db_connection.find(param_id);
+        
         response["data"] = allData;
         response["is_error"] = false;
         response["message"] = localize.data_get_success; 

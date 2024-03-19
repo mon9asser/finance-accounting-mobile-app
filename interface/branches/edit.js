@@ -15,17 +15,17 @@ import { Button, Checkbox } from "react-native-paper";
 import { LineChart } from "react-native-chart-kit";
 
 // App Files 
-import {config} from "./../../settings/config.js" ;
-import {styles} from "./../../controllers/styles.js"; 
-import {get_setting, add_last_session_form, get_last_session_form, delete_session_form} from "./../../controllers/cores/settings.js";
-import {get_lang} from './../../controllers/languages.js'; 
+import {config} from "../../settings/config.js" ;
+import {styles} from "../../controllers/styles.js"; 
+import {get_setting, add_last_session_form, get_last_session_form, delete_session_form} from "../../controllers/cores/settings.js";
+import {get_lang} from '../../controllers/languages.js'; 
 
 // Controller 
-import { BranchInstance } from "./../../controllers/storage/branches.js"
+import { BranchInstance } from "../../controllers/storage/branches.js"
 import { usr } from "../../controllers/storage/user.js";
 
 
-class AddNewBranchComponents extends Component {
+class EditCurrentBranchComponents extends Component {
     
     constructor(props){
         
@@ -44,6 +44,7 @@ class AddNewBranchComponents extends Component {
             branch_address: "", 
             branch_number: "", 
             note: "", 
+            local_id: "", 
 
             branch_name_hlgt: false, 
 
@@ -59,6 +60,13 @@ class AddNewBranchComponents extends Component {
         this.internetStateBox = new Animated.Value(0);
 
     } 
+    
+    setLocalId = (value) => {
+         
+        this.setState({
+            local_id: value
+        })
+    }
 
     setColorDefault = (value) => {
          
@@ -122,6 +130,20 @@ class AddNewBranchComponents extends Component {
         // this.setCurrentLanguage(language); 
         this.setLanguage(this.props.route.params.langs); 
         
+        if( this.props.route.params.item ) {
+
+            this.setBranchName(this.props.route.params.item.branch_name);
+            this.setBranchCountry(this.props.route.params.item.branch_country);
+            this.setBranchCity(this.props.route.params.item.branch_city);
+            this.setBranchAddress(this.props.route.params.item.branch_address);
+            this.setBranchNumber(this.props.route.params.item.branch_number);
+            this.setBranchNote(this.props.route.params.item.note);
+            this.setLocalId(this.props.route.params.item.local_id);
+        }
+
+
+        var dd = this.props.route.params.all;
+        alert(dd.state.default_color);
     }
 
     // internet connection
@@ -275,7 +297,8 @@ class AddNewBranchComponents extends Component {
             branch_city: this.state.branch_city, 
             branch_address: this.state.branch_address, 
             branch_number: this.state.branch_number,  
-            note: this.state.note
+            note: this.state.note,
+            param_id: this.state.local_id
         }; 
 
          
@@ -302,14 +325,8 @@ class AddNewBranchComponents extends Component {
             this.setNotificationCssTextClass(styles.error_text)
             this.setNotificationMessage(response.message);
 
-            setTimeout(async () => {
-                
-                var add = await add_last_session_form({
-                    name: "add-new-branch",
-                    data_object: obj_data
-                });
-
-                this.props.navigation.navigate("Login", { redirect_to: "add-new-branch" });
+            setTimeout(async () => { 
+                this.props.navigation.navigate("Login", { redirect_to: "edit-branch" });
             }, 1500);
             return;
         }
@@ -451,4 +468,4 @@ class AddNewBranchComponents extends Component {
 }
 
 
-export {AddNewBranchComponents}
+export {EditCurrentBranchComponents}

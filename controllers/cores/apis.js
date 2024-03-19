@@ -286,6 +286,8 @@ class A_P_I_S {
         // send request for remote server 
         var request = await this.axiosRequest(axiosOptions); 
          
+        var rowData = {};
+
         // store data locally 
         if(  objectIndex != -1 ) {
 
@@ -296,16 +298,20 @@ class A_P_I_S {
                 remote_updated: request.is_error? false: true,
                 _id: request.data._id == undefined? "": request.data._id
            };
-
+            rowData = updator;
            old_data[objectIndex] = updator;
 
         } else {
             
-            old_data.push({
+            rowData = {
                 ...__object, 
                 remote_saved: request.is_error? false: true,
                 _id: request.data._id == undefined? "": request.data._id
-            });
+            };
+
+            old_data.push(rowData);
+
+           
 
         }
 
@@ -319,7 +325,7 @@ class A_P_I_S {
 
             return {
                 message: language.saved_success,
-                data: is_saved,
+                data: rowData,
                 is_error: false, 
                 login_redirect: false
             }
@@ -807,7 +813,7 @@ class A_P_I_S {
      * Get all: Getting Updates from remote and store it locally 
      * Optionally: Paingation ( page number and size )
      */
-    async bulkGetAsync( mobject, async = false, filteration = {}, paging_page = null, paging_size= null ){
+    async bulkGetAsync( mobject, async = false, desc =true, paging_page = null, paging_size= null ){
         
         // getting settings and language
         var settings, user_data, array_data, pagination, filtered;
@@ -887,10 +893,22 @@ class A_P_I_S {
         var asynced = [ ...filtered, ...request.data];
 
         // filter data desc and asc 
-        if( Object.keys(filteration).length ) {
+        if( desc ) {
             // updated_date ( Desc Asc )
             // created_date ( Desc Asc )
             // 
+
+            var filter_by = 'updated_date'
+            if( desc !== true && typeof desc == 'string' ) {
+                filter_by = desc;
+            }
+
+            asynced.sort(function(a,b){
+                // Turn your strings into dates, and then subtract them
+                // to get a value that is either negative, positive, or zero.
+                return new Date(b[filter_by]) - new Date(a[filter_by]);
+            });
+              
         }
 
         try {

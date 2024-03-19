@@ -21,7 +21,7 @@ import {get_setting, localization} from "./controllers/cores/settings.js";
 // App Screens 
 // ---------------------------------
 import { AddNewBranchComponents } from "./interface/branches/add.js";
-
+import { EditCurrentBranchComponents } from "./interface/branches/edit.js";
 
 
 
@@ -41,11 +41,21 @@ import { SubscriptionComponents } from './interface/subscription.js';
 
 import { TestComponent } from "./interface/test.js";
 import { BranchesComponents } from "./interface/branches/all.js";
+import { usr } from "./controllers/storage/user.js";
 
 // Functions 
 const Stack = createStackNavigator(); 
 const Drawer = createDrawerNavigator();
 
+
+var logout_user = async (navigation) => {
+
+    var delete_sess = await usr.delete_session();
+    if( delete_sess ) {
+        navigation.navigate("Login");
+    }
+
+};
 
 var CustomDrawerContent = (props) => {
  
@@ -213,7 +223,7 @@ var CustomDrawerContent = (props) => {
             </View>
 
             <View style={{...styles.sidebar_nav_item}}>
-                <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
+                <TouchableOpacity onPress={( ) => logout_user( props.navigation )} style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
                     <Image
                         source={require('./assets/icons/logout.png')}
@@ -248,7 +258,8 @@ const App = () => {
    
     var [language, setLanguage] = useState({});
     localization().then(res => setLanguage(res));
-    console.log(language);
+    
+    
     return (
         <SafeAreaView style={styles.flex}>
           <NavigationContainer> 
@@ -259,6 +270,7 @@ const App = () => {
               
               {/* Screen */}
               <Stack.Screen name="add-new-branch"  component={AddNewBranchComponents} initialParams={{ langs: language }} />
+              <Stack.Screen name="edit-branch"  component={EditCurrentBranchComponents} initialParams={{ langs: language }} />
               
               <Stack.Screen name="Branches"  component={BranchesComponents} initialParams={{ langs: language }}/>
               <Stack.Screen name="Login" component={LoginComponents}/>
