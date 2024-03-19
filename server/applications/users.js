@@ -137,6 +137,16 @@ const verify_api_keys = ( req, res, next ) => {
 
 }
 
+const to_lowercase = (value) => {
+
+    if( value != undefined ) {
+        return value.toLowerCase();
+    }
+
+    return value; 
+
+};
+
 
 // => Localized  !
 ApplicationRouter.post("/application/create", verify_api_keys, async (req, res) => {
@@ -152,12 +162,12 @@ ApplicationRouter.post("/application/create", verify_api_keys, async (req, res) 
 
     // Data Validation  
     var name = req.body.name;
-    var email = req.body.email; 
+    var email = to_lowercase(req.body.email); 
     var password= req.body.password;
-    var company_name = req.body.company_name; 
+    var company_name = to_lowercase(req.body.company_name); 
 
     // additional parameters needed 
-    var app_name = req.body.app_name;
+    var app_name = to_lowercase(req.body.app_name);
     var platform = req.body.platform;
     var version = req.body.version;
 
@@ -287,9 +297,9 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
     };
 
     // Data Validation   
-    var email = req.body.email; 
+    var email = to_lowercase(req.body.email); 
     var password= req.body.password; 
-    var app_name = req.body.app_name;
+    var app_name = to_lowercase(req.body.app_name);
     
     //- Validate inputs 
     if( email == '' || email == undefined || password == '' || password == undefined || app_name == '' || app_name == undefined ) {
@@ -373,7 +383,7 @@ ApplicationRouter.post("/application/reset", verify_api_keys, async (req, res) =
     };
 
     // Data Validation    
-    var email = req.body.email; 
+    var email = to_lowercase(req.body.email); 
     
     
     //- Validate inputs 
@@ -444,7 +454,7 @@ ApplicationRouter.post("/application/passcode-verify", verify_api_keys, async (r
     };
 
     // Data Validation    
-    var email = req.body.email; 
+    var email = to_lowercase(req.body.email); 
     var passcode = req.body.passcode; 
 
     //- Validate inputs 
@@ -512,7 +522,7 @@ ApplicationRouter.post("/application/passcode-verify", verify_api_keys, async (r
         return res.send(objx);
     }
     
-    var email = req.body.email;
+    var email = to_lowercase(req.body.email);
     var newPass = req.body.password;
 
     var user = await User.findOne({email: email});

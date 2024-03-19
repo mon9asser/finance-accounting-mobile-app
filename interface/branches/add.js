@@ -201,13 +201,14 @@ class AddNewBranchComponents extends Component {
     )
 
     screen_options = () => { 
+         
         // Screen Options 
         this.props.navigation.setOptions({
-
+            headerTitle: this.state.language.title, 
             headerStyle: {backgroundColor: this.state.default_color}, 
             headerTitleStyle: { color: "#fff" },
             headerTintColor: '#fff',
-            headerTitle: this.state.language.title, 
+            
             // headerLeft: () => this.headerLeftComponent(), 
             // headerRight: () => this.headerRightComponent()
             

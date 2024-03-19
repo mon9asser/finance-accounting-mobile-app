@@ -807,7 +807,7 @@ class A_P_I_S {
      * Get all: Getting Updates from remote and store it locally 
      * Optionally: Paingation ( page number and size )
      */
-    async bulkGetAsync( mobject, async = false, paging_page = null, paging_size= null ){
+    async bulkGetAsync( mobject, async = false, filteration = {}, paging_page = null, paging_size= null ){
         
         // getting settings and language
         var settings, user_data, array_data, pagination, filtered;
@@ -885,6 +885,13 @@ class A_P_I_S {
         }
 
         var asynced = [ ...filtered, ...request.data];
+
+        // filter data desc and asc 
+        if( Object.keys(filteration).length ) {
+            // updated_date ( Desc Asc )
+            // created_date ( Desc Asc )
+            // 
+        }
 
         try {
             

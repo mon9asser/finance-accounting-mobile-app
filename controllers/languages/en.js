@@ -106,6 +106,7 @@ const en = {
         price_doesnt_exists: "Price does not exist!",
         item_doesnt_exists: "item does not exist!",
         no_records: "No records found",
+        no_more_records: "No more records found, check back later.",
         required_data: "Object data or array data is required!",
         doesnt_exists: "Resource not found. The requested item does not exist.",
         uptodate: "Everything is up to date",

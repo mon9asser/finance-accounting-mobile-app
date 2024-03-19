@@ -12,7 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationEvents  } from '@react-navigation/native';   
 
-import { FlatList,TouchableHighlight, Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
+import { FlatList, RefreshControl, TouchableHighlight, Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
 import { Checkbox, Button, Provider as PaperProvider, DefaultTheme } from "react-native-paper"; 
  
 import { LineChart } from "react-native-chart-kit";
@@ -53,13 +53,36 @@ class BranchesComponents extends Component {
             // scroll load new data 
             branches: [],
             loading: false, 
-            pageNumber: 1
+            pageNumber: 1,
+            number_of_records: 6,
+            last_local_id: null,
+            show_text: null 
         }
 
         this.internetState = null;
         this.internetStateBox = new Animated.Value(0);
 
     } 
+
+    is_duplicate_id = (data) => {
+
+        var value = null 
+        
+        if( data != undefined && data.length ) {
+            var last_record = data.length - 1;
+            value = data[last_record].local_id;
+        }
+
+        if( value == this.state.last_local_id ) {
+            return true; 
+        }
+        
+        this.setState({
+            last_local_id: value
+        });
+
+        return false;  
+    }
 
     setDataLoaded = (value) => {
         this.setState({
@@ -69,7 +92,7 @@ class BranchesComponents extends Component {
 
     setCheckOnBox = () => {
          
-        this.setState({
+        this.setState({ 
             select_all: ! this.state.select_all
         });
         
@@ -100,36 +123,23 @@ class BranchesComponents extends Component {
         })
     }
  
-    setLanguage = ( lang ) => {
-
-        I18nManager.forceRTL(lang.is_rtl);
-        this.setState({
-            language: {...lang.branches_screen, ...lang.labels}
-        });
-
-    }
+  
 
      // Setup Language
      setup_params = () => {
 
-        // var {language}  = await get_setting(); 
-        // this.setCurrentLanguage(language); 
-        this.setLanguage(this.props.route.params.langs); 
+         
+        var _this_lang = this.props.route.params.langs;
+
+        I18nManager.forceRTL(_this_lang.is_rtl);
+        this.setState({
+            language: _this_lang
+        });
+        
         
     }
-
-
-    setCurrentLanguage = (lang = "en") => {
-        this.setState({
-            current_language: lang
-        })
-    } 
-
-    setupLanguage = async() => {
-        var {language}  = await get_setting(); 
-        this.setCurrentLanguage(language);
-        this.setLanguage(language);
-    }
+ 
+   
 
     internetConnectionStatus = () => {
         this.internetState = NetInfo.addEventListener(state => {
@@ -148,36 +158,65 @@ class BranchesComponents extends Component {
         }
     }
 
-    get_branches = async() => {
+    // get more data every while pages 
+    load_more = async() => {
         
-        if( this.state.loading ) {
-            return;
-        } 
-        this.setLoading(true);
+        if(this.state.loading) return;
+
+        this.setPageNumber( this.state.pageNumber + 1 );  
+        this.setLoading(true); 
 
         var reqs = await BranchInstance.get_records([], {
             page: this.state.pageNumber,
-            size: 7
+            size: this.state.number_of_records
         }, true ); 
-        
-        if( reqs.data.length ) {
-            
-            var new_data = [...this.state.branches, ...reqs.data];
-            this.setBranches(new_data);
-        }
-        console.log(this.state.pageNumber);
-        this.setPageNumber( this.state.pageNumber + 1);
 
+       
+        if(reqs.is_error) {
+            this.setLoading(false); 
+            return; 
+        }
+
+        var is_duplicated = this.is_duplicate_id(reqs.data);
+        
+        if( is_duplicated ) {
+            
+            this.setLoading(false); 
+            
+            this.setState({
+                show_text: this.state.language.no_more_records
+            });
+
+            return; 
+        }
+
+        if( reqs.data && reqs.data.length ) {
+            this.setState(prevState => ({
+                branches: [...prevState.branches, ...reqs.data], 
+                loading: false,  
+            }));
+        } 
+         
+    }
+
+    // initial first load
+    get_branches = async() => {
+        
+        var reqs = await BranchInstance.get_records([], {
+            page: this.state.pageNumber,
+            size: this.state.number_of_records
+        }, true ); 
+          
         if( reqs.login_redirect ) {
             this.props.navigation.navigate( "Login", { redirect_to: "Branches" });
         }
 
         if( reqs.is_error ) {
             return;
-        }
+        } 
 
-        this.setDataLoaded(true); 
-        this.setLoading(false);
+        this.setPageNumber( this.state.pageNumber + 1 ); 
+        this.setDataLoaded(true);  
 
         // get last 5 or whatever size to our local storage from remote 
         this.setBranches(reqs.data); 
@@ -185,9 +224,8 @@ class BranchesComponents extends Component {
     }
 
     componentDidMount = async () => {
-         
-        var reqs = await BranchInstance.get_records( ); 
-        console.log(reqs);
+        
+        
         // setup language
         await this.setup_params();
 
@@ -197,8 +235,7 @@ class BranchesComponents extends Component {
         // Apply screen and header options 
         this.screen_options();  
 
-        // getting a data
-        
+        // getting a data 
         await this.get_branches(); 
 
         this.unsubscribeFocusListener = this.props.navigation.addListener('focus', async () => {
@@ -351,14 +388,12 @@ class BranchesComponents extends Component {
                         <FlatList
                             data={this.state.branches}
                             renderItem={ (item) => <this.Item data={item}/>}
-                            keyExtractor={(item, index) => index.toString()} 
-                            ListHeaderComponent={()=><this.HeaderComponent/>}
-                            onEndReached={() => this.get_branches()}
-                            onEndReachedThreshold={0.5}
-                            ListFooterComponent={() => this.state.loading ? <ActivityIndicator />: ""}
-
-
-                            //ListFooterComponent={()=><Text>1231312</Text>}
+                            keyExtractor={(item, index) => item.local_id.toString()} 
+                            onEndReached={() => this.load_more()}
+                           // onEndReachedThreshold={0.5} 
+                            ListHeaderComponent={ <this.HeaderComponent /> }
+                            ListFooterComponent={ this.state.show_text == null && this.state.loading ? <ActivityIndicator size={"small"} color={this.state.default_color} />: <View style={{justifyContent: "center", alignItems: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.show_text}</Text></View>}
+                            //refreshControl={<RefreshControl/>}  
                         />
                         : 
                         <View style={{width: "100%",  alignContent: "center", alignItems: "center", padding: 10, borderRadius: 3, flex: 1, justifyContent: "center"}}>

@@ -248,7 +248,7 @@ const App = () => {
    
     var [language, setLanguage] = useState({});
     localization().then(res => setLanguage(res));
-
+    console.log(language);
     return (
         <SafeAreaView style={styles.flex}>
           <NavigationContainer> 
@@ -260,8 +260,9 @@ const App = () => {
               {/* Screen */}
               <Stack.Screen name="add-new-branch"  component={AddNewBranchComponents} initialParams={{ langs: language }} />
               
-              <Stack.Screen name="Branches" component={BranchesComponents} initialParams={{ langs: language }}/>
-              <Stack.Screen name="Login" component={LoginComponents} />
+              <Stack.Screen name="Branches"  component={BranchesComponents} initialParams={{ langs: language }}/>
+              <Stack.Screen name="Login" component={LoginComponents}/>
+              <Stack.Screen name="Register" component={RegisterComponents} />
               
             </Stack.Navigator> 
           </NavigationContainer> 
