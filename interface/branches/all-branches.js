@@ -18,13 +18,13 @@ import { Checkbox, Button, Provider as PaperProvider, DefaultTheme } from "react
 import { LineChart } from "react-native-chart-kit";
 
 // App Files 
-import {config} from "./../../settings/config.js" ;
-import {styles} from "./../../controllers/styles.js"; 
-import {get_setting, add_last_session_form, get_last_session_form, delete_session_form} from "./../../controllers/cores/settings.js";
-import {get_lang} from './../../controllers/languages.js'; 
+import {config} from "../../settings/config.js" ;
+import {styles} from "../../controllers/styles.js"; 
+import {get_setting, add_last_session_form, get_last_session_form, delete_session_form} from "../../controllers/cores/settings.js";
+import {get_lang} from '../../controllers/languages.js'; 
 
 // Controller 
-import { BranchInstance } from "./../../controllers/storage/branches.js"
+import { BranchInstance } from "../../controllers/storage/branches.js"
 import { usr } from "../../controllers/storage/user.js";
 
 class BranchesComponents extends PureComponent {
@@ -62,7 +62,7 @@ class BranchesComponents extends PureComponent {
         this.internetState = null;
         this.internetStateBox = new Animated.Value(0);
 
-    } 
+    }  
 
     is_duplicate_id = (data) => {
 
@@ -159,15 +159,12 @@ class BranchesComponents extends PureComponent {
     }
 
     // get more data every while pages 
-    load_more = async( change_page = true ) => {
+    load_more = async( ) => {
         
-        if( change_page ) {
-        
-            if(this.state.loading) return;
+        if(this.state.loading) return;
 
-            this.setPageNumber( this.state.pageNumber + 1 );  
-            this.setLoading(true);
-        } 
+        this.setPageNumber( this.state.pageNumber + 1 );  
+        this.setLoading(true);
 
         var reqs = await BranchInstance.get_records([], {
             page: this.state.pageNumber,
@@ -197,25 +194,48 @@ class BranchesComponents extends PureComponent {
 
 
         if( reqs.data && reqs.data.length ) {
-            this.setState(prevState => ({
-                branches: [...prevState.branches, ...reqs.data], 
-                loading: false,  
-            }));
+            this.setState(prevState => {
+
+                // Create a map from the first array, with local_id as the key and the object itself as the value.
+                const existingItemsMap = prevState.branches.reduce((acc, current) => {
+                    acc[current.local_id] = current;
+                    return acc;
+                }, {});
+                
+                // Now, as we filter through reqs.data, we'll check the map to ensure uniqueness
+                const uniqueReqsData = reqs.data.filter(item => !existingItemsMap[item.local_id]);
+                
+                // Since we already have a comprehensive map of existing items, let's also convert it back to an array to combine with uniqueReqsData
+                const existingItemsArray = Object.values(existingItemsMap);
+                
+                // Finally, merge the existing items with the unique ones from reqs.data
+                const deduplicatedArray = [...existingItemsArray, ...uniqueReqsData];
+
+                return {
+                    branches: deduplicatedArray, // [...prevState.branches, ...reqs.data], 
+                    loading: false,  
+                };
+
+            });
         } 
          
+        console.log("=====", this.state.pageNumber );
     }
 
     // initial first load
     get_branches = async() => {
         
+        
+        setTimeout(() => this.setDataLoaded(true), 2000);  
+
         var reqs = await BranchInstance.get_records([], {
             page: this.state.pageNumber,
             size: this.state.number_of_records
         }, true ); 
           
-
+        
         var reqs = await BranchInstance.get_records( ); 
-        console.log(reqs.data)
+        // console.log(reqs.data)
  
         if( reqs.login_redirect ) {
             this.props.navigation.navigate( "Login", { redirect_to: "Branches" });
@@ -237,13 +257,13 @@ class BranchesComponents extends PureComponent {
 
         if( reqs.is_error ) {
             return;
-        } 
-
-        this.setPageNumber( this.state.pageNumber + 1 ); 
-        this.setDataLoaded(true);  
+        }  
 
         // get last 5 or whatever size to our local storage from remote 
         this.setBranches(reqs.data); 
+
+        this.setPageNumber( this.state.pageNumber + 1 ); 
+        this.setDataLoaded(false);
 
     }
 
@@ -261,7 +281,7 @@ class BranchesComponents extends PureComponent {
 
         // getting a data 
         await this.get_branches(); 
-
+        
         /*
         this.unsubscribeFocusListener = this.props.navigation.addListener('focus', () => {
             // This code will be executed when the screen is focused
@@ -284,13 +304,7 @@ class BranchesComponents extends PureComponent {
             
         }); */
         
-    }
-
-    _handleUpdate = (data) => {
-        // Do something with user object
-        console.log(data);
-    }
-    
+    } 
 
     componentWillUnmount() { 
         // this.unsubscribeFocusListener(); 
@@ -457,7 +471,7 @@ class BranchesComponents extends PureComponent {
                             renderItem={ (item) => <this.Item data={item}/>}
                             keyExtractor={(item, index) => index.toString()} 
                             onEndReached={() => this.load_more()}
-                           // onEndReachedThreshold={0.5} 
+                            onEndReachedThreshold={0.2} 
                             ListHeaderComponent={ <this.HeaderComponent /> }
                             ListFooterComponent={ this.state.show_text == null && this.state.loading ? <ActivityIndicator size={"small"} color={this.state.default_color} />: <View style={{justifyContent: "center", alignItems: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.show_text}</Text></View>}
                             //refreshControl={<RefreshControl/>}  

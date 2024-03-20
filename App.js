@@ -20,9 +20,9 @@ import {get_setting, localization} from "./controllers/cores/settings.js";
 // ---------------------------------
 // App Screens 
 // ---------------------------------
-import { AddNewBranchComponents } from "./interface/branches/add.js";
-import { EditCurrentBranchComponents } from "./interface/branches/edit.js";
-
+import { AddNewBranchComponents } from "./interface/branches/add-branch.js";
+import { EditCurrentBranchComponents } from "./interface/branches/edit-branch.js";
+import { BranchesComponents } from "./interface/branches/all-branches.js";
 
 
 
@@ -40,7 +40,7 @@ import {AppSidebarComponents}  from './interface/sidebar.js';
 import { SubscriptionComponents } from './interface/subscription.js';
 
 import { TestComponent } from "./interface/test.js";
-import { BranchesComponents } from "./interface/branches/all.js";
+
 import { usr } from "./controllers/storage/user.js";
 
 // Functions 

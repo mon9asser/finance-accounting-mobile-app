@@ -15,13 +15,13 @@ import { Button, Checkbox } from "react-native-paper";
 import { LineChart } from "react-native-chart-kit";
 
 // App Files 
-import {config} from "./../../settings/config.js" ;
-import {styles} from "./../../controllers/styles.js"; 
-import {get_setting, add_last_session_form, get_last_session_form, delete_session_form} from "./../../controllers/cores/settings.js";
-import {get_lang} from './../../controllers/languages.js'; 
+import {config} from "../../settings/config.js" ;
+import {styles} from "../../controllers/styles.js"; 
+import {get_setting, add_last_session_form, get_last_session_form, delete_session_form} from "../../controllers/cores/settings.js";
+import {get_lang} from '../../controllers/languages.js'; 
 
 // Controller 
-import { BranchInstance } from "./../../controllers/storage/branches.js"
+import { BranchInstance } from "../../controllers/storage/branches.js"
 import { usr } from "../../controllers/storage/user.js";
 
 

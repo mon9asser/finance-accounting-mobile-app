@@ -19,7 +19,8 @@ class A_P_I_S {
     
     // HTTP Request 
     axiosRequest = async ({ api, dataObject, method, headers, model_name } = null) => {
-        
+         
+
         // disable internet 
         if( ! config.enable_remote_server_apis ) {
 
@@ -223,6 +224,7 @@ class A_P_I_S {
 
         // build update object 
         if( obj_data.local_id != undefined || parameter_id != null ) {
+            
             __object = {
                 local_id: param_id,
                 updated_date: Date.now(),
@@ -240,9 +242,10 @@ class A_P_I_S {
                 
             if( typeof param_id_object == 'object'  ) {
                 var key__ = Object.keys(param_id_object)[0]; 
+                console.log("checking index ",  x[key__], param_id_object[key__]);
                 return x[key__] == param_id_object[key__]; 
             }
-
+            console.log("checking index ",x.local_id, param_id)
             return x.local_id == param_id;
 
         });
@@ -289,8 +292,8 @@ class A_P_I_S {
         var rowData = {};
 
         // store data locally 
-        if(  objectIndex != -1 ) {
-
+        if(  objectIndex !== -1 ) {
+            console.log(__object.local_id + " is updated", objectIndex);
            var updator = {
 
                 ...old_data[objectIndex],
@@ -299,19 +302,19 @@ class A_P_I_S {
                 _id: request.data._id == undefined? "": request.data._id
            };
             rowData = updator;
-           old_data[objectIndex] = updator;
+            old_data[objectIndex] = updator;
 
-        } else {
-            
+        } 
+        
+        if( objectIndex === -1) {
+            console.log(__object.local_id + " is added", objectIndex);
             rowData = {
                 ...__object, 
                 remote_saved: request.is_error? false: true,
                 _id: request.data._id == undefined? "": request.data._id
             };
 
-            old_data.push(rowData);
-
-           
+            old_data.push(rowData); 
 
         }
 
@@ -889,6 +892,16 @@ class A_P_I_S {
                 ...request
             }; 
         }
+
+
+        // check if filter data already on the remote server so delete the filter
+        filtered = filtered.filter(item => {
+            var local_id = item.local_id;
+            var remoted = request.data.findIndex( x => x.local_id == local_id);
+            if( remoted === -1 ) {
+                return item;
+            }
+        })
 
         var asynced = [ ...filtered, ...request.data];
 

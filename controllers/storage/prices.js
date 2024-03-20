@@ -124,7 +124,7 @@ class Prices extends A_P_I_S {
      * paging = { page, size }
      * async: case true it will get data from remote and store it in locally
      */
-    get_records = async(param_id = [], paging = {}, async = false ) => {
+    get_records = async(param_id = [], paging = {}, async = false, desc = true ) => {
  
         
         // getting settings and language
@@ -135,12 +135,31 @@ class Prices extends A_P_I_S {
         } catch(error){}
         
         var language =  get_lang(settings.language);
-        
+
+
+        var param_value = Array.isArray(param_id) ? param_id : []; 
         
         // get data from remote
         await this.bulkGetAsync(this.Schema, async);
 
         var array_data = await this.get_data_locally(this.Schema);
+
+        if( desc ) {
+            // updated_date ( Desc Asc )
+            // created_date ( Desc Asc )
+            //  
+            var filter_by = 'updated_date'
+            if( desc !== true && typeof desc == 'string' ) {
+                filter_by = desc;
+            }
+            
+            array_data.sort(function(a,b){
+                // Turn your strings into dates, and then subtract them
+                // to get a value that is either negative, positive, or zero.
+                return new Date(b[filter_by]) - new Date(a[filter_by]);
+            });
+              
+        }
 
         //return _.chunk(array_data, 4 );
         if(param_id.length) {
@@ -181,7 +200,7 @@ class Prices extends A_P_I_S {
                 login_redirect: false, 
                 is_error: false, 
                 data: _return,
-                message: _return.length == 0? language.no_prices: ""
+                message: _return.length == 0? language.no_records: ""
             }
 
         }  
@@ -190,7 +209,7 @@ class Prices extends A_P_I_S {
             login_redirect: false, 
             is_error: false, 
             data: array_data,
-            message: array_data.length == 0 ? language.no_products: ""
+            message: array_data.length == 0 ? language.no_records: ""
         }
     }
  
