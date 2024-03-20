@@ -341,7 +341,8 @@ class AddNewBranchComponents extends Component {
             this.setBranchNumber("");
             this.setBranchNote("");
 
-            this.props.navigation.navigate("Branches", {last_update: response});
+            this.props.navigation.goBack(null);
+            this.props.navigation.navigate("Branches");
         }, 1500);
     }
 

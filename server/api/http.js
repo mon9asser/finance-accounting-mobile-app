@@ -359,12 +359,7 @@ apiRouters.post("/get", verify_user_tokens_and_keys, async (req, res) => {
         model: model_name, 
         schemaObject:schema_object
     }); 
-    
-    return res.send({
-        is_error: true, 
-        data: [],
-        message: ""
-    })
+     
     
     if( ! db_connection ) {
         response["data"] = [];

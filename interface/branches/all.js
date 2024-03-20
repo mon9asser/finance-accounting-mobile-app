@@ -1,6 +1,6 @@
 
 // Default
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import NetInfo from '@react-native-community/netinfo';
 // import Device from 'react-native-device-info';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -27,7 +27,7 @@ import {get_lang} from './../../controllers/languages.js';
 import { BranchInstance } from "./../../controllers/storage/branches.js"
 import { usr } from "../../controllers/storage/user.js";
 
-class BranchesComponents extends Component {
+class BranchesComponents extends PureComponent {
 
     constructor(props){
         
@@ -48,7 +48,7 @@ class BranchesComponents extends Component {
             isPressed: false,
             select_all: false, 
 
-            loaded_for_first_time: true, 
+            loaded_for_first_time: false,  
 
             // scroll load new data 
             branches: [],
@@ -213,6 +213,9 @@ class BranchesComponents extends Component {
             size: this.state.number_of_records
         }, true ); 
           
+
+        var reqs = await BranchInstance.get_records( ); 
+        console.log(reqs.data)
  
         if( reqs.login_redirect ) {
             this.props.navigation.navigate( "Login", { redirect_to: "Branches" });
@@ -280,9 +283,14 @@ class BranchesComponents extends Component {
             }
             
         }); */
-      
-
+        
     }
+
+    _handleUpdate = (data) => {
+        // Do something with user object
+        console.log(data);
+    }
+    
 
     componentWillUnmount() { 
         // this.unsubscribeFocusListener(); 
@@ -329,10 +337,17 @@ class BranchesComponents extends Component {
 
     }
 
+    add_new = () => {
+
+        this.props.navigation.goBack(null);
+        this.props.navigation.navigate("add-new-branch")
+
+    }
+
     headerRightComponent = () => {
         return (
             <View style={{...styles.space_15_right}}>
-                <TouchableOpacity style={{...styles.flex, ...styles.direction_row, ...styles.item_center}} onPress={() => this.props.navigation.navigate("add-new-branch")}>
+                <TouchableOpacity style={{...styles.flex, ...styles.direction_row, ...styles.item_center}} onPress={this.add_new}>
                     <Image
                         source={require('./../../assets/icons/add-new-btn-white.png')}
                         style={styles.header_icon_md}
@@ -344,10 +359,17 @@ class BranchesComponents extends Component {
         );
     }
 
+
+    callback_to = () => {
+        this.setState({
+            branches: []
+        })
+    }
+
+    
     Item = (item) => {
         
-        
-
+         
         return (
            <View key={item.data.index} style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15}}>
                  <TouchableOpacity onPress={() => this.selectThisItem(key)}  style={{borderWidth: 1, gap: 15, marginBottom: 15, padding: 15, flexDirection: "row", borderColor: ( false? "red" : "#f9f9f9"), backgroundColor: ( false? "#ffe9e9" : "#f9f9f9"), borderRadius: 10}}>
@@ -373,7 +395,15 @@ class BranchesComponents extends Component {
                                             View Details
                                         </Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => this.props.navigation.navigate("edit-branch", {item: item.data.item, all: this})}>
+                                    <TouchableOpacity onPress={() => {
+                                        
+                                        this.props.navigation.goBack(null);
+
+                                        this.props.navigation.navigate("edit-branch", {
+                                            item: item.data.item 
+                                        });
+
+                                    }}>
                                         <Text style={{color: "#666", fontWeight: "normal"}}>
                                             Edit
                                         </Text>
@@ -454,7 +484,7 @@ class BranchesComponents extends Component {
                         : "" 
                     }
                     
-                    <Button mode="contained" onPress={() => this.props.navigation.navigate("add-new-branch")} style={{...styles.add_btn_bg.container, backgroundColor: this.state.default_color, ...styles.flex}}>
+                    <Button mode="contained" onPress={this.add_new} style={{...styles.add_btn_bg.container, backgroundColor: this.state.default_color, ...styles.flex}}>
                         <Text style={{...styles.add_btn_bg.text}}>Add new branch</Text> 
                     </Button> 
                      

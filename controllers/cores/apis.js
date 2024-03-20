@@ -51,7 +51,7 @@ class A_P_I_S {
             };
 
         }  
-
+        
         if( model_name == undefined ) {
             return {
                 login_redirect: false, 
@@ -70,7 +70,7 @@ class A_P_I_S {
                 data: []
             };
         }
-
+        
          // assign default values for request 
          dataObject['language'] = settings.language;
          dataObject['database_name'] = user_data.database_name;
@@ -88,7 +88,7 @@ class A_P_I_S {
                 'X-api-tokens': user_data.token  
             }
         };  
-
+        
         if( headers !== undefined ) {
             Object.keys(headers).forEach((element) => {
                 var key = element;
@@ -117,7 +117,7 @@ class A_P_I_S {
                 // Something happened in setting up the request that triggered an Error
                 message = language.check_internet_connection
             } 
-
+            
             return {
                 login_redirect: false, 
                 message: message,
@@ -127,7 +127,7 @@ class A_P_I_S {
 
         }
 
-        var success_callback = (response) => {
+        var success_callback = (response) => { 
             return response.data; 
         }
  
@@ -880,9 +880,9 @@ class A_P_I_S {
             __object.dataObject["pagination"] = pagination; 
         }
         
-
+        
         var request = await this.axiosRequest(__object); 
-
+        
         if( request.is_error ) {
             return {
                 login_redirect: false, 
@@ -893,16 +893,16 @@ class A_P_I_S {
         var asynced = [ ...filtered, ...request.data];
 
         // filter data desc and asc 
+        
         if( desc ) {
             // updated_date ( Desc Asc )
             // created_date ( Desc Asc )
-            // 
-
+            //  
             var filter_by = 'updated_date'
             if( desc !== true && typeof desc == 'string' ) {
                 filter_by = desc;
             }
-
+            
             asynced.sort(function(a,b){
                 // Turn your strings into dates, and then subtract them
                 // to get a value that is either negative, positive, or zero.

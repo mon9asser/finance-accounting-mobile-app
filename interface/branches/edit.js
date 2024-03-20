@@ -53,7 +53,7 @@ class EditCurrentBranchComponents extends Component {
             notificationTextCssClass: {},
             notificationMessage: "",
 
-            isPressed: false,
+            isPressed: false 
         }
 
         this.internetState = null;
@@ -140,11 +140,9 @@ class EditCurrentBranchComponents extends Component {
             this.setBranchNote(this.props.route.params.item.note);
             this.setLocalId(this.props.route.params.item.local_id);
         }
-
-
-        var dd = this.props.route.params.all;
-        alert(dd.state.default_color);
-    }
+         
+        
+    } 
 
     // internet connection
     internetConnectionStatus = () => {
@@ -289,8 +287,7 @@ class EditCurrentBranchComponents extends Component {
             return;
         }
 
-        await delete_session_form();
-
+         
         var obj_data = { 
             branch_name: this.state.branch_name, 
             branch_country: this.state.branch_country, 
@@ -300,9 +297,8 @@ class EditCurrentBranchComponents extends Component {
             note: this.state.note,
             param_id: this.state.local_id
         }; 
-
-         
-
+ 
+        
         if ( this.state.branch_name == '') {
             this.setPressBtn(false);
             this.setNameHlght(true);
@@ -325,7 +321,7 @@ class EditCurrentBranchComponents extends Component {
             this.setNotificationCssTextClass(styles.error_text)
             this.setNotificationMessage(response.message);
 
-            setTimeout(async () => { 
+            setTimeout(async () => {  
                 this.props.navigation.navigate("Login", { redirect_to: "edit-branch" });
             }, 1500);
             return;
@@ -358,7 +354,9 @@ class EditCurrentBranchComponents extends Component {
             this.setBranchNumber("");
             this.setBranchNote("");
 
-            this.props.navigation.navigate("Branches", {last_update: response});
+                this.props.navigation.goBack(null);
+                this.props.navigation.navigate("Branches");
+
         }, 1500);
     }
 
