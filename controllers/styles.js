@@ -244,10 +244,10 @@ var styles = StyleSheet.create({
     add_btn_outlined: {
         container: {
             borderColor:'#399872',
+            borderWidth:1,
             borderRadius: 8,
-            borderWidth: 1,
             flex: 1,  
-           justifyContent: "center"
+             justifyContent: "center",
         },
         text: {
             color: '#399872',
@@ -261,7 +261,7 @@ var styles = StyleSheet.create({
             backgroundColor:'#399872',
             borderRadius: 8,
             flex: 1,  
-           justifyContent: "center"
+           justifyContent: "center",
         },
         text: {
             color: '#fff',

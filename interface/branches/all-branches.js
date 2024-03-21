@@ -2,6 +2,7 @@
 // Default
 import React, { PureComponent } from "react";
 import NetInfo from '@react-native-community/netinfo';
+import DatePicker from 'react-native-date-picker';
 // import Device from 'react-native-device-info';
 import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';  
@@ -12,7 +13,7 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationEvents  } from '@react-navigation/native';   
 
-import { FlatList, Alert, RefreshControl, TouchableHighlight, Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
+import { FlatList, Alert, RefreshControl, TouchableHighlight, Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions, Touchable } from 'react-native';
 import { Checkbox, Button, Provider as PaperProvider, DefaultTheme } from "react-native-paper"; 
  
 import { LineChart } from "react-native-chart-kit";
@@ -45,12 +46,22 @@ class BranchesComponents extends PureComponent {
             // load all data 
             all_data: [],
 
+            all_searched_data: [],
+
             // scroll load new data  
             loaded_data: [], 
+
+            // search and filter
+            searched_data: [],
+            searched_page_number: 0,
 
             // checked ids 
             checkbox_checked: false, 
             selected_ids: [], 
+
+            // date picker forms 
+            expanded: false,
+            isFlexed: "none",
 
             // needed givens 
             page_number: 0,
@@ -69,6 +80,8 @@ class BranchesComponents extends PureComponent {
 
         this.internetState = null;
         this.internetStateBox = new Animated.Value(0);
+        this.animationHeight = new Animated.Value(0);
+        this.animationSlider = new Animated.Value(0);
     }
 
     
@@ -80,10 +93,17 @@ class BranchesComponents extends PureComponent {
 
     add_new_items = (items) => {
         
-        var _added = [...this.state.loaded_data, ...items];
-        this.setState({
-            loaded_data: _added
-        });
+        if( ! this.state.searched_data.length ) {
+            var _added = [...this.state.loaded_data, ...items];
+            this.setState({
+                loaded_data: _added
+            });
+        } else {
+            var _added = [...this.state.searched_data, ...items];
+            this.setState({
+                searched_data: _added
+            });
+        }
 
     }
 
@@ -169,8 +189,12 @@ class BranchesComponents extends PureComponent {
 
     }
 
-    componentDidMount = async () => {
-
+    componentDidMount = async () => { 
+        /*
+        alert("https://www.npmjs.com/package/react-slidedown")
+        alert("https://www.npmjs.com/package/react-native-swipe-up-down")
+        alert("https://www.npmjs.com/package/react-native-date-picker")
+        */
         // Load All data async 
         await this.Get_All_Data(); 
 
@@ -247,26 +271,61 @@ class BranchesComponents extends PureComponent {
     }
 
     Load_More = () => {
+         
 
-        // increase the page with 1 
-        var next_page = this.state.page_number + 1;
-        
-        if( ( this.state.all_data.length - 1  ) >= next_page  ) {
+        var new_data;
+        var next_page
+
+        if( ! this.state.searched_data.length ) {
+
+            // increase the page with 1 
+            next_page = this.state.page_number + 1;
             
-            this.setState({
-                page_number: next_page 
-            });
+            if( ( this.state.all_data.length - 1  ) >= next_page  ) {
+                
+                this.setState({
+                    page_number: next_page 
+                });
+            } else {
+
+                // show message there is no any new result 
+                this.setState({
+                    is_last_page: true 
+                });
+                return;
+            }
+
+            
+
+            // => next_page
+            new_data = this.state.all_data[next_page];
+
         } else {
 
-            // show message there is no any new result 
-            this.setState({
-                is_last_page: true 
-            });
-            return;
+            // increase the page with 1 
+            next_page = this.state.searched_page_number + 1;
+            
+            if( ( this.state.all_searched_data.length - 1  ) >= next_page  ) {
+                
+                this.setState({
+                    searched_page_number: next_page 
+                });
+            } else {
+
+                // show message there is no any new result 
+                this.setState({
+                    is_last_page: true 
+                });
+                return;
+            }
+
+            
+
+            // => next_page
+            new_data = this.state.all_searched_data[next_page]; 
+            console.log(new_data);
         }
 
-        // => next_page
-        var new_data = this.state.all_data[next_page];
         this.add_new_items(new_data);
          
     }
@@ -375,19 +434,115 @@ class BranchesComponents extends PureComponent {
 
     }
 
+    filter_by_texts = (text) => {
+       
+        var all = this.state.all_data.flat();
+        if( text == "" ) {
+
+            this.setState({
+                searched_data: []
+            }); 
+            
+            return; 
+        }
+
+        var searched_items = all.filter( item => {
+            
+            var index1 = item.branch_name.indexOf(text);
+            var index2 = item.branch_city.indexOf(text);
+            var index3 = item.branch_number.indexOf(text);
+
+            if(index1 !== -1 || index2 !== -1 || index3 !== -1 ) {
+                return item; 
+            }
+
+        });
+
+        var chunked =  searched_items.length ? _.chunk(searched_items, this.state.records): [];
+
+        this.setState({
+            all_searched_data:chunked,
+            searched_data: chunked.length? chunked[0]: []
+        }); 
+
+
+    }
+    
+    toggleExpansion = () => {
+        const { expanded } = this.state; 
+
+        this.setState({ isFlexed: expanded ? "none" : "flex" }, () => {
+            // Start the animation
+            Animated.timing(this.animationSlider, {
+                toValue: expanded ? "none" : "flex", // Change 300 to the desired expanded height or dynamically calculate it
+                duration: 500, // Animation speed in milliseconds
+                useNativeDriver: false
+            }).start();
+        });
+
+        // Toggle the expanded state
+        this.setState({ expanded: !expanded }, () => {
+            // Start the animation
+            Animated.timing(this.animationHeight, {
+                toValue: expanded ? 0 : 295, // Change 300 to the desired expanded height or dynamically calculate it
+                duration: 295, // Animation speed in milliseconds
+                useNativeDriver: false, // Since we're animating height, we cannot use native driver
+            }).start();
+        });
+    };
+
+
     HeaderComponent = () => {
         return (
             <View style={{ width: "100%", overflow:"hidden", flexDirection: "column",gap: 15}}>
                 
 
-                <View>
-                    <TouchableOpacity>
-                        <Text>Filters</Text>
-                    </TouchableOpacity>
+                <View style={{backgroundColor:"#f9f9f9", padding: 20, borderWidth: 1, borderColor:"#eee", borderRadius: 10}}>
 
-                    <View style={{  borderColor:'#eee',  ...styles.search_inputs, ...styles.space_top_15,justifyContent: "space-between", alignItems: "center", marginBottom: 15}}>
-                        <TextInput placeholder={"Filter by name, phone, city"} style={{...styles.input_field}} />
-                    </View>
+                    <TouchableOpacity style={{flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center"}} onPress={this.toggleExpansion}>
+                        <Text style={{fontWeight:"bold"}}>Filters</Text>
+                        <Image 
+                            source={require("./../../assets/icons/filters.png")}
+                            style={{width: 22, height: 22}} 
+                        /> 
+                    </TouchableOpacity> 
+
+                    <Animated.View style={{ 
+                        overflow: 'hidden',
+                        display: this.state.isFlexed,
+                        height: this.animationHeight, // Bind the animated height value
+                        marginTop: 20 
+                    }}>
+                        <View style={{height: 85, borderBottomColor: "#ddd", borderBottomWidth: 1, paddingBottom: 15}}>
+                            <Text style={{color: "#999"}}>Search by name, phone, city</Text>
+                            <View style={{  borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 8}}>
+                                <TextInput onChangeText={text => this.filter_by_texts(text)} placeholder={"Filter by name, phone, city"} style={{...styles.input_field}} />
+                            </View>
+                        </View>
+
+                        <View style={{marginTop: 20}}>
+                            <Text style={{color: "#999"}}>Search by date</Text>
+                            <View style={{marginTop: 5, height: 50}}>
+                                
+                                <TouchableHighlight onPress={alert} underlayColor={"#fff"} style={{ borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 8}}>
+                                    <TextInput readOnly={true} placeholder={"From date"} style={{...styles.input_field}} />
+                                </TouchableHighlight>
+                            </View>
+
+                            <View style={{marginTop: 5, height: 50}}>
+                                <TouchableHighlight onPress={alert} underlayColor={"#fff"} style={{ borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 5}}>
+                                    <TextInput readOnly={true} placeholder={"To date"} style={{...styles.input_field}} />
+                                </TouchableHighlight> 
+                            </View>
+
+                            
+                        </View> 
+
+                        <TouchableHighlight style={{borderColor: this.state.default_color, borderWidth: 1, marginTop: 15, borderRadius: 8, backgroundColor: "#fff", flex: 1, justifyContent: 'center', alignItems: "center" }}>
+                            <Text style={{color: this.state.default_color}}>Search</Text>
+                        </TouchableHighlight>
+                    </Animated.View>
+
                 </View>
 
                 
@@ -484,7 +639,7 @@ class BranchesComponents extends PureComponent {
                         <View style={{width: "100%",  alignContent: "center", alignItems: "center", padding: 10, borderRadius: 3, flex: 1, justifyContent: "center"}}><ActivityIndicator color={this.state.default_color} size={"large"}></ActivityIndicator></View> :
                         ( this.state.all_data.length ) ?
                             <FlatList
-                                data={this.state.loaded_data}
+                                data={this.state.searched_data.length? this.state.searched_data: this.state.loaded_data}
                                 renderItem={ (item) => <this.Item_Data data={item}/>}
                                 keyExtractor={(item, index) => item.local_id.toString()} 
                                 onEndReached={() => this.Load_More()} 
