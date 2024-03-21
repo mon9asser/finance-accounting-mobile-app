@@ -92,22 +92,40 @@ class BranchesComponents extends PureComponent {
         // send request 
         var reqs = await BranchInstance.delete_records(ids)
         
+        if( reqs.is_error ) {
+            Alert.alert(reqs.message);
+            return;
+        }
+        
+        if( reqs.login_redirect ) {
+            Alert.alert(reqs.message);
+            this.props.navigation.navigate("Login", {
+                redirect_to: "Branches"
+            });
+            return;
+        }
 
         // return deletion button 
         this.setState({
             is_pressed: false
         }); 
 
+        await this.Get_All_Data();
+
     }
 
     deleteConfirmMessage = (ids) => {
+        
         Alert.alert(
             "Confirm Deletion Action", // Dialog Title
             "Are you sure you want to delete the selected rows?", // Dialog Message
             [
                 {
                     text: "Cancel", 
-                    style: "cancel"
+                    onPress: () => this.setState({
+                        is_pressed: false 
+                    }), 
+                    style: "cancel",
                 },
                 { 
                     text: "OK", 
@@ -263,10 +281,33 @@ class BranchesComponents extends PureComponent {
 
     }
 
+    select_this_row = (id) => {
+
+        if( id == undefined ) return; 
+
+       this.setState((prevState) => {
+
+            var index = prevState.selected_ids.indexOf(id);
+            var array = [];
+            if( index == -1 ) {
+                array = [...prevState.selected_ids, id];
+            } else {
+                array = prevState.selected_ids.filter( x => x != id );
+            } 
+
+            return {
+                selected_ids: array
+            }
+       })
+        
+       
+
+    }
+
     Item_Data = ( item, key ) => {
         return (
             <View key={item.data.index} style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15}}>
-                 <TouchableOpacity style={{borderWidth: 1, gap: 15, marginBottom: 15, padding: 15, flexDirection: "row", borderColor: ( this.is_highlighted(item.data.item.local_id)? "red" : "#f9f9f9"), backgroundColor: ( this.is_highlighted(item.data.item.local_id)? "#ffe9e9" : "#f9f9f9"), borderRadius: 10}}>
+                 <TouchableOpacity onPress={() => this.select_this_row(item.data.item.local_id)} style={{borderWidth: 1, gap: 15, marginBottom: 15, padding: 15, flexDirection: "row", borderColor: ( this.is_highlighted(item.data.item.local_id)? "red" : "#f9f9f9"), backgroundColor: ( this.is_highlighted(item.data.item.local_id)? "#ffe9e9" : "#f9f9f9"), borderRadius: 10}}>
                      
                     <View style={{flexDirection: 'column', height: 60, justifyContent: 'center',  flex: 1}}>
                             <View style={{flex: 1, flexDirection: "row", gap: 5, alignItems: "center"}}>
@@ -338,16 +379,22 @@ class BranchesComponents extends PureComponent {
         return (
             <View style={{ width: "100%", overflow:"hidden", flexDirection: "column",gap: 15}}>
                 
-                <View style={{  borderColor:'#eee',  ...styles.search_inputs, ...styles.space_top_15,justifyContent: "space-between", alignItems: "center", marginBottom: 15}}>
-                    <TextInput placeholder={"Filter by name, phone number"} style={{...styles.input_field}} />
-                    <Button>
-                        <Text>Filter</Text>
-                    </Button>
+
+                <View>
+                    <TouchableOpacity>
+                        <Text>Filters</Text>
+                    </TouchableOpacity>
+
+                    <View style={{  borderColor:'#eee',  ...styles.search_inputs, ...styles.space_top_15,justifyContent: "space-between", alignItems: "center", marginBottom: 15}}>
+                        <TextInput placeholder={"Filter by name, phone, city"} style={{...styles.input_field}} />
+                    </View>
                 </View>
 
-                <TouchableOpacity onPress={ this.select_all_records } style={{flexDirection: "row", justifyContent: "left", alignItems: "center", backgroundColor: '#f9f9f9', borderRadius: 5, padding: 5, marginBottom: 15}}>
+                
+
+                <TouchableOpacity onPress={ this.select_all_records } style={{flexDirection: "row", alignItems: "center",  marginBottom: 10, marginLeft:-5}}>
                     <Checkbox status={this.state.checkbox_checked ? 'checked' : 'unchecked'} />
-                    <Text>Select all branches</Text>                                
+                    <Text style={{color: "#999"}}>Select all branches</Text>                                
                 </TouchableOpacity>
                 
             </View>
@@ -376,9 +423,7 @@ class BranchesComponents extends PureComponent {
     };
 
     delete_rows = () => {
-        
-        
-
+         
         var ids = [];
         if( this.state.checkbox_checked ) {
             ids = this.state.all_data.flat().map(item => ( item.local_id !== undefined)? item.local_id: null ).filter(x => x !== null );
@@ -407,13 +452,25 @@ class BranchesComponents extends PureComponent {
 
 
         // show confirm message 
-        this.deleteConfirmMessage(ids);
-
-        
-
+        this.deleteConfirmMessage(ids); 
 
     }
-    
+    FooterComponent = () => {
+
+        return (
+
+            <View>
+                
+                { this.state.is_last_page ? <View style={{justifyContent: "center", alignItems: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.language.no_more_records}</Text></View> : <ActivityIndicator size={"small"} color={this.state.default_color} /> }
+
+                <View style={{flex: 1, marginTop: 15, borderTopColor: "#eee", borderTopWidth: 2, height: 40, alignItems:"center", flexDirection: "row", justifyContent: "space-between"}}>
+                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.all_data.flat().length} Branche(s)</Text>
+                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}> {this.state.all_data.length} Page(s)</Text>
+                </View>
+
+            </View>
+        )
+    }
     render (){ 
 
         return (
@@ -433,13 +490,15 @@ class BranchesComponents extends PureComponent {
                                 onEndReached={() => this.Load_More()} 
                                 onEndReachedThreshold={0.2} 
                                 refreshControl={
-                                    <RefreshControl
-                                      refreshing={this.state.refreshing}
-                                      onRefresh={this.onRefresh}
+                                    <RefreshControl 
+                                        titleColor="#fff" 
+                                        refreshing={this.state.refreshing}
+                                        onRefresh={this.onRefresh}
+                                        colors={[this.state.default_color]}
                                     />
                                 }
                                 ListHeaderComponent={ <this.HeaderComponent /> }
-                                ListFooterComponent={  this.state.is_last_page ? <View style={{justifyContent: "center", alignItems: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.language.no_more_records}</Text></View> : <ActivityIndicator size={"small"} color={this.state.default_color} />}
+                                ListFooterComponent={ <this.FooterComponent /> }
                             /> :<View style={{width: "100%",  alignContent: "center", alignItems: "center", padding: 10, borderRadius: 3, flex: 1, justifyContent: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.data_status}</Text></View>
                     }
                     
