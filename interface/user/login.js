@@ -309,7 +309,7 @@ class LoginComponents extends Component {
                     
                     this.setNotificationBox("none");
 
-                    if( this.props.route.params.redirect_to !== undefined ) {
+                    if( this.props.route.params !== undefined && this.props.route.params.redirect_to !== undefined ) {
                         this.redirect_to(this.props.route.params.redirect_to);
                         return;
                     }

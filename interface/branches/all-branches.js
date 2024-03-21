@@ -5,14 +5,14 @@ import NetInfo from '@react-native-community/netinfo';
 // import Device from 'react-native-device-info';
 import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';  
-
+import _ from "lodash";
 
 // Distruct 
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationEvents  } from '@react-navigation/native';   
 
-import { FlatList, RefreshControl, TouchableHighlight, Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
+import { FlatList, Alert, RefreshControl, TouchableHighlight, Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
 import { Checkbox, Button, Provider as PaperProvider, DefaultTheme } from "react-native-paper"; 
  
 import { LineChart } from "react-native-chart-kit";
@@ -43,16 +43,81 @@ class BranchesComponents extends PureComponent {
             select_all: false,   
 
             // load all data 
-            all_data: [{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}],
+            all_data: [],
 
             // scroll load new data  
-            loaded_data: [{},{},{},{},{},{}], 
+            loaded_data: [], 
+
+            // checked ids 
+            checkbox_checked: false, 
+            selected_ids: [], 
+
+            // needed givens 
+            page_number: 0,
+            records: 10,
+            is_loading: false, 
+            is_last_page: false,
+
+            // delete counter
+            is_pressed: false, 
+
+            // show stats when screen is loaded
+            loaded_page: false,
+            refreshing: false, 
+            data_status: "No records have been found. Please click the button below to add a new one."
         }
 
         this.internetState = null;
         this.internetStateBox = new Animated.Value(0);
     }
 
+    
+    setLoading = (value) => {
+        this.setState({
+            is_loading: value
+        })
+    }
+
+    add_new_items = (items) => {
+        
+        var _added = [...this.state.loaded_data, ...items];
+        this.setState({
+            loaded_data: _added
+        });
+
+    }
+
+    performDeletionAction = async (ids) => {
+
+        // send request 
+        var reqs = await BranchInstance.delete_records(ids)
+        
+
+        // return deletion button 
+        this.setState({
+            is_pressed: false
+        }); 
+
+    }
+
+    deleteConfirmMessage = (ids) => {
+        Alert.alert(
+            "Confirm Deletion Action", // Dialog Title
+            "Are you sure you want to delete the selected rows?", // Dialog Message
+            [
+                {
+                    text: "Cancel", 
+                    style: "cancel"
+                },
+                { 
+                    text: "OK", 
+                    onPress: async () => await this.performDeletionAction(ids) // The action you want to perform on confirmation
+                }
+            ]
+        );
+    }
+
+    
     setup_params = () => {
 
          
@@ -98,7 +163,7 @@ class BranchesComponents extends PureComponent {
         this.internetConnectionStatus();
 
         // Apply screen and header options 
-        this.screen_options();  
+        this.screen_options();   
 
     }
 
@@ -116,27 +181,239 @@ class BranchesComponents extends PureComponent {
         );
     }
 
-    Get_All_Data = () => {
+    Get_All_Data = async () => {
 
+        // show loading for 2 secs
+        this.setLoading(true);
+
+        // send request to get the data
+        var reqs = await BranchInstance.get_records();
+         
+
+        // check for error and see error message
+        if( reqs.is_error ) {
+            
+            this.setState({
+                loaded_page: true
+            })
+
+            this.setState({
+                data_status: reqs.message
+            })
+
+            return; 
+        }  
+
+        // if yes chunk the big array into small pieces 
+        var paging = _.chunk(reqs.data, this.state.records);
+        this.setState({
+            all_data: paging
+        });
+        
+        // by default set page number with 1 
+        this.setState({
+            page_number: 0
+        }) 
+
+        // assign records for page 1
+        this.setState({
+            loaded_data: paging[0]
+        })
+        
+        // disable loading proccess 
+        if( reqs.data ) {
+            this.setState({
+                loaded_page: true
+            })
+        }
     }
 
     Load_More = () => {
 
-        // Getting all data with one array
+        // increase the page with 1 
+        var next_page = this.state.page_number + 1;
+        
+        if( ( this.state.all_data.length - 1  ) >= next_page  ) {
+            
+            this.setState({
+                page_number: next_page 
+            });
+        } else {
 
-        // Devide it into parts 
+            // show message there is no any new result 
+            this.setState({
+                is_last_page: true 
+            });
+            return;
+        }
 
-        // give the main part
-
-        console.log("data")
+        // => next_page
+        var new_data = this.state.all_data[next_page];
+        this.add_new_items(new_data);
+         
     }
 
-    Item_Data = ( item ) => {
+    edit_this_item = (item) => {
+
+        this.props.navigation.goBack(null);
+
+        this.props.navigation.navigate("edit-branch", {
+            item: item.data.item 
+        });
+
+    }
+
+    Item_Data = ( item, key ) => {
         return (
-            <View style={{height: 100, backgroundColor: "blue", marginBottom: 10, justifyContent: "center"}}><Text style={{color:"#fff", textAlign:"center"}}>Items</Text></View>
+            <View key={item.data.index} style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15}}>
+                 <TouchableOpacity style={{borderWidth: 1, gap: 15, marginBottom: 15, padding: 15, flexDirection: "row", borderColor: ( this.is_highlighted(item.data.item.local_id)? "red" : "#f9f9f9"), backgroundColor: ( this.is_highlighted(item.data.item.local_id)? "#ffe9e9" : "#f9f9f9"), borderRadius: 10}}>
+                     
+                    <View style={{flexDirection: 'column', height: 60, justifyContent: 'center',  flex: 1}}>
+                            <View style={{flex: 1, flexDirection: "row", gap: 5, alignItems: "center"}}>
+                                <Image 
+                                    source={require("./../../assets/icons/location.png")}
+                                    style={{width: 22, height: 22}}
+                                /> 
+                                <Text style={{fontSize: 16, color: "#222", fontWeight: "normal"}}>
+                                    {item.data.item.branch_name}
+                                </Text> 
+                            </View>
+
+                            <View style={{ flexDirection:'row', justifyContent: 'space-between'}}>
+                                <Text style={{color:"grey"}}>
+                                {item.data.item.branch_city}
+                                </Text>  
+                                <View style={{...styles.direction_row, ...styles.gap_15}}>
+                                    <TouchableOpacity>
+                                        <Text style={{color: "#666", fontWeight: "normal"}}> 
+                                            View Details
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => this.edit_this_item(item)}>
+                                        <Text style={{color: "#666", fontWeight: "normal"}}>
+                                            Edit
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View> 
+                    </View> 
+                </TouchableOpacity>    
+
+                  
+           </View>
         );
     }
 
+    is_highlighted = ( item_id ) => {
+        
+        if( item_id == undefined ) {
+            return false;
+        }
+
+        var selected = this.state.selected_ids;
+ 
+        if( this.state.checkbox_checked ) {
+            return true; 
+        }
+
+        if(selected.length && selected.indexOf(item_id) !== -1 ) {
+            return true;
+        }
+
+        return false; 
+
+    }
+
+    select_all_records = () => { 
+        
+        this.setState((prevState) => {
+            return {
+                checkbox_checked: !prevState.checkbox_checked,
+            };
+        }); 
+
+    }
+
+    HeaderComponent = () => {
+        return (
+            <View style={{ width: "100%", overflow:"hidden", flexDirection: "column",gap: 15}}>
+                
+                <View style={{  borderColor:'#eee',  ...styles.search_inputs, ...styles.space_top_15,justifyContent: "space-between", alignItems: "center", marginBottom: 15}}>
+                    <TextInput placeholder={"Filter by name, phone number"} style={{...styles.input_field}} />
+                    <Button>
+                        <Text>Filter</Text>
+                    </Button>
+                </View>
+
+                <TouchableOpacity onPress={ this.select_all_records } style={{flexDirection: "row", justifyContent: "left", alignItems: "center", backgroundColor: '#f9f9f9', borderRadius: 5, padding: 5, marginBottom: 15}}>
+                    <Checkbox status={this.state.checkbox_checked ? 'checked' : 'unchecked'} />
+                    <Text>Select all branches</Text>                                
+                </TouchableOpacity>
+                
+            </View>
+        );
+    }
+
+    add_new = () => {
+        this.props.navigation.goBack(null);
+        this.props.navigation.navigate("add-new-branch");
+    }
+
+    setRefreshing = (value) => {
+        this.setState({
+            refreshing: value
+        })
+    }
+
+    onRefresh = async () => {
+
+        this.setRefreshing(true);
+
+        await this.Get_All_Data();
+
+        this.setRefreshing(false);
+
+    };
+
+    delete_rows = () => {
+        
+        
+
+        var ids = [];
+        if( this.state.checkbox_checked ) {
+            ids = this.state.all_data.flat().map(item => ( item.local_id !== undefined)? item.local_id: null ).filter(x => x !== null );
+        
+        } else {
+            ids = this.state.selected_ids; 
+        }
+
+        if( this.state.is_pressed ) {
+            alert( "We already deleting your records, please wait ..." );
+            return;
+        }
+
+        this.setState({
+            is_pressed: true
+        }); 
+
+
+        if( ! ids.length ) {
+            this.setState({
+                is_pressed: false
+            }); 
+            alert("You have to select data first then press on the deletion button");
+            return;
+        }
+
+
+        // show confirm message 
+        this.deleteConfirmMessage(ids);
+
+        
+
+
+    }
+    
     render (){ 
 
         return (
@@ -144,25 +421,45 @@ class BranchesComponents extends PureComponent {
                 
                  
                 <View style={{ flex: 1, width: "100%", padding:15}}>
-                    <FlatList
-                        data={this.state.loaded_data}
-                        renderItem={ (item) => <this.Item_Data data={item}/>}
-                        keyExtractor={(item, index) => index.toString()} 
-                        onEndReached={() => this.Load_More()} 
-                    />
+
+                    {
+                        ( ! this.state.loaded_page ) ?
+                        <View style={{width: "100%",  alignContent: "center", alignItems: "center", padding: 10, borderRadius: 3, flex: 1, justifyContent: "center"}}><ActivityIndicator color={this.state.default_color} size={"large"}></ActivityIndicator></View> :
+                        ( this.state.all_data.length ) ?
+                            <FlatList
+                                data={this.state.loaded_data}
+                                renderItem={ (item) => <this.Item_Data data={item}/>}
+                                keyExtractor={(item, index) => item.local_id.toString()} 
+                                onEndReached={() => this.Load_More()} 
+                                onEndReachedThreshold={0.2} 
+                                refreshControl={
+                                    <RefreshControl
+                                      refreshing={this.state.refreshing}
+                                      onRefresh={this.onRefresh}
+                                    />
+                                }
+                                ListHeaderComponent={ <this.HeaderComponent /> }
+                                ListFooterComponent={  this.state.is_last_page ? <View style={{justifyContent: "center", alignItems: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.language.no_more_records}</Text></View> : <ActivityIndicator size={"small"} color={this.state.default_color} />}
+                            /> :<View style={{width: "100%",  alignContent: "center", alignItems: "center", padding: 10, borderRadius: 3, flex: 1, justifyContent: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.data_status}</Text></View>
+                    }
+                    
+
+
+                    
+
                 </View>
 
-                <View style={{ width: "100%", flexDirection: "row", height:50, paddingLeft: 15,paddingRight: 15, gap: 15}}>
+                <View style={{ width: "100%", flexDirection: "row", height:80, paddingBottom: 30,paddingTop: 0, paddingLeft: 15,paddingRight: 15, gap: 15}}>
                     
                     {
-                        this.state.loaded_data.length ?
-                        <Button mode="outlined" style={{...styles.delete_btn_outlined.container, ...styles.flex}}>
+                        this.state.loaded_data && this.state.loaded_data.length ?
+                        <Button onPress={this.delete_rows} mode="outlined" style={{...styles.delete_btn_outlined.container, ...styles.flex, opacity:(this.state.checkbox_checked || this.state.selected_ids.length )? 1: 0.5}}>
                             <Text style={{...styles.delete_btn_outlined.text}}>Delete</Text> 
                         </Button> 
                         : "" 
                     }
                     
-                    <Button mode="contained" onPress={this.add_new} style={{...styles.add_btn_bg.container, backgroundColor: this.state.default_color, ...styles.flex}}>
+                    <Button onPress={this.add_new}  mode="contained" style={{...styles.add_btn_bg.container, backgroundColor: this.state.default_color, ...styles.flex}}>
                         <Text style={{...styles.add_btn_bg.text}}>Add new branch</Text> 
                     </Button> 
                      

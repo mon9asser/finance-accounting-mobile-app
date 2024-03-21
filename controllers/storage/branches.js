@@ -115,7 +115,7 @@ class Branches extends A_P_I_S {
      * paging = { page, size }
      * async: case true it will get data from remote and store it in locally
      */
-    get_records = async(param_id = [], paging = {}, async = false, desc = true ) => {
+    get_records = async(param_id = [], paging = {}, async = true, desc = true ) => {
  
         
         // getting settings and language
