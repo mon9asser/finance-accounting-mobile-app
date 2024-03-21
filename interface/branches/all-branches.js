@@ -365,8 +365,8 @@ class BranchesComponents extends PureComponent {
 
     Item_Data = ( item, key ) => {
         return (
-            <View key={item.data.index} style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15}}>
-                 <TouchableOpacity onPress={() => this.select_this_row(item.data.item.local_id)} style={{borderWidth: 1, gap: 15, marginBottom: 15, padding: 15, flexDirection: "row", borderColor: ( this.is_highlighted(item.data.item.local_id)? "red" : "#f9f9f9"), backgroundColor: ( this.is_highlighted(item.data.item.local_id)? "#ffe9e9" : "#f9f9f9"), borderRadius: 10}}>
+            <View key={item.data.index} style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15 }}>
+                 <TouchableOpacity onPress={() => this.select_this_row(item.data.item.local_id)} style={{borderWidth: 1, gap: 15, marginBottom: 15, padding: 15, flexDirection: "row", borderColor: ( this.is_highlighted(item.data.item.local_id)? "red" : "#eee"), backgroundColor: ( this.is_highlighted(item.data.item.local_id)? "#ffe9e9" : "#f9f9f9"), borderRadius: 10}}>
                      
                     <View style={{flexDirection: 'column', height: 60, justifyContent: 'center',  flex: 1}}>
                             <View style={{flex: 1, flexDirection: "row", gap: 5, alignItems: "center"}}>
