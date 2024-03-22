@@ -105,11 +105,12 @@ class AddNewBranchComponents extends Component {
         })
     }
 
-    setLanguage = (lang ) => {
+    setLanguage = async (lang ) => {
  
         I18nManager.forceRTL(lang.is_rtl);
+        
         this.setState({
-            language: {...lang.add_branch_screen, ...lang.labels}
+            language:lang
         });
 
     }
@@ -162,8 +163,8 @@ class AddNewBranchComponents extends Component {
     componentDidMount = async () => {
          
         // setup language
-        this.setup_params();
-
+        this.setup_params();  
+        
         // internet connection status
         this.internetConnectionStatus();
 
@@ -201,10 +202,11 @@ class AddNewBranchComponents extends Component {
     )
 
     screen_options = () => { 
+        
          
         // Screen Options 
         this.props.navigation.setOptions({
-            headerTitle: this.state.language.title, 
+            headerTitle: this.state.language.add_new_branch, 
             headerStyle: {backgroundColor: this.state.default_color}, 
             headerTitleStyle: { color: "#fff" },
             headerTintColor: '#fff',
@@ -263,7 +265,7 @@ class AddNewBranchComponents extends Component {
         
 
         if( this.state.isPressed ) {
-            alert(this.state.language.btn_clicked_twice);
+            alert(this.state.language.labels.btn_clicked_twice);
             return;
         }
 
@@ -355,7 +357,7 @@ class AddNewBranchComponents extends Component {
     render() {
         
 
-         
+         console.log(this.state.language.password);
 
         return  (
             <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>

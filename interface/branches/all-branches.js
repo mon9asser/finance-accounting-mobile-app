@@ -11,7 +11,7 @@ import _ from "lodash";
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationEvents  } from '@react-navigation/native';    
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from '@react-native-community/datetimepicker'; 
 
 import { FlatList, Alert, RefreshControl, TouchableHighlight, Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions, Touchable } from 'react-native';
 import { Checkbox, Button, Provider as PaperProvider, DefaultTheme } from "react-native-paper"; 
@@ -544,8 +544,32 @@ class BranchesComponents extends PureComponent {
         return `${day}/${month}/${year}`;
     };
     
+    
     searchOnDataByDate = () => {
-        alert("Convert two dates to timestamps")
+
+        var flats = this.state.all_data.flat();
+        var values = flats.filter(obj => {
+            
+            if( obj.created_date != null ) {
+
+                var from = new Date(this.state.date_from.setHours(0, 0, 0, 0)).getTime();
+                var to = new Date(this.state.date_to.setHours(23, 59, 59, 999)).getTime();
+                var created_date = new Date(obj.created_date).getTime();
+                
+                return created_date >= from && created_date <= to;
+            }
+            
+        });
+
+        
+        // increase the page with 1 
+        var chunked =  values.length ? _.chunk(values, this.state.records): [];
+
+        this.setState({
+            all_searched_data:chunked,
+            searched_data: chunked.length? chunked[0]: []
+        }); 
+
     }
 
     HeaderComponent = () => {
