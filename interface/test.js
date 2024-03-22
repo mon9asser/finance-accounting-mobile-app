@@ -1,7 +1,9 @@
 
-import { View, Button, Text } from "react-native";
+import React, { useState} from "react";
+import { View, Button, Text, StyleSheet, Modal, Platform } from "react-native";
 import { ProductsInstance } from "../controllers/storage/products";
 import { NotificationInstance } from "../controllers/storage/notifications";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 var i = 100;
 var TestComponent =  ({navigation}) => {
@@ -63,7 +65,23 @@ var TestComponent =  ({navigation}) => {
         console.log("------------------------------------------ Totals:" + prodInstance.data.length) 
     }
 
+    const [isPickerShow, setIsPickerShow] = useState(false);
+  const [date, setDate] = useState(new Date());
+
+  // Shows or hides the date picker based on the current state
+  const showPicker = () => {
+    setIsPickerShow(true);
+  };
+
+  // Updates the selected date and controls the picker visibility
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setIsPickerShow(Platform.OS === 'ios');
+    setDate(currentDate);
+  };
+
     return (
+        <View>
         <View style={{flex: 1, justifyContent: 'center', alignItems:'center', gap: 50}}>
             <Button onPress={DeleteData} title="Delete Row" />
             <Button onPress={addData} title="Insert a new row" />
@@ -72,7 +90,59 @@ var TestComponent =  ({navigation}) => {
             <Button onPress={getById} title="Get By Id" />
             <Button onPress={() => {navigation.navigate("Login")}} title="Login" />
         </View>
+
+        <Button title="Show Date Picker" onPress={showPicker} />
+        {isPickerShow && (
+        <Modal
+            transparent={true}
+            visible={isPickerShow}
+            animationType="slide"
+            onRequestClose={() => setIsPickerShow(false)}>
+            <View style={styles.modalView}>
+            <DateTimePicker
+                testID="dateTimePicker"
+                value={date}
+                mode={'date'}
+                is24Hour={true}
+                display="default"
+                onChange={onChange}
+            />
+            {Platform.OS === 'ios' && (
+                <Button onPress={() => setIsPickerShow(false)} title="Done" />
+            )}
+            </View>
+        </Modal>
+        )}
+        <Text style={styles.dateText}>Selected Date: {date.toDateString()}</Text>
+        </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalView: {
+      backgroundColor: 'white',
+      borderRadius: 20,
+      padding: 35,
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+      margin: 20,
+    },
+    dateText: {
+      marginTop: 20,
+    },
+  });
+  
 
 export { TestComponent };

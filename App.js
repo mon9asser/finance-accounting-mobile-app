@@ -265,6 +265,8 @@ const App = () => {
           <NavigationContainer> 
             <Stack.Navigator initialRouteName='MainPage'>
 
+             <Stack.Screen name="test" component={TestComponent}/>
+
               {/* Dashboard with its sidebar */}
               <Stack.Screen name="MainPage" options={{ headerShown: false }}   component={DrawerDashboardComponents}  />
               

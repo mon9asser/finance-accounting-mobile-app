@@ -1,8 +1,7 @@
 
 // Default
 import React, { PureComponent } from "react";
-import NetInfo from '@react-native-community/netinfo';
-import DatePicker from 'react-native-date-picker';
+import NetInfo from '@react-native-community/netinfo'; 
 // import Device from 'react-native-device-info';
 import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';  
@@ -11,7 +10,8 @@ import _ from "lodash";
 // Distruct 
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
-import { NavigationEvents  } from '@react-navigation/native';   
+import { NavigationEvents  } from '@react-navigation/native';    
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { FlatList, Alert, RefreshControl, TouchableHighlight, Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions, Touchable } from 'react-native';
 import { Checkbox, Button, Provider as PaperProvider, DefaultTheme } from "react-native-paper"; 
@@ -53,7 +53,14 @@ class BranchesComponents extends PureComponent {
 
             // search and filter
             searched_data: [],
-            searched_page_number: 0,
+            searched_page_number: 0, 
+
+            // date
+            date_from: new Date(),
+            date_to: new Date(),
+            open_date_from_modal: false,
+            open_date_to_modal: false,
+
 
             // checked ids 
             checkbox_checked: false, 
@@ -361,7 +368,7 @@ class BranchesComponents extends PureComponent {
         
        
 
-    }
+    } 
 
     Item_Data = ( item, key ) => {
         return (
@@ -491,6 +498,55 @@ class BranchesComponents extends PureComponent {
         });
     };
 
+    change_date_from_value = ( event, selectedDate) => {
+        
+        var date_from_value = selectedDate || this.state.date_from;
+
+        this.setState({ 
+            date_from: date_from_value,
+            open_date_from_modal: false
+        });
+        
+    }
+
+    change_date_to_value = ( event, selectedDate) => {
+        
+        var date_to_value = selectedDate || this.state.date_to;
+
+        this.setState({ 
+            date_to: date_to_value,
+            open_date_to_modal: false
+        });
+        
+    }
+
+    open_date_from_picker_model = (value) => {
+        this.setState({
+            open_date_from_modal: value 
+        })
+    }
+
+    open_date_to_picker_model = (value) => {
+        this.setState({
+            open_date_to_modal: value
+        })
+    }
+
+    formatDate = (date) => {
+        let day = date.getDate();
+        let month = date.getMonth() + 1; // Months are zero indexed
+        let year = date.getFullYear();
+        
+        // Ensuring day and month are in two digits format
+        day = day < 10 ? `0${day}` : day;
+        month = month < 10 ? `0${month}` : month;
+    
+        return `${day}/${month}/${year}`;
+    };
+    
+    searchOnDataByDate = () => {
+        alert("Convert two dates to timestamps")
+    }
 
     HeaderComponent = () => {
         return (
@@ -522,24 +578,41 @@ class BranchesComponents extends PureComponent {
 
                         <View style={{marginTop: 20}}>
                             <Text style={{color: "#999"}}>Search by date</Text>
-                            <View style={{marginTop: 5, height: 50}}>
+                            <View style={{marginTop: 5, height: 50}}> 
+                                <TouchableHighlight onPress={() => this.open_date_from_picker_model(true)} underlayColor={"#fff"} style={{ borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 8}}>
+                                    <TextInput readOnly={true} placeholder={"From date"} style={{...styles.input_field}} value={this.formatDate(this.state.date_from)} />
+                                </TouchableHighlight>  
+
+                                { this.state.open_date_from_modal && (
+                                    <DateTimePicker
+                                        value={this.state.date_from}
+                                        mode={'date'}
+                                        display="default"
+                                        onChange={this.change_date_from_value}
+                                    />
+                                )}
                                 
-                                <TouchableHighlight onPress={alert} underlayColor={"#fff"} style={{ borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 8}}>
-                                    <TextInput readOnly={true} placeholder={"From date"} style={{...styles.input_field}} />
-                                </TouchableHighlight>
+                                
                             </View>
 
                             <View style={{marginTop: 5, height: 50}}>
-                                <TouchableHighlight onPress={alert} underlayColor={"#fff"} style={{ borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 5}}>
-                                    <TextInput readOnly={true} placeholder={"To date"} style={{...styles.input_field}} />
+                                <TouchableHighlight onPress={() => this.open_date_to_picker_model(true)} underlayColor={"#fff"} style={{ borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 5}}>
+                                    <TextInput readOnly={true} placeholder={"To date"} style={{...styles.input_field}} value={this.formatDate(this.state.date_to)}/>
                                 </TouchableHighlight> 
-                            </View>
 
-                            
+                                { this.state.open_date_to_modal && (
+                                    <DateTimePicker
+                                        value={this.state.date_to}
+                                        mode={'date'}
+                                        display="default"
+                                        onChange={this.change_date_to_value}
+                                    />
+                                )}
+                            </View> 
                         </View> 
 
-                        <TouchableHighlight style={{borderColor: this.state.default_color, borderWidth: 1, marginTop: 15, borderRadius: 8, backgroundColor: "#fff", flex: 1, justifyContent: 'center', alignItems: "center" }}>
-                            <Text style={{color: this.state.default_color}}>Search</Text>
+                        <TouchableHighlight onPress={this.searchOnDataByDate} style={{borderColor: this.state.default_color, borderWidth: 1, marginTop: 15, borderRadius: 8, backgroundColor: "#fff", flex: 1, justifyContent: 'center', alignItems: "center" }}>
+                            <Text style={{color: this.state.default_color}}>Search by date</Text>
                         </TouchableHighlight>
                     </Animated.View>
 
