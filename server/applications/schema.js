@@ -97,11 +97,21 @@ var allSchema = {
         ...default_properties,
     },
 
+    /**
+     * doc type => doc name
+     * -1        => login
+     * 1-        => register
+     * 0        => branch
+     * 3        => branch
+     * 4        => branch
+     * 5        => branch
+     */
     log_history: {
-        doc_type: { type: Number, default: -1}, 
-        doc_local_id : { type: String, default: ""},
-        doc_name: { type: String, default: ""},
-        user_local_id: { type: String, default: ""},
+        doc_type: { type: Number, default: -1}, // login  
+        doc_local_id : { type: String, default: ""},  
+        user_local_id: { type: String, default: ""}, 
+        doc_name: { type: String, default: ""}, // Branch => branch as key in language object 
+        describe_obj_key: { type: String, default: ""}, // language object key 
         ...default_properties,
     },
 

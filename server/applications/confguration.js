@@ -30,7 +30,7 @@ let usersSchema = new Schema({
         version:  { type : String , default: '' }
     },
 
-    branch_local_id: { type : String , default: '*' }, // * all branches
+    branch_local_id:  {type : String , default: '*'}, // * all branches
     is_owner: { type : Boolean , default: true },
     // device_info: {type: Object, default: {}},  // for next update
     // country_information: {type: Object, default: {}}, // for next update

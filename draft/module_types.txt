@@ -1,0 +1,19 @@
+
+/**  
+    
+    25 mins ago - Michael created a branch #00000001 ( navigation action ) 
+    2 hrs ago - Michael updated a branch #14584587 ( navigation action ) 
+    1 month ago - Michael deleted a branch #14584587 ( navigation action ) 
+    just now - Michael logged in to the applicatoin  
+
+    doc_type 
+    doc_local_id 
+    user_local_id 
+    doc_name: 
+    describe_obj_key
+ */
+
+
+
+branch => 0
+product => 1

@@ -82,7 +82,7 @@ class BranchesComponents extends PureComponent {
             // show stats when screen is loaded
             loaded_page: false,
             refreshing: false, 
-            data_status: "No records have been found. Please click the button below to add a new one."
+            data_status: this.props.route.params.langs.no_records_found  
         }
 
         this.internetState = null;
@@ -596,7 +596,7 @@ class BranchesComponents extends PureComponent {
                         <View style={{height: 85, borderBottomColor: "#ddd", borderBottomWidth: 1, paddingBottom: 15}}>
                             <Text style={{color: "#999"}}>{this.state.language.search_name_phone_city}</Text>
                             <View style={{  borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 8}}>
-                                <TextInput onChangeText={text => this.filter_by_texts(text)} placeholder={"Filter by name, phone, city"} style={{...styles.input_field}} />
+                                <TextInput onChangeText={text => this.filter_by_texts(text)} placeholder={this.state.language.search_name_phone_city} style={{...styles.input_field}} />
                             </View>
                         </View>
 
@@ -685,7 +685,8 @@ class BranchesComponents extends PureComponent {
         }
 
         if( this.state.is_pressed ) {
-            alert( "We already deleting your records, please wait ..." );
+            // this.state.language
+            alert( this.state.language.press_two_times_deletion );
             return;
         }
 
@@ -698,7 +699,7 @@ class BranchesComponents extends PureComponent {
             this.setState({
                 is_pressed: false
             }); 
-            alert("You have to select data first then press on the deletion button");
+            alert(this.state.language.select_rows_to_delete);
             return;
         }
 
@@ -716,8 +717,8 @@ class BranchesComponents extends PureComponent {
                 { this.state.is_last_page ? <View style={{justifyContent: "center", alignItems: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.language.no_more_records}</Text></View> : <ActivityIndicator size={"small"} color={this.state.default_color} /> }
 
                 <View style={{flex: 1, marginTop: 15, borderTopColor: "#eee", borderTopWidth: 2, height: 40, alignItems:"center", flexDirection: "row", justifyContent: "space-between"}}>
-                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.all_data.flat().length} Branche(s)</Text>
-                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}> {this.state.all_data.length} Page(s)</Text>
+                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.all_data.flat().length} {this.state.all_data.flat().length > 1? this.state.language.branches: this.state.language.branch}</Text>
+                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}> {this.state.all_data.length} {this.state.all_data.length > 1? this.state.language.screens: this.state.language.screen}</Text>
                 </View>
 
             </View>
@@ -765,13 +766,13 @@ class BranchesComponents extends PureComponent {
                     {
                         this.state.loaded_data && this.state.loaded_data.length ?
                         <Button onPress={this.delete_rows} mode="outlined" style={{...styles.delete_btn_outlined.container, ...styles.flex, opacity:(this.state.checkbox_checked || this.state.selected_ids.length )? 1: 0.5}}>
-                            <Text style={{...styles.delete_btn_outlined.text}}>Delete</Text> 
+                            <Text style={{...styles.delete_btn_outlined.text}}>{this.state.language.delete}</Text> 
                         </Button> 
                         : "" 
                     }
                     
                     <Button onPress={this.add_new}  mode="contained" style={{...styles.add_btn_bg.container, backgroundColor: this.state.default_color, ...styles.flex}}>
-                        <Text style={{...styles.add_btn_bg.text}}>Add new branch</Text> 
+                        <Text style={{...styles.add_btn_bg.text}}>{this.state.language.add_new_branch}</Text> 
                     </Button> 
                      
                 </View>

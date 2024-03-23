@@ -26,14 +26,15 @@ class LogHistory extends A_P_I_S {
     }
 
     /** Insert and update a record */
-    create_update = async ({doc_type, doc_local_id, doc_name, user_local_id, param_id} = null ) => {
+    create_update = async ({doc_type, doc_local_id, doc_name, user_local_id, describe_obj_key, param_id} = null ) => {
        
          
         var _object =  {
             doc_type: doc_type == undefined? "": doc_type ,
             doc_local_id: doc_local_id == undefined? "": doc_local_id, 
             doc_name: doc_name == undefined? "": doc_name,
-            user_local_id: user_local_id == undefined? "": user_local_id 
+            user_local_id: user_local_id == undefined? "": user_local_id,
+            describe_obj_key: describe_obj_key == undefined? "": describe_obj_key 
         };
 
         var param_value = null;
