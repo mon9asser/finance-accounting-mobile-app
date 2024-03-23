@@ -3,8 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { generateId } from './../helpers.js';
 import {get_lang} from './../languages.js';  
-
-
+ 
 class Usr {
 
     constructor() {
@@ -62,6 +61,9 @@ class Usr {
                 application_id: application._id,
                 settings: application.settings
             }
+
+           // await apis.assign_log(userInfo.id, "login", null ); 
+
         
             await this.session.save({
                 key: 'user',

@@ -6,7 +6,7 @@ import {generateId} from '../helpers';
 import {get_setting} from '../cores/settings'; 
 import {config} from '../../settings/config';
 import {usr} from '../storage/user';
-
+import {Models} from "./models";
 
 
 
@@ -293,7 +293,7 @@ class A_P_I_S {
 
         // store data locally 
         if(  objectIndex !== -1 ) {
-            console.log(__object.local_id + " is updated", objectIndex);
+             
            var updator = {
 
                 ...old_data[objectIndex],
@@ -304,6 +304,7 @@ class A_P_I_S {
             rowData = updator;
             old_data[objectIndex] = updator;
 
+             
         } 
         
         if( objectIndex === -1) {
@@ -314,9 +315,13 @@ class A_P_I_S {
                 _id: request.data._id == undefined? "": request.data._id
             };
 
+            
             old_data.push(rowData); 
 
         }
+
+        // assig log history 
+        await this.assign_log(mobject, rowData.local_id, is_update? "update": "create" );
 
         // update data locally 
         try {
@@ -326,6 +331,7 @@ class A_P_I_S {
                 data: old_data
             }); 
 
+            
             return {
                 message: language.saved_success,
                 data: rowData,
@@ -425,6 +431,8 @@ class A_P_I_S {
             return new_item;
         });
 
+        
+
         try {
 
             await instance.save({
@@ -498,6 +506,9 @@ class A_P_I_S {
             model_name: key
         }); 
         
+         
+        await this.assign_log(mobject, "-1", "delete_many" );
+
         /**----------------- */
         var old_data = await this.get_data_locally(mobject);
         
@@ -1068,6 +1079,75 @@ class A_P_I_S {
 
         return array_data;
     }
+
+    /**
+     * register logs for user 
+     */
+    async assign_log( mobject, doc_local_id, type  ) {
+        
+        // to store data 
+        var log_key = Models.log_history.key;
+        var log_instance = Models.log_history.instance;
+
+        
+        // => Model data 
+        if( type != "login" && mobject != null ) {
+            console.log(mobject);
+            var {key} = mobject; 
+            var {doc_type} = mobject; 
+            
+            if( doc_type == undefined ) {
+                return;
+            }
+        
+            var localize_obj_key = key; 
+            if( key.indexOf("-") != -1 ) {
+                localize_obj_key = key.replaceAll("-", "_");
+            } // localize_obj_key
+            
+            var vowels = ['a','i','o','u','e']; // ies 
+            var first_char = localize_obj_key[0];
+            var selector = "_a";
+            if( vowels.indexOf(first_char) != -1 ) {
+                selector = "_an"
+            }
+
+            if( type == "create" ) {
+                selector = `__created${selector}`;
+            }  
+            
+            if( type == "update" ) { 
+                selector = `__updated${selector}`;
+            } 
+            
+            if ( type == "delete" ) {
+                selector = `__deleted${selector}`;
+            }
+
+            if( type  == 'delete_many' ) {
+                selector = `__deleted_a`;
+            }
+
+
+        }
+
+        if( type == "login" ) {
+            selector = "__logged_in";
+            doc_type = "-1";
+            doc_name = "login"; 
+        }
+
+
+        var res = await this.coreAsync(Models.log_history, {
+            doc_type: doc_type,
+            doc_local_id: doc_local_id,
+            doc_name: localize_obj_key, 
+            describe_obj_key: selector
+        });
+
+        return res;
+    }
+
 }
  
 

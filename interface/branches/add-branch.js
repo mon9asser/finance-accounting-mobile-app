@@ -292,7 +292,7 @@ class AddNewBranchComponents extends Component {
 
             return;
         }
-
+       
         var response = await BranchInstance.create_update({ ...obj_data });
         
         // case redirect order 
@@ -315,7 +315,7 @@ class AddNewBranchComponents extends Component {
             }, 1500);
             return;
         }
-
+        
         // show error 
         if( response.is_error ) {
             this.setPressBtn(false); 

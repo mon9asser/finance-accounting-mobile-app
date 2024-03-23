@@ -21,7 +21,7 @@ class Branches extends A_P_I_S {
     constructor(props) {
 
         super(props); 
-        this.Schema =  Models.branche 
+        this.Schema =  Models.branches 
     }
 
     /** Insert and update a record */
@@ -48,7 +48,7 @@ class Branches extends A_P_I_S {
                 local_id: param_id
             }
         }
-
+        
         if( typeof param_id == 'object' && param_id != null ) {
             param_value = {...param_id};
         }  

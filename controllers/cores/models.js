@@ -5,6 +5,7 @@ var Models = {
 
     categories: {
         key: "categories",
+        doc_type: 0,
         instance: new Storage({
             size: 220,
             storageBackend: AsyncStorage,
@@ -14,6 +15,7 @@ var Models = {
 
     products: {
         key: "products",
+        doc_type: 1,
         instance: new Storage({
             size: 350,
             storageBackend: AsyncStorage,
@@ -23,6 +25,7 @@ var Models = {
 
     prices: {
         key: "prices",
+        doc_type: 2,
         instance: new Storage({
             size: 250,
             storageBackend: AsyncStorage,
@@ -32,6 +35,7 @@ var Models = {
 
     customers: {
         key: "customers",
+        doc_type: 3,
         instance: new Storage({
             size: 350,
             storageBackend: AsyncStorage,
@@ -41,6 +45,7 @@ var Models = {
 
     branches: {
         key: "branches",
+        doc_type: 4,
         instance: new Storage({
             size: 100,
             storageBackend: AsyncStorage,
@@ -50,6 +55,7 @@ var Models = {
 
     payment_methods: {
         key: "payment-methods",
+        doc_type: 5,
         instance: new Storage({
             size: 100,
             storageBackend: AsyncStorage,
@@ -59,6 +65,7 @@ var Models = {
 
     expenses: {
         key: "expenses",
+        doc_type: 6,
         instance: new Storage({
             size: 300,
             storageBackend: AsyncStorage,
@@ -68,12 +75,28 @@ var Models = {
 
     balances: {
         key: "balances",
+        doc_type: 7,
         instance: new Storage({
             size: 200,
             storageBackend: AsyncStorage,
             defaultExpires: null
         })
     },
+    
+    document_status: {
+        key: "document-status",
+        doc_type: 8,
+        instance: new Storage({
+            size: 70,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    },
+
+
+
+
+
 
     log_history: {
         key: "log-history",
@@ -93,23 +116,16 @@ var Models = {
         })
     },
 
-    document_status: {
-        key: "document-status",
-        instance: new Storage({
-            size: 70,
-            storageBackend: AsyncStorage,
-            defaultExpires: null
-        })
-    },
-
-    expired_at: {
+    expired_at: { // when user go to fill form and the session expired it should store data once he logging again he can see his data in form 
         key: "expired-at",
         instance: new Storage({
             size: 50,
             storageBackend: AsyncStorage,
             defaultExpires: null
         })
-    }
+    },
+
+    
     
 };
 

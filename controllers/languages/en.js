@@ -123,7 +123,36 @@ const en = {
         uptodate: "Everything is up to date",
 
         synchronized_data: "Data has been synchronized successfully",
-        array_data_required: "Array Data is required"
+        array_data_required: "Array Data is required",
+
+
+
+
+        categories: "Category",
+        products: "Product",
+        prices: "Price",
+        customers: "Customer",
+        branches: "Branch",
+        payment_methods: "Payment Method",
+        expenses: "Expense",
+        balances: "Balance",
+        document_status: "Document Status", 
+
+        record: "record",
+
+        __created: "Created",
+        __created_a: "Created a",
+        __created_an: "Created an",
+
+        __updated: "Updated",
+        __updated_a: "Updated a",
+        __updated_an: "Updated an",
+
+        __deleted: "Deleted",
+        __deleted_a: "Deleted one or more",
+        __deleted_an: "Deleted one or more",
+
+        __logged_in: "Logged into the application", 
 }
 
 

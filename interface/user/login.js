@@ -18,7 +18,7 @@ import {styles} from "../../controllers/styles.js";
 import {get_setting} from "./../../controllers/cores/settings.js"
 import {get_lang} from '../../controllers/languages.js' 
 import {usr} from './../../controllers/storage/user.js';
-
+import { A_P_I_S } from "../../controllers/cores/apis.js";
 
 
 class LoginComponents extends Component {
@@ -301,7 +301,8 @@ class LoginComponents extends Component {
                     this.setNotificationMessage(this.state.language.successful_login); 
                 }
 
-                
+                var apis = new A_P_I_S();
+                await apis.assign_log(null, _session.id, "login" ); 
                 
 
                 // transfer use to dashboard screen after 5 seconds
