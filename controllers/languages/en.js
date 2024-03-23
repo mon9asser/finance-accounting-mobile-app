@@ -1,20 +1,27 @@
 const en = {
 
-        is_rtl: false,
+        is_rtl: false, 
 
-        labels: {
-                save: "Save",
-                btn_clicked_twice: "Please wait while the data is being saved."
-        }, 
+        btn_clicked_twice: "Please wait while the data is being saved.",
+        save: "save",
 
         add_new_branch: "Add New Branch",
-
+        edit_branch: "Change Branch Details",
         branches: "Branches",
-
+        deletion_dialog_title: "Confirm Deletion Action",
         branch_name: "Branch name",
         branch_country_name: "Branch country name",
         branch_city_name: "Branch city name",
         branch_address_name: "Branch address",
+        sure_to_delete_row: "Are you sure you want to delete the selected rows?",
+        cancel: "Cancel",
+        ok: "Ok",
+        edit: "Edit",
+        filters: "Filters",
+        search_by_date: "Search by date",
+        select_all_branches: "Select all branches",
+        search_name_phone_city: "Search by name, phone, city",
+        view_details: "View Details",
         branch_number: "Branch number",
         branch_note: "Note",
         branch_name_required: "Branch name is required!",    

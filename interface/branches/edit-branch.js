@@ -117,7 +117,7 @@ class EditCurrentBranchComponents extends Component {
  
         I18nManager.forceRTL(lang.is_rtl);
         this.setState({
-            language: {...lang.add_branch_screen, ...lang.labels}
+            language: lang
         });
 
     }
@@ -224,7 +224,7 @@ class EditCurrentBranchComponents extends Component {
          
         // Screen Options 
         this.props.navigation.setOptions({
-            headerTitle: this.state.language.title, 
+          //  headerTitle: this.state.language.title, 
             headerStyle: {backgroundColor: this.state.default_color}, 
             headerTitleStyle: { color: "#fff" },
             headerTintColor: '#fff',

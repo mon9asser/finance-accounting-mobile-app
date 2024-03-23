@@ -144,18 +144,18 @@ class BranchesComponents extends PureComponent {
     deleteConfirmMessage = (ids) => {
         
         Alert.alert(
-            "Confirm Deletion Action", // Dialog Title
-            "Are you sure you want to delete the selected rows?", // Dialog Message
+            this.state.language.deletion_dialog_title, // Dialog Title
+            this.state.language.sure_to_delete_row, // Dialog Message
             [
                 {
-                    text: "Cancel", 
+                    text: this.state.language.cancel, 
                     onPress: () => this.setState({
                         is_pressed: false 
                     }), 
                     style: "cancel",
                 },
                 { 
-                    text: "OK", 
+                    text: this.state.language.ok, 
                     onPress: async () => await this.performDeletionAction(ids) // The action you want to perform on confirmation
                 }
             ]
@@ -330,7 +330,7 @@ class BranchesComponents extends PureComponent {
 
             // => next_page
             new_data = this.state.all_searched_data[next_page]; 
-            console.log(new_data);
+             
         }
 
         this.add_new_items(new_data);
@@ -393,12 +393,12 @@ class BranchesComponents extends PureComponent {
                                 <View style={{...styles.direction_row, ...styles.gap_15}}>
                                     <TouchableOpacity>
                                         <Text style={{color: "#666", fontWeight: "normal"}}> 
-                                            View Details
+                                            {this.state.language.view_details}
                                         </Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => this.edit_this_item(item)}>
                                         <Text style={{color: "#666", fontWeight: "normal"}}>
-                                            Edit
+                                            {this.state.language.edit}
                                         </Text>
                                     </TouchableOpacity>
                                 </View>
@@ -580,7 +580,7 @@ class BranchesComponents extends PureComponent {
                 <View style={{backgroundColor:"#f9f9f9", padding: 20, borderWidth: 1, borderColor:"#eee", borderRadius: 10}}>
 
                     <TouchableOpacity style={{flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center"}} onPress={this.toggleExpansion}>
-                        <Text style={{fontWeight:"bold"}}>Filters</Text>
+                        <Text style={{fontWeight:"bold"}}>{this.state.language.filters}</Text>
                         <Image 
                             source={require("./../../assets/icons/filters.png")}
                             style={{width: 22, height: 22}} 
@@ -594,14 +594,14 @@ class BranchesComponents extends PureComponent {
                         marginTop: 20 
                     }}>
                         <View style={{height: 85, borderBottomColor: "#ddd", borderBottomWidth: 1, paddingBottom: 15}}>
-                            <Text style={{color: "#999"}}>Search by name, phone, city</Text>
+                            <Text style={{color: "#999"}}>{this.state.language.search_name_phone_city}</Text>
                             <View style={{  borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 8}}>
                                 <TextInput onChangeText={text => this.filter_by_texts(text)} placeholder={"Filter by name, phone, city"} style={{...styles.input_field}} />
                             </View>
                         </View>
 
                         <View style={{marginTop: 20}}>
-                            <Text style={{color: "#999"}}>Search by date</Text>
+                            <Text style={{color: "#999"}}>{this.state.language.search_by_date}</Text>
                             <View style={{marginTop: 5, height: 50}}> 
                                 <TouchableHighlight onPress={() => this.open_date_from_picker_model(true)} underlayColor={"#fff"} style={{ borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 8}}>
                                     <TextInput readOnly={true} placeholder={"From date"} style={{...styles.input_field}} value={this.formatDate(this.state.date_from)} />
@@ -636,7 +636,7 @@ class BranchesComponents extends PureComponent {
                         </View> 
 
                         <TouchableHighlight onPress={this.searchOnDataByDate} style={{borderColor: this.state.default_color, borderWidth: 1, marginTop: 15, borderRadius: 8, backgroundColor: "#fff", flex: 1, justifyContent: 'center', alignItems: "center" }}>
-                            <Text style={{color: this.state.default_color}}>Search by date</Text>
+                            <Text style={{color: this.state.default_color}}>{this.state.language.search_by_date}</Text>
                         </TouchableHighlight>
                     </Animated.View>
 
@@ -646,7 +646,7 @@ class BranchesComponents extends PureComponent {
 
                 <TouchableOpacity onPress={ this.select_all_records } style={{flexDirection: "row", alignItems: "center",  marginBottom: 10, marginLeft:-5}}>
                     <Checkbox status={this.state.checkbox_checked ? 'checked' : 'unchecked'} />
-                    <Text style={{color: "#999"}}>Select all branches</Text>                                
+                    <Text style={{color: "#999"}}>{this.state.language.select_all_branches}</Text>                                
                 </TouchableOpacity>
                 
             </View>

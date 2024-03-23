@@ -270,11 +270,11 @@ const App = () => {
               {/* Dashboard with its sidebar */}
               <Stack.Screen name="MainPage" options={{ headerShown: false }}   component={DrawerDashboardComponents}  />
               
-              {/* Screen */}
-              <Stack.Screen name="add-new-branch"  component={AddNewBranchComponents} initialParams={{ langs: language }} />
-              <Stack.Screen name="edit-branch"  component={EditCurrentBranchComponents} initialParams={{ langs: language }} />
-              
-              <Stack.Screen name="Branches"  component={BranchesComponents} initialParams={{ langs: language }}/>
+              {/* Branches Screens */}
+              <Stack.Screen name="Branches" options={{headerTitle: language.branches}} component={BranchesComponents} initialParams={{ langs: language }}/>
+              <Stack.Screen name="add-new-branch" options={{headerTitle: language.add_new_branch}}  component={AddNewBranchComponents} initialParams={{ langs: language }} />
+              <Stack.Screen name="edit-branch" options={{headerTitle: language.edit_branch}}  component={EditCurrentBranchComponents} initialParams={{ langs: language }} />
+               
               <Stack.Screen name="Login" component={LoginComponents}/>
               <Stack.Screen name="Register" component={RegisterComponents} />
               
