@@ -8,7 +8,9 @@ var styles = StyleSheet.create({
             white: "#fff"
         }
     },
-
+    field_container: {
+        marginBottom: 30
+    },
     colors: {
         white: { color: "#fff" }
     },
@@ -25,11 +27,49 @@ var styles = StyleSheet.create({
     },
     inputLabelText: {
         fontWeight: "bold",
-        color: "#222"
+        color: "#222",
+        marginBottom: 10
+    },
+    product_price_container: {
+        backgroundColor: "transparent",
+        borderStyle: "dashed", 
+        borderColor: "#dfdfdf",
+        borderWidth: 1,
+        padding:10,
+        marginBottom: 5,
+        flex: 1, 
+        flexDirection: "row",
+        justifyContent:"space-between"
+    },
+
+    product_price_text: {
+        fontSize: 12,
+        color:"#999"
+    }, 
+    boxStyle: {
+        borderWidth: 1,   
+        flexDirection: "row", 
+        borderColor: "#dfdfdf", 
+        borderRadius: 10,  
+        flex: 1,
+        width: '100%',
+        
+    },
+    inputLabel: {  
+        flex: 1,  
+        flexDirection: "row",
+        justifyContent: "space-between"
     },
     flex: {
         flex: 1
     },
+
+    modalContainer: {
+        backgroundColor: "#fff",
+        padding:20,
+       // borderRadius: 20 
+    },
+
     textInput: {
         borderWidth: 1, 
         justifyContent: "space-between", 
@@ -38,9 +78,18 @@ var styles = StyleSheet.create({
         padding: 10, 
         flexDirection: "row", 
         borderColor: "#dfdfdf", 
-        borderRadius: 10, 
-        marginLeft: 20,
-        marginRight: 20
+        borderRadius: 10,  
+        marginTop: 10
+    },
+
+    textInputNoMargins: {
+        borderWidth: 1, 
+        justifyContent: "space-between", 
+        alignItems: 'center', 
+        padding: 10, 
+        flexDirection: "row", 
+        borderColor: "#dfdfdf", 
+        borderRadius: 10
     },
     direction_row: {
         flexDirection: 'row'
@@ -120,6 +169,14 @@ var styles = StyleSheet.create({
         flex: 1,
         width: '100%'
     },
+
+    container1: {
+        justifyContent: 'center',
+        paddingLeft: 25,
+        paddingRight: 25, 
+        width: '100%'
+    },
+
 
     container_fluid: { 
         width: '100%', 
