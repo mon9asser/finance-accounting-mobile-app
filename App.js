@@ -42,6 +42,8 @@ import { SubscriptionComponents } from './interface/subscription.js';
 import { TestComponent } from "./interface/test.js";
 
 import { usr } from "./controllers/storage/user.js";
+import { AddNewProductComponents } from "./interface/products/add-new-product.js";
+import { AddProductComponents } from "./interface/products/add-product.js";
 
 // Functions 
 const Stack = createStackNavigator(); 
@@ -265,18 +267,22 @@ const App = () => {
           <NavigationContainer> 
             <Stack.Navigator initialRouteName='MainPage'>
 
-             <Stack.Screen name="test" component={TestComponent}/>
+                <Stack.Screen name="test" component={TestComponent}/>
 
-              {/* Dashboard with its sidebar */}
-              <Stack.Screen name="MainPage" options={{ headerShown: false }}   component={DrawerDashboardComponents}  />
-              
-              {/* Branches Screens */}
-              <Stack.Screen name="Branches" options={{headerTitle: language.branches}} component={BranchesComponents} initialParams={{ langs: language }}/>
-              <Stack.Screen name="add-new-branch" options={{headerTitle: language.add_new_branch}}  component={AddNewBranchComponents} initialParams={{ langs: language }} />
-              <Stack.Screen name="edit-branch" options={{headerTitle: language.edit_branch}}  component={EditCurrentBranchComponents} initialParams={{ langs: language }} />
-               
-              <Stack.Screen name="Login" component={LoginComponents}/>
-              <Stack.Screen name="Register" component={RegisterComponents} />
+                {/* Dashboard with its sidebar */}
+                <Stack.Screen name="MainPage" options={{ headerShown: false }}   component={DrawerDashboardComponents}  />
+                
+                {/* Branches Screens */}
+                <Stack.Screen name="Branches" options={{headerTitle: language.branches}} component={BranchesComponents} initialParams={{ langs: language }}/>
+                <Stack.Screen name="add-new-branch" options={{headerTitle: language.add_new_branch}}  component={AddNewBranchComponents} initialParams={{ langs: language }} />
+                <Stack.Screen name="edit-branch" options={{headerTitle: language.edit_branch}}  component={EditCurrentBranchComponents} initialParams={{ langs: language }} />
+                
+                {/* Branches Screens */}
+                <Stack.Screen name="add-product" component={AddProductComponents}/>
+                <Stack.Screen name="add-new-product" options={{headerTitle: language.add_new_product}} component={AddNewProductComponents} initialParams={{ langs: language }}/>
+
+                <Stack.Screen name="Login" component={LoginComponents}/>
+                <Stack.Screen name="Register" component={RegisterComponents} />
               
             </Stack.Navigator> 
           </NavigationContainer> 

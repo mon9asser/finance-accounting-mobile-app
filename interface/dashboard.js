@@ -15,6 +15,7 @@ import { Animated, I18nManager, StyleSheet, KeyboardAvoidingView, ScrollView, Ac
 import { Button, Checkbox } from "react-native-paper";
 import { LineChart } from "react-native-chart-kit";
 
+
 // App Files 
 import {config} from "./../settings/config.js" ;
 import {styles} from "./../controllers/styles.js"; 
@@ -318,7 +319,7 @@ class DashboardComponents extends Component {
                                 <Text style={{...styles.bold, ...styles.colors.white}}>Add New Branch</Text>
                             </TouchableOpacity> 
 
-                            <TouchableOpacity style={{backgroundColor: "#e17055", ...styles.dashboard_cols}}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-product")} style={{backgroundColor: "#546de5", ...styles.dashboard_cols}}>
                                 <View style={{...styles.space_bottom_10}}>
                                     <Image 
                                         source={require("./../assets/icons/add-new-prdouct.png")}
@@ -344,7 +345,7 @@ class DashboardComponents extends Component {
                                 <Text style={{...styles.bold, ...styles.colors.white}}>Branches</Text>
                             </TouchableOpacity> 
 
-                            <TouchableOpacity style={{backgroundColor: "#e17055", ...styles.dashboard_cols}}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("add-product")} style={{backgroundColor: "#546de5", ...styles.dashboard_cols}}>
                                 <View style={{...styles.space_bottom_10}}>
                                     <Image 
                                         source={require("./../assets/icons/add-new-prdouct.png")}

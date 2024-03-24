@@ -180,26 +180,7 @@ class AddNewBranchComponents extends Component {
         
         this.internetConnectionMessageBox(prevProps, prevState);
 
-    }
-
-    AnimatedBoxforInternetWarning = () => (
-            <Animated.View style={[
-                    {...styles.flex, ...styles.absolute, ...styles.internet_state_box},
-                    { transform: [{ translateY: this.internetStateBox }], },
-            ]}>
-                    <View style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
-                    
-                        <Image 
-                            source={require('./../../assets/icons/internet-state.png')}
-                            style={{...styles.intenet_connection_icon}}
-                            resizeMode="cover"
-                        />
-                        <Text style={{...styles.intenet_connection_text}}>
-                            {this.state.language.internet_msg_box}
-                        </Text>
-                    </View>
-            </Animated.View>
-    )
+    } 
 
     screen_options = () => { 
         
@@ -354,16 +335,35 @@ class AddNewBranchComponents extends Component {
         })
     }
 
-    render() {
-        
+    AnimatedBoxforInternetWarning = () => (
+        <View style={{...styles.direction_row, marginTop: 25, backgroundColor: "red", padding:10, borderRadius: 10, ...styles.item_center, ...styles.gap_15}}>
+                
+            <Image 
+                source={require('./../../assets/icons/internet-state.png')}
+                style={{width: 30, height: 30}} 
+                resizeMode="cover"
+            />
 
-         console.log(this.state.language.password);
+            <Text style={{...styles.intenet_connection_text}}>
+                {this.state.language.internet_msg_box}
+            </Text>
+            
+        </View>
+    )
+
+    render() {
+         
 
         return  (
             <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>
- 
+                
+               
+                
                  <ScrollView contentContainerStyle={{...styles.container,  ...styles.min_heigh_680}}>
+                    {this.state.isConnected? "" : this.AnimatedBoxforInternetWarning()} 
+
                     <KeyboardAvoidingView  style={{ ...styles.flex, ...styles.space_top_15 , ...styles.space_bottom_25 }}>
+                        
                         <View style={{ borderColor:(this.state.branch_name_hlgt) ? 'red': '#eee', ...styles.input_color_no_border, ...styles.space_top_15}}>
                             <TextInput 
                             onChangeText={(value) => {
@@ -444,9 +444,7 @@ class AddNewBranchComponents extends Component {
                         </Button>
                     </View>
                      
-                 </ScrollView>
- 
-                 {this.AnimatedBoxforInternetWarning()}  
+                 </ScrollView> 
  
                  
             </SafeAreaView> ); 

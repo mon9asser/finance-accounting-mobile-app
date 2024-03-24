@@ -572,10 +572,26 @@ class BranchesComponents extends PureComponent {
 
     }
 
+    AnimatedBoxforInternetWarning = () => (
+        <View style={{...styles.direction_row, backgroundColor: "red", padding:10, borderRadius: 10, ...styles.item_center, ...styles.gap_15}}>
+                
+                    <Image 
+                source={require('./../../assets/icons/internet-state.png')}
+                style={{width: 30, height: 30}} 
+                resizeMode="cover"
+            />
+            <Text style={{...styles.intenet_connection_text}}>
+                {this.state.language.internet_msg_box}
+            </Text>
+        </View>
+    )
+
     HeaderComponent = () => {
         return (
+            <>
             <View style={{ width: "100%", overflow:"hidden", flexDirection: "column",gap: 15}}>
                 
+                {this.state.isConnected? "" : this.AnimatedBoxforInternetWarning()} 
 
                 <View style={{backgroundColor:"#f9f9f9", padding: 20, borderWidth: 1, borderColor:"#eee", borderRadius: 10}}>
 
@@ -649,7 +665,12 @@ class BranchesComponents extends PureComponent {
                     <Text style={{color: "#999"}}>{this.state.language.select_all_branches}</Text>                                
                 </TouchableOpacity>
                 
+                 
+                
             </View>
+
+            
+            </>
         );
     }
 

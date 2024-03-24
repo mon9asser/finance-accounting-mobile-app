@@ -5,7 +5,7 @@ const en = {
         btn_clicked_twice: "Please wait while the data is being saved.",
         save: "save",
 
-        add_new_branch: "Add New Branch",
+        add_new_branch: "Add a new branch",
         edit_branch: "Change Branch Details",
         branches: "Branches",
         branch: "Branch",
@@ -16,8 +16,7 @@ const en = {
         branch_country_name: "Branch country name",
         branch_city_name: "Branch city name",
         branch_address_name: "Branch address",
-        sure_to_delete_row: "Are you sure you want to delete the selected rows?",
-        add_new_branch: "Add new branch",
+        sure_to_delete_row: "Are you sure you want to delete the selected rows?", 
         cancel: "Cancel",
         delete: "Delete",
         ok: "Ok",
@@ -86,7 +85,7 @@ const en = {
         total_storage_usage: "Total Storage Usage",
         supscription: "Supscription.",
         mywork_team: "My Work Team.",
-        add_new_user: "Add new user.",
+        add_new_user: "Add a new user.",
         settings: "Settings",
         team_log_history: "Team log history.",
         support: "Support",
@@ -137,6 +136,7 @@ const en = {
         expenses: "Expense",
         balances: "Balance",
         document_status: "Document Status", 
+        add_new_product: "Add a new product",
 
         record: "record",
 

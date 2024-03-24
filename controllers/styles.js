@@ -21,13 +21,27 @@ var styles = StyleSheet.create({
     },
 
     min_heigh_680: {
-        minHeight: 680 
+        minHeight: 700 
     },
-
+    inputLabelText: {
+        fontWeight: "bold",
+        color: "#222"
+    },
     flex: {
         flex: 1
     },
-
+    textInput: {
+        borderWidth: 1, 
+        justifyContent: "space-between", 
+        alignItems: 'center',
+        marginBottom: 40, 
+        padding: 10, 
+        flexDirection: "row", 
+        borderColor: "#dfdfdf", 
+        borderRadius: 10, 
+        marginLeft: 20,
+        marginRight: 20
+    },
     direction_row: {
         flexDirection: 'row'
     },
