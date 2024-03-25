@@ -640,6 +640,10 @@ class A_P_I_S {
 
             array_data = [...old_data, ...mapped];
             
+            // => delete duplicated data in local storage
+            const uniqueMap = new Map(array_data.map(item => [item.local_id, item]));
+            array_data = Array.from(uniqueMap.values()); 
+            
         }
          
         

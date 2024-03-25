@@ -66,7 +66,7 @@ class Categories extends A_P_I_S {
     /**
      * array_data = []; keep empty array 
      * consider_flags = true 
-     */
+     */ 
     bulk_create_update = async(array_data, consider_flags = false) => {
 
         // getting settings and language

@@ -25,6 +25,9 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import { BranchInstance } from "../../controllers/storage/branches.js"
 import { usr } from "../../controllers/storage/user.js";
 
+import {CategoryInstance} from "./../../controllers/storage/categories.js";
+import { generateId } from "../../controllers/helpers.js";
+
 var cls = { 
     
     // Delete Button 
@@ -49,8 +52,8 @@ class AddNewProductComponents extends Component {
         this.state = {
 
             language: {}, 
-            default_color: "#6b5353",
-            dyntamicCategories: [{ key: '', value: '', enabled: true }],
+            default_color: "#6b5353", 
+
             isCategoryModalOpen: false,
 
             isPricesPackageModalOpen: false,
@@ -63,14 +66,30 @@ class AddNewProductComponents extends Component {
                 price:  "#dfdfdf"
             },
 
+            db_categories: {
+                expenses: [], 
+                products: []
+            }, 
+            selected_category: null, 
+
             unitName: '',
             shortUnitName: '',
             unitValue: '',
             salePrice: '',
             purchasePrice: '',
 
+            PricePackageButtonText: "Add",
+
+            is_pressed_category_save: false 
+
         };
 
+    }
+
+    setPressedBtnCategorySave = (value) => {
+        this.setState({
+            is_pressed_category_save: value
+        });
     }
 
     toggleModalOfPricesPackage = () => {
@@ -80,6 +99,7 @@ class AddNewProductComponents extends Component {
         })
     }
 
+ 
     setLanguage = async (lang ) => {
  
         I18nManager.forceRTL(lang.is_rtl);
@@ -139,6 +159,25 @@ class AddNewProductComponents extends Component {
         }) 
 
     }
+    
+    get_categories_async = async() => {
+        
+        //await CategoryInstance.Schema.instance.save({key: "categories", data: []})
+
+        var categories = await CategoryInstance.get_records();
+        
+        
+        
+        if( categories.is_error ) return; 
+        if( ! categories.data.length ) return; 
+
+        this.setState({
+            db_categories: {
+                expenses: categories.data.filter( x => x.app_name == 1),
+                products: categories.data.filter( x => x.app_name == 0),
+            }
+        });  
+    }
 
     componentDidMount = async () => {
          
@@ -153,6 +192,9 @@ class AddNewProductComponents extends Component {
 
         // add data to fields if session already expired before 
         this.restore_data_to_fields();
+
+        // getting all products async 
+        await this.get_categories_async();
 
     }
 
@@ -177,42 +219,9 @@ class AddNewProductComponents extends Component {
             isCategoryModalOpen: !this.state.isCategoryModalOpen
         })
     }
-
-    setDyntamicCategory = () => { 
-
-        let {dyntamicCategories} = this.state;
-
-        this.setState({
-            dyntamicCategories: dyntamicCategories.concat([{ key: `input-${dyntamicCategories.length}`, value: '', enabled: false }])
-        })
  
-    }
-    
-    enableAllCategories = () => {
-        let {dyntamicCategories} = this.state;
-        dyntamicCategories.map(x => {
-            x.enabled = true 
-            return x;
-        });
-        this.toggleCategoryModalOpen();
-    }
-
-    removeDyntamicCategory = (indexToRemove) => {
-        this.setState(prevState => ({
-            dyntamicCategories: prevState.dyntamicCategories.filter((_, index) => index !== indexToRemove)
-        }));
-    };
-
-    handleInputChange = (text, index) => {
-        const newInputs = this.state.dyntamicCategories.map((input, i) => {
-          if (i === index) {
-            return { ...input, value: text, enabled: false };
-          }
-          return input;
-        });
-        this.setState({ dyntamicCategories: newInputs });
-    };
-
+ 
+ 
     setUnitName = (val) => {
         this.setState({
             unitName: val
@@ -253,6 +262,108 @@ class AddNewProductComponents extends Component {
         this.toggleModalOfPricesPackage();
 
     }
+    
+    handleInputChange = ( text, id ) => {
+         
+        var index = this.state.db_categories.products.findIndex(x => x.local_id == id)
+        
+        if(index == -1 ) {
+            return; 
+        } 
+        
+        
+        this.setState( (prevState) => {
+            
+            let updatedProductsCats = [...prevState.db_categories.products];
+            updatedProductsCats[index].category_name = text;
+
+            return {
+                db_categories: {
+                    ...prevState.db_categories,
+                    products: updatedProductsCats,
+                },
+            };
+        
+
+        });
+        
+    }
+
+    RenderDBCategories = (item) => { 
+        
+
+
+        return (
+            <View key={item.local_id}  style={{...styles.textInputNoMargins, marginBottom: 10}}>
+                <TextInput
+                        style={{flex: 1}} 
+                        placeholder='Category Name' 
+                        value={item.category_name} 
+                        onChangeText={(text) => this.handleInputChange(text, item.local_id)}
+                    />
+                <TouchableOpacity onPress={() => this.removeDyntamicCategory(index)}>
+                    <Image
+                        source={require('./../../assets/icons/trash-icon.png')}
+                        style={{height: 25, width:25, borderRadius: 25, flex: 1}}
+                        resizeMode="cover"
+                        PlaceholderContent={<ActivityIndicator />}
+                    />
+                </TouchableOpacity>
+            </View> 
+        );
+    }
+
+    add_new_category = () => {
+
+        var new_id = generateId();
+        var objex = {
+            app_name: 0, 
+            category_name: '', 
+            local_id: new_id, 
+        };
+
+        var old = this.state.db_categories.products;
+        old.push(objex);
+
+        this.setState((prevState) => {
+            
+            return {
+                db_categories: {
+                    ...prevState.db_categories,
+                    products: old 
+                } 
+            };
+        });
+
+    }
+
+    store_categories = async () => {
+
+        this.setPressedBtnCategorySave(true);
+        
+        // use bulk insert into database 
+        var _bulk = [...this.state.db_categories.expenses, ...this.state.db_categories.products]
+
+
+        // get the stored data to category fields 
+        var reqs = await CategoryInstance.bulk_create_update(_bulk);
+        
+        if( reqs.login_redirect ) {
+            this.props.navigation.navigate("Login", {redirect_to: "add-new-product"});
+            return; 
+        }
+
+        if( reqs.is_error ) {
+            this.toggleCategoryModalOpen();
+            return; 
+        }
+
+        // load data with new 
+        await this.get_categories_async(); 
+        this.setPressedBtnCategorySave(false);
+        this.toggleCategoryModalOpen();
+
+    }
 
     CategoriesModal = ({ isVisible, toggleModal }) => (
         <Modal isVisible={isVisible}>
@@ -264,54 +375,54 @@ class AddNewProductComponents extends Component {
                             Categories
                         </Text> 
 
-                        <TouchableOpacity onPress={this.setDyntamicCategory}>
+                        <TouchableOpacity onPress={this.add_new_category}>
                             <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>Add New Field</Text>
                         </TouchableOpacity>
                     </View>
                     
                     <View style={{flex: 1, marginTop: 5}}>
-                        {
-                            (this.state.dyntamicCategories.length) ?
-                            this.state.dyntamicCategories.map((item, index) => (
-                            <View key={index} style={{...styles.textInputNoMargins, marginBottom: 10}}>
-                                <TextInput
-                                        style={{flex: 1}} 
-                                        placeholder='Category Name' 
-                                        value={item.value} 
-                                        onChangeText={(text) => this.handleInputChange(text, index)}
-                                    />
-                                <TouchableOpacity onPress={() => this.removeDyntamicCategory(index)}>
-                                    <Image
-                                        source={require('./../../assets/icons/trash-icon.png')}
-                                        style={{height: 25, width:25, borderRadius: 25, flex: 1}}
-                                        resizeMode="cover"
-                                        PlaceholderContent={<ActivityIndicator />}
-                                    />
-                                </TouchableOpacity>
 
-                            </View> 
-                            ))
-                            :
-                            <View style={{flex: 1, backgroundColor: '#ffffff', padding: 10, marginTop: 20}}>
-                                <Text style={{color: '#999', lineHeight:20, textAlign:"center"}}>No categories were found. Please click the 'Add New Field' button to create a new category.</Text>
-                            </View>
-                        }
+                        {
+                            this.state.db_categories.products.length ?
+                                this.state.db_categories.products.map(item => this.RenderDBCategories(item))
+                            : 
+                                <View style={{flex: 1, backgroundColor: '#ffffff', padding: 10, marginTop: 20}}>
+                                    <Text style={{color: '#999', lineHeight:20, textAlign:"center"}}>No categories were found. Please click the 'Add New Field' button to create a new category.</Text>
+                                </View>
+                        } 
+
                     </View> 
                 </ScrollView>
                 <View style={{ flexDirection: 'row', gap: 10}}>
                         <View style={{flex: 1, flexDirection: 'row', gap: 10}}>
-                        <TouchableOpacity style={{ height: 50, marginTop: 10, backgroundColor:cls.btnDeleteBg, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}} onPress={this.toggleCategoryModalOpen}>
-                                <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnPrimaryColor}}>Cancel</Text>
-                            </TouchableOpacity> 
-                            <TouchableOpacity style={{ height: 50, marginTop: 10, backgroundColor:cls.btnPrimaryBg, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }} onPress={this.enableAllCategories}>
-                                <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnPrimaryColor}}>Save</Text>
+                           
+
+                            <TouchableOpacity style={{ height: 50, marginTop: 10, borderWidth:1, borderColor:cls.btnDeleteBorderColor, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 5 }} onPress={this.toggleCategoryModalOpen}>
+                                <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnDeleteBorderTextColor}}>Cancel</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{ height: 50, marginTop: 10, backgroundColor:cls.btnPrimaryBg, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 5 }} onPress={this.store_categories}>
+                                <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnPrimaryColor}}>
+                                    {
+                                        this.state.is_pressed_category_save?
+                                        <ActivityIndicator color={'#fff'} />: 
+                                        'Save'
+                                    }
+                                </Text>
                             </TouchableOpacity>
                         </View>
                 </View> 
             </View>
         </Modal>
-    )
+    )   
 
+
+    setButtonPricePackage = (val) => {
+        this.setState({
+            PricePackageButtonText: val
+        })
+    }
+    
     PricesPackagesModal = ({ isVisible, toggleModal }) => (
         <Modal isVisible={isVisible}>
             <View style={styles.modalContainer}>
@@ -363,8 +474,8 @@ class AddNewProductComponents extends Component {
                         <View style={styles.textInput}>
                             <TextInput onChangeText={(text) => this.setPurchasePrice(text)} style={{flex: 1}} placeholder='Example:- 15' value={this.state.purchasePrice} />
                         </View> 
-                        <View style={{flex:1, marginLeft: 20, marginRight: 20, marginBottom: 30, marginTop: -30}}>
-                            <Text>Note: You don't have a purchase price? We are planning to add a calculator for raw materials in the next update.</Text>
+                        <View style={{flex:1,  marginBottom: 30, marginTop: -30}}>
+                            <Text style={{...styles.product_price_text}}>Note: You don't have a purchase price? We are planning to add a calculator for raw materials in the next update.</Text>
                         </View>
                     </View>
                     <View style={{flex: 1, flexDirection: "row", height: 80, gap: 10}}>
@@ -383,6 +494,17 @@ class AddNewProductComponents extends Component {
         </Modal>    
     )
 
+    selecte_category_object( val ) {
+        
+        var index = this.state.db_categories.products.findIndex( x => x.category_name == val );
+        if( index == -1 ) {
+            return;
+        }
+        this.state.selected_category = this.state.db_categories.products[index];
+
+
+    }
+    
     render() {
         return(
             <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>
@@ -431,8 +553,13 @@ class AddNewProductComponents extends Component {
                                     inputStyles={{color: '#999',  flex: 1}}
                                     dropdownStyles={{flex: 1, width: '100%', borderColor:'#eee'}}
                                     placeholder="Select Category" 
-                                    setSelected={(val) => setSelected(val)} 
-                                    data={this.state.dyntamicCategories.filter(x => x.enabled == true )} 
+                                    setSelected={(val) => this.selecte_category_object(val)}   
+                                    onSelect={() => console.log(this.state.selected_category)}
+                                    data={this.state.db_categories.products.map( item => {
+                                        item.key = item.local_id;
+                                        item.value = item.category_name
+                                        return item;
+                                    })} 
                                     save="value"
                                 />
                             </View>
