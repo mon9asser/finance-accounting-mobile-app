@@ -289,6 +289,32 @@ class AddNewProductComponents extends Component {
         
     }
 
+    removeDyntamicCategory = async (item_local_id) => {
+        
+        // remove it from list first 
+        var index = this.state.db_categories.products.findIndex( x => x.local_id == item_local_id);
+        if( index == -1 ) return; 
+
+        var updates = this.state.db_categories.products.filter( x => x.local_id != item_local_id );
+      
+        this.setState( (prevState) => {
+             
+
+            return {
+                db_categories: {
+                    ...prevState.db_categories,
+                    products: updates,
+                },
+            };
+        
+
+        });
+
+        // send request to remote it from database async 
+        var _bulk = [item_local_id];
+        await CategoryInstance.delete_records(_bulk);
+    }
+
     RenderDBCategories = (item) => { 
         
 
@@ -301,7 +327,8 @@ class AddNewProductComponents extends Component {
                         value={item.category_name} 
                         onChangeText={(text) => this.handleInputChange(text, item.local_id)}
                     />
-                <TouchableOpacity onPress={() => this.removeDyntamicCategory(index)}>
+
+                <TouchableOpacity onPress={() => this.removeDyntamicCategory(item.local_id)}>
                     <Image
                         source={require('./../../assets/icons/trash-icon.png')}
                         style={{height: 25, width:25, borderRadius: 25, flex: 1}}
@@ -349,8 +376,9 @@ class AddNewProductComponents extends Component {
         var reqs = await CategoryInstance.bulk_create_update(_bulk);
         
         if( reqs.login_redirect ) {
+            this.toggleCategoryModalOpen();
             this.props.navigation.navigate("Login", {redirect_to: "add-new-product"});
-            return; 
+            return;  
         }
 
         if( reqs.is_error ) {
