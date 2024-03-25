@@ -265,7 +265,7 @@ const App = () => {
     return (
         <SafeAreaView style={styles.flex}>
           <NavigationContainer> 
-            <Stack.Navigator initialRouteName='MainPage'>
+            <Stack.Navigator initialRouteName='test'>
 
                 <Stack.Screen name="test" component={TestComponent}/>
 

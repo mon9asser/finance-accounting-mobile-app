@@ -27,7 +27,7 @@ import { usr } from "../../controllers/storage/user.js";
 
 import {CategoryInstance} from "./../../controllers/storage/categories.js";
 import { generateId } from "../../controllers/helpers.js";
-
+ 
 var cls = { 
     
     // Delete Button 
@@ -80,10 +80,33 @@ class AddNewProductComponents extends Component {
 
             PricePackageButtonText: "Add",
 
-            is_pressed_category_save: false 
+            is_pressed_category_save: false, 
+            
+            hasPermission: null,
+            scanned: false, 
+            scanText: "Not scanned yet"
 
         };
 
+    }
+ 
+
+    setHasPermission = (value) => {
+       this.setState({
+            hasPermission: value
+       }); 
+    } 
+
+    setScanned = (value) => {
+        this.setState({
+            scanned: value
+       }); 
+    }
+
+    setscanText = (value) => {
+        this.setState({
+            scanText: value
+       }); 
     }
 
     setPressedBtnCategorySave = (value) => {

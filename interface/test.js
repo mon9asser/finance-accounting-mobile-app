@@ -1,12 +1,14 @@
 
-import React, { useState} from "react";
+import React, { useState, useEffect } from "react";
 import { View, Button, Text, StyleSheet, Modal, Platform } from "react-native";
 import { ProductsInstance } from "../controllers/storage/products";
 import { NotificationInstance } from "../controllers/storage/notifications";
 import DateTimePicker from '@react-native-community/datetimepicker';
 
+import { Camera } from 'expo-camera';
+
 var i = 100;
-var TestComponent =  ({navigation}) => {
+var TestComponentOld =  ({navigation}) => {
 
  
     var addData = async () => {
@@ -118,31 +120,86 @@ var TestComponent =  ({navigation}) => {
     );
 }
 
-const styles = StyleSheet.create({
+
+
+var TestComponent = () => {
+    const [hasPermission, setHasPermission] = useState(null);
+    const [scanned, setScanned] = useState(false);
+    const [barcodeData, setBarcodeData] = useState('');
+  
+    useEffect(() => {
+      (async () => {
+        const { status } = await Camera.requestCameraPermissionsAsync();
+        setHasPermission(status === 'granted');
+      })();
+    }, []);
+  
+    const handleBarCodeScanned = ({ type, data }) => {
+      setScanned(true);
+      setBarcodeData(data);
+      alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    };
+  
+    if (hasPermission === null) {
+      return <Text>Requesting for camera permission</Text>;
+    }
+    if (hasPermission === false) {
+      return <Text>No access to camera</Text>;
+    }
+  
+    return (
+      <View style={styles.container}>
+        <Camera
+          style={[styles.camera, {height: 110, width: 270}]}
+          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}>
+          <View style={styles.barcodeBox}>
+            <Text style={styles.barcodeText}>{scanned ? `Scanned: ${barcodeData}` : 'Scan a barcode'}</Text>
+          </View>
+        </Camera>
+        {scanned && <Text onPress={() => setScanned(false)} style={styles.rescanText}>Tap to Scan Again</Text>}
+      </View>
+    );
+  }
+
+
+  const styles = StyleSheet.create({
     container: {
       flex: 1,
+      flexDirection: 'column',
       justifyContent: 'center',
-      alignItems: 'center',
+      width: '50%',
+        height: 150
     },
-    modalView: {
-      backgroundColor: 'white',
-      borderRadius: 20,
-      padding: 35,
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-      margin: 20,
+    camera: { 
+      // aspectRatio: 1,
+      flex: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    dateText: {
-      marginTop: 20,
+    barcodeBox: {
+      flex: 0,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    barcodeText: {
+      color: '#fff',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      padding: 10,
+    },
+    rescanText: {
+      fontSize: 18,
+      padding: 15,
+      textAlign: 'center',
+      color: 'blue',
     },
   });
+  
+
+
+
+
+
+
   
 
 export { TestComponent };
