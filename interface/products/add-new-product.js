@@ -13,6 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
 import { Button, Checkbox } from "react-native-paper"; 
 import { LineChart } from "react-native-chart-kit";
+import { Camera } from 'expo-camera';
 
 // App Files 
 import {config} from "../../settings/config.js" ;
@@ -55,10 +56,12 @@ class AddNewProductComponents extends Component {
             default_color: "#6b5353", 
 
             isCategoryModalOpen: false,
+            isBarcodeScannerOpen: false, 
 
             isPricesPackageModalOpen: false,
             isPercentageDiscount: false,
             isModificationPrice: false,
+            validatedTextEnabled: false, 
             currentIndex: -1,
 
             requiredFields: {
@@ -72,24 +75,43 @@ class AddNewProductComponents extends Component {
             }, 
             selected_category: null, 
 
+            local_id: generateId(),
             unitName: '',
             shortUnitName: '',
             unitValue: '',
             salePrice: '',
             purchasePrice: '',
+            defaultPrice: false,
 
+            barcode_data: '',
+            product_name: '',
+
+            enabled_discount_percentage: false, 
             PricePackageButtonText: "Add",
 
             is_pressed_category_save: false, 
             
             hasPermission: null,
             scanned: false, 
-            scanText: "Not scanned yet"
+            scanText: "Not scanned yet",
+            
+            prices_list: []
 
         };
 
     }
+
+    setProductName = ( value ) => {
+        this.setState({
+            product_name: value
+        })
+    }
  
+    setBarcodeNumber = (value) => {
+        this.setState({
+            barcode_data: value
+        })
+    }
 
     setHasPermission = (value) => {
        this.setState({
@@ -122,7 +144,7 @@ class AddNewProductComponents extends Component {
         })
     }
 
- 
+    
     setLanguage = async (lang ) => {
  
         I18nManager.forceRTL(lang.is_rtl);
@@ -219,6 +241,9 @@ class AddNewProductComponents extends Component {
         // getting all products async 
         await this.get_categories_async();
 
+        // camera permission 
+        await this.assignPermissionStatus();
+
     }
 
     AnimatedBoxforInternetWarning = () => (
@@ -236,13 +261,27 @@ class AddNewProductComponents extends Component {
             
         </View>
     )
+
+   
     
     toggleCategoryModalOpen = () => {
         this.setState({
             isCategoryModalOpen: !this.state.isCategoryModalOpen
         })
     }
- 
+    
+    toggleBarcodeScannerOpen = () => { 
+
+        // this.enableValidMessage(false);
+        // this.setScanned(false);
+
+        this.setState(prevState => ({
+            isBarcodeScannerOpen: !prevState.isBarcodeScannerOpen
+        }));
+
+        
+
+    }
  
  
     setUnitName = (val) => {
@@ -277,6 +316,8 @@ class AddNewProductComponents extends Component {
 
     setModificaionAdd = () => {
         
+        
+        this.isDefaultPrice(false);
         this.setUnitName('');
         this.setShortUnitName('');
         this.setUnitValue('');
@@ -284,6 +325,12 @@ class AddNewProductComponents extends Component {
         this.setPurchasePrice(''); 
         this.toggleModalOfPricesPackage();
 
+    }
+
+    isDefaultPrice = ( value ) => {
+        this.setState({
+            defaultPrice: value
+        })
     }
     
     handleInputChange = ( text, id ) => {
@@ -416,6 +463,60 @@ class AddNewProductComponents extends Component {
 
     }
 
+    isValidBarcode = (data) => {
+        const barcodePattern = /^\d{12,13}$/; // Adjust pattern based on expected barcode type
+        return barcodePattern.test(data);
+    }
+
+    enableValidMessage = (value) => {
+        this.setState({
+            validatedTextEnabled: value
+        })
+    }
+    // Invalid barcode. Please scan a valid barcode
+    handleBarCodeScanned = ({ type, data }) => {
+
+        if (!this.isValidBarcode(data)) {
+            this.enableValidMessage(true);
+            this.setScanned(false);
+            return;
+        } 
+
+        this.setBarcodeNumber(data)
+        this.setScanned(true);
+        this.toggleBarcodeScannerOpen();
+    }
+
+    BarcodeScannerModal = ({ isVisible, toggleModal }) => {
+         
+        return (
+            <Modal isVisible={isVisible}>
+                <View style={{...styles.modalContainer, height: 500, borderRadius: 5}}>
+                    <View style={{maxHeight: 500, flex: 1}}>
+                        <View style={{flexDirection: "column", justifyContent: 'space-between', alignItems: 'center', marginBottom:5}}>
+                            <Text style={{fontWeight: 'bold', marginBottom: 5, fontSize: 22}}>
+                                Barcode Scanner
+                            </Text>  
+                            <Text style={{color:"#666", textAlign: "center"}}>Please ensure to scan the barcode present on the box.</Text> 
+                        </View>
+
+                        {this.state.validatedTextEnabled ? <Text style={{backgroundColor: "red", borderRadius: 5, color: "#fff", padding: 7, textAlign: "center"}}>Invalid barcode. Please scan a valid barcode.</Text> :"" }
+
+                        <TouchableOpacity style={{marginTop: 10, textAlign:"center", width: "100%", justifyContent: "center", alignItems: "center"}} onPress={this.toggleBarcodeScannerOpen}><Text>Cancel</Text></TouchableOpacity>
+                        <View style={{marginTop: 10, height: 250, justifyContent: 'center', alignItems: 'center'}}> 
+                            <Camera style={{height: "100%", width: "100%", aspectRatio: 1}} onBarCodeScanned={this.state.scanned ? undefined : this.handleBarCodeScanned}></Camera>
+                        </View> 
+
+                        <View>  
+                            <ActivityIndicator style={{marginTop: 15}}  color={this.state.default_color} size={'large'}/>
+                        </View> 
+                    </View> 
+                </View>
+            </Modal>
+        );
+    };
+    
+
     CategoriesModal = ({ isVisible, toggleModal }) => (
         <Modal isVisible={isVisible}>
             <View style={{...styles.modalContainer, flex: 1}}>
@@ -473,77 +574,112 @@ class AddNewProductComponents extends Component {
             PricePackageButtonText: val
         })
     }
+
+
+    StoreModalPricesPackage = () => {
+        
+        var local_id = this.state.local_id;
+        var is_default_price = this.state.defaultPrice;
+        var unit_name = this.state.unitName;
+        var short_name = this.state.shortUnitName;
+        var unit_value = this.state.unitValue;
+        var sale_price = this.state.salePrice;
+        var purchase_price = this.state.purchasePrice; 
+
+        // push to the array
+        this.setState({
+            prices_list: [...]
+        })
+
+    }
     
-    PricesPackagesModal = ({ isVisible, toggleModal }) => (
-        <Modal isVisible={isVisible}>
-            <View style={styles.modalContainer}>
-                <ScrollView style={{maxHeight: 600}}>
-                <View style={{flex:1, marginBottom:20}}>
-                    <Text style={{fontWeight: 'bold', fontSize: 22}}>
-                        Price Package
-                    </Text>
-                </View>
-                <View style={{flex: 1}}>
-                        <View style={styles.inputLabel}>
-                            <Text style={styles.inputLabelText}>Unit Name</Text>
-                        </View>
-                        <View style={styles.textInput}>
-                            <TextInput onChangeText={(value) => {this.setUnitName(value)}} style={{flex: 1}} placeholder='Example:- Gram' value={this.state.unitName} />
-                        </View>
+    PricesPackagesModal = ({ isVisible, toggleModal }) => {
+
+        isVisible = true; 
+        return (
+        
+            <Modal isVisible={isVisible}>
+                <View style={styles.modalContainer}>
+                    <ScrollView style={{maxHeight: 600}}>
+                    <View style={{flex:1, marginBottom:20}}>
+                        <Text style={{fontWeight: 'bold', fontSize: 22}}>
+                            Price Package
+                        </Text>
                     </View>
-                    <View style={{flex: 1}}>
-                        <View style={styles.inputLabel}>
-                            <Text style={styles.inputLabelText}>Unit Short Name</Text>
-                        </View>
-                        <View style={styles.textInput}>
-                            <TextInput onChangeText={(value) => {this.setShortUnitName(value)}} style={{flex: 1}} placeholder='Example:- gm' value={this.state.shortUnitName}  />
-                        </View>
-                    </View>
-                    <View style={{flex: 1}}>
-                        <View style={styles.inputLabel}>
-                            <Text style={styles.inputLabelText}>Unit Value</Text>
-                            <Text style={styles.inputLabelText}>( Based on the Unit Name )</Text>
-                        </View>
-                        <View style={{...styles.textInput, borderColor: this.state.requiredFields.unit}}> 
-                            <TextInput onChangeText={(value) => {this.setUnitValue(value)}} style={{flex: 1}} placeholder='Example:- 1' value={this.state.unitValue} />
-                        </View>
-                    </View>
-                    <View style={{flex: 1}}>
-                        <View style={styles.inputLabel}>
-                            <Text style={styles.inputLabelText}>Sale Price</Text>
-                            <Text style={styles.inputLabelText}>( Per Unit )</Text>
-                        </View>
-                        <View style={{...styles.textInput, borderColor: this.state.requiredFields.price}}>
-                            <TextInput onChangeText={(value) => {this.setSalePrice(value)}} style={{flex: 1}} placeholder='Example:- 8.5' value={this.state.salePrice} />
-                        </View>
-                    </View>
-                    <View style={{flex: 1}}>
-                        <View style={styles.inputLabel}>
-                            <Text style={styles.inputLabelText}>Purchase Price</Text>
-                            <Text style={styles.inputLabelText}>( Per Unit )</Text>
-                        </View>
-                        <View style={styles.textInput}>
-                            <TextInput onChangeText={(text) => this.setPurchasePrice(text)} style={{flex: 1}} placeholder='Example:- 15' value={this.state.purchasePrice} />
-                        </View> 
-                        <View style={{flex:1,  marginBottom: 30, marginTop: -30}}>
-                            <Text style={{...styles.product_price_text}}>Note: You don't have a purchase price? We are planning to add a calculator for raw materials in the next update.</Text>
-                        </View>
-                    </View>
-                    <View style={{flex: 1, flexDirection: "row", height: 80, gap: 10}}>
+    
                     
-                        <TouchableOpacity style={{ height: 50, marginTop: 10, borderWidth:1, borderColor:cls.btnDeleteBorderColor, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 5 }} onPress={this.toggleModalOfPricesPackage}>
-                            <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnDeleteBorderTextColor}}>Cancel</Text>
-                        </TouchableOpacity>
+                        <View style={{flex: 1}}>
+                            <TouchableOpacity onPress={() => this.isDefaultPrice(!this.state.defaultPrice)} style={{flexDirection: "row", alignItems: "center", alignContent: "center", marginBottom: 20, justifyContent: "space-between"}}>
+                                <View>
+                                    <Text style={{fontWeight: "bold"}}>Mark as a default price</Text>
+                                </View> 
 
-                        <TouchableOpacity style={{ height: 50, marginTop: 10, backgroundColor:cls.btnPrimaryBg, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 5 }} onPress={this.StoreModalPricesPackage}>
-                            <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnPrimaryColor}}>{this.state.PricePackageButtonText}</Text>
-                        </TouchableOpacity>
-
-                    </View>
-                </ScrollView>
-            </View>
-        </Modal>    
-    )
+                                <Checkbox status={this.state.defaultPrice ? "checked": "unchecked"}/>
+                                
+                            </TouchableOpacity> 
+                        </View>
+                        <View style={{flex: 1}}>
+                            <View style={styles.inputLabel}>
+                                <Text style={styles.inputLabelText}>Unit Name</Text>
+                            </View>
+                            <View style={styles.textInput}>
+                                <TextInput onChangeText={(value) => {this.setUnitName(value)}} style={{flex: 1}} placeholder='Example:- Gram' value={this.state.unitName} />
+                            </View>
+                        </View>
+                        <View style={{flex: 1}}>
+                            <View style={styles.inputLabel}>
+                                <Text style={styles.inputLabelText}>Unit Short Name</Text>
+                            </View>
+                            <View style={styles.textInput}>
+                                <TextInput onChangeText={(value) => {this.setShortUnitName(value)}} style={{flex: 1}} placeholder='Example:- gm' value={this.state.shortUnitName}  />
+                            </View>
+                        </View>
+                        <View style={{flex: 1}}>
+                            <View style={styles.inputLabel}>
+                                <Text style={styles.inputLabelText}>Unit Value</Text>
+                                <Text style={styles.inputLabelText}>( Based on the Unit Name )</Text>
+                            </View>
+                            <View style={{...styles.textInput, borderColor: this.state.requiredFields.unit}}> 
+                                <TextInput onChangeText={(value) => {this.setUnitValue(value)}} style={{flex: 1}} placeholder='Example:- 1' value={this.state.unitValue} />
+                            </View>
+                        </View>
+                        <View style={{flex: 1}}>
+                            <View style={styles.inputLabel}>
+                                <Text style={styles.inputLabelText}>Sale Price</Text>
+                                <Text style={styles.inputLabelText}>( Per Unit )</Text>
+                            </View>
+                            <View style={{...styles.textInput, borderColor: this.state.requiredFields.price}}>
+                                <TextInput onChangeText={(value) => {this.setSalePrice(value)}} style={{flex: 1}} placeholder='Example:- 8.5' value={this.state.salePrice} />
+                            </View>
+                        </View>
+                        <View style={{flex: 1}}>
+                            <View style={styles.inputLabel}>
+                                <Text style={styles.inputLabelText}>Purchase Price</Text>
+                                <Text style={styles.inputLabelText}>( Per Unit )</Text>
+                            </View>
+                            <View style={styles.textInput}>
+                                <TextInput onChangeText={(text) => this.setPurchasePrice(text)} style={{flex: 1}} placeholder='Example:- 15' value={this.state.purchasePrice} />
+                            </View> 
+                            <View style={{flex:1,  marginBottom: 30, marginTop: -30}}>
+                                <Text style={{...styles.product_price_text}}>Note: You don't have a purchase price? We are planning to add a calculator for raw materials in the next update.</Text>
+                            </View>
+                        </View>
+                        <View style={{flex: 1, flexDirection: "row", height: 80, gap: 10}}>
+                        
+                            <TouchableOpacity style={{ height: 50, marginTop: 10, borderWidth:1, borderColor:cls.btnDeleteBorderColor, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 5 }} onPress={this.toggleModalOfPricesPackage}>
+                                <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnDeleteBorderTextColor}}>Cancel</Text>
+                            </TouchableOpacity>
+    
+                            <TouchableOpacity style={{ height: 50, marginTop: 10, backgroundColor:cls.btnPrimaryBg, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 5 }} onPress={this.StoreModalPricesPackage}>
+                                <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnPrimaryColor}}>{this.state.PricePackageButtonText}</Text>
+                            </TouchableOpacity>
+    
+                        </View>
+                    </ScrollView>
+                </View>
+            </Modal>    
+        )
+    }
 
     selecte_category_object( val ) {
         
@@ -554,6 +690,32 @@ class AddNewProductComponents extends Component {
         this.state.selected_category = this.state.db_categories.products[index];
 
 
+    }
+
+    assignPermissionStatus = async () => {
+        const { status } = await Camera.requestCameraPermissionsAsync();
+        this.setHasPermission(status === 'granted');
+    }
+
+    checkCameraPermission = () => {
+
+       
+        if( this.state.hasPermission == false || this.state.hasPermission == null ) {
+            alert("To scan the barcode, you need to let the app use your camera. Please turn on camera permission.")
+            return;
+        }    
+        
+        // open the scanner 
+        this.enableValidMessage(false);
+        this.setScanned(false);
+        this.toggleBarcodeScannerOpen();
+    }
+
+
+    setPercentageDiscount = (val) => {
+        this.setState({
+            enabled_discount_percentage: val
+        })
     }
     
     render() {
@@ -586,7 +748,7 @@ class AddNewProductComponents extends Component {
                                 <Text style={styles.inputLabelText}>Product Name</Text>
                             </View>
                             <View style={{...styles.textInputNoMargins}}>
-                                <TextInput style={{flex: 1}} placeholder='Product Name' />
+                                <TextInput value={this.state.product_name} onChangeText={text => this.setProductName(text)} style={{flex: 1}} placeholder='Product Name' />
                             </View>
                         </View> 
             
@@ -622,27 +784,34 @@ class AddNewProductComponents extends Component {
                             <View style={styles.inputLabel}>
                                 <Text style={styles.inputLabelText}>Barcode</Text>
 
-                                 <TouchableOpacity onPress={this.setModificaionAdd}>
+                                 <TouchableOpacity onPress={this.checkCameraPermission}>
                                     <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>Scan Barcode</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{...styles.textInputNoMargins}}>
-                                <TextInput style={{flex: 1}} placeholder='Barcode' />
+                                <TextInput onChangeText={(text) => this.setState({barcode_data: text})} style={{flex: 1}} value={this.state.barcode_data} placeholder='Barcode' />
                             </View>
+
+                            <this.BarcodeScannerModal isVisible={this.state.isBarcodeScannerOpen} toggleModal={this.toggleBarcodeScannerOpen} />
                         </View>
 
                         <View style={{...styles.field_container}}>
                             <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
                                 <Text style={styles.inputLabelText}>Discount</Text>
 
-                                <TouchableOpacity onPress={() => { this.setPercentageDiscount(!this.state.isPercentageDiscount); }} style={{flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
-                                    <Checkbox status={this.state.isPercentageDiscount ? 'checked' : 'unchecked'} />
+                                <TouchableOpacity onPress={() => { this.setPercentageDiscount(!this.state.enabled_discount_percentage); }} style={{flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+                                    <Checkbox status={this.state.enabled_discount_percentage ? 'checked' : 'unchecked'} />
                                     <Text style={{fontSize: 12}}>Enable Percentage (%)</Text>                                
                                 </TouchableOpacity>
                             </View>
                             <View style={styles.textInputNoMargins}>
                                 <TextInput status='checked' style={{flex: 2}} placeholder='Discount Value' />
-                                <TextInput status='checked' style={{flex: 1, borderLeftWidth: 1, borderLeftColor: "#ddd", paddingLeft: 10}} placeholder='%' />
+                                {
+                                    this.state.enabled_discount_percentage ?
+                                    <TextInput status='checked' style={{flex: 1, borderLeftWidth: 1, borderLeftColor: "#ddd", paddingLeft: 10}} placeholder='%' />
+                                    : ""
+                                }
+                                
                             </View> 
                         </View>
 
