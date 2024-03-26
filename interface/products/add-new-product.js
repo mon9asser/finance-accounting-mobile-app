@@ -723,7 +723,7 @@ class AddNewProductComponents extends Component {
                                 <Text style={styles.inputLabelText}>( Per Unit )</Text>
                             </View>
                             <View style={{...styles.textInput, borderColor: this.state.requiredFields.price}}>
-                                <TextInput value={this.state.salePrice.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setSalePrice, text)} style={{flex: 1}} placeholder='Example:- 8.5' />
+                                <TextInput value={this.state.salePrice.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setSalePrice, text)} style={{flex: 1}} placeholder='Example:- 15' />
                             </View>
                         </View>
                         <View style={{flex: 1}}>
@@ -732,7 +732,7 @@ class AddNewProductComponents extends Component {
                                 <Text style={styles.inputLabelText}>( Per Unit )</Text>
                             </View>
                             <View style={styles.textInput}>
-                                <TextInput keyboardType="numeric" onChangeText={(text) => this.validateInput(this.setPurchasePrice, text)} style={{flex: 1}}  value={this.state.purchasePrice.toString()}  placeholder='Example:- 15'/>
+                                <TextInput keyboardType="numeric" onChangeText={(text) => this.validateInput(this.setPurchasePrice, text)} style={{flex: 1}}  value={this.state.purchasePrice.toString()}  placeholder='Example:- 8.5'/>
                             </View> 
                             <View style={{flex:1,  marginBottom: 30, marginTop: -30}}>
                                 <Text style={{...styles.product_price_text}}>Note: You don't have a purchase price? We are planning to add a calculator for raw materials in the next update.</Text>
