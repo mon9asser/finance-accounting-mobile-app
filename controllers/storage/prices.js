@@ -24,12 +24,12 @@ class Prices extends A_P_I_S {
     }
 
     /** Insert and update a record */
-    create_update = async ({product_local_id, name, unit_name, unit_short, sales_price, purchase_price, factor, is_default_price, param_id} = null ) => {
+    create_update = async ({product_local_id, /*name,*/ unit_name, unit_short, sales_price, purchase_price, factor, is_default_price, param_id} = null ) => {
        
          
         var _object =  {
             product_local_id: product_local_id == undefined? -1: product_local_id ,
-            name: name == undefined? "": name, 
+            //name: name == undefined? "": name, 
             unit_name: unit_name == undefined? "": unit_name, 
             unit_short: unit_short == undefined? "": unit_short, 
             sales_price: sales_price == undefined? "": sales_price, 

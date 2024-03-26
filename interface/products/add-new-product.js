@@ -75,6 +75,7 @@ class AddNewProductComponents extends Component {
             }, 
             selected_category: null, 
 
+            product_local_id: generateId(),
             local_id: generateId(),
             unitName: '',
             shortUnitName: '',
@@ -93,14 +94,20 @@ class AddNewProductComponents extends Component {
             
             hasPermission: null,
             scanned: false, 
-            scanText: "Not scanned yet",
+            scanText: "Not scanned yet", 
             
-            prices_list: []
-
+            prices_list: [],
+            discountValue: '', 
+            discountPercentage: ''
         };
 
     }
 
+    setBtnPriceEditText= ( value ) => {
+        this.setState({
+            PricePackageButtonText: value
+        })
+    }
     setProductName = ( value ) => {
         this.setState({
             product_name: value
@@ -282,7 +289,12 @@ class AddNewProductComponents extends Component {
         
 
     }
- 
+    
+    setLocalId = ( value = null ) => {
+        this.setState({
+            local_id: value == null ? generateId(): value 
+        })
+    }
  
     setUnitName = (val) => {
         this.setState({
@@ -575,27 +587,88 @@ class AddNewProductComponents extends Component {
         })
     }
 
+    
 
     StoreModalPricesPackage = () => {
         
+       // var product_local_id, name, unit_name, unit_short, sales_price, purchase_price, factor, is_default_price
+        
+        var product_local_id = this.state.product_local_id;
         var local_id = this.state.local_id;
-        var is_default_price = this.state.defaultPrice;
+        var is_default_price = this.state.defaultPrice;  
         var unit_name = this.state.unitName;
-        var short_name = this.state.shortUnitName;
-        var unit_value = this.state.unitValue;
-        var sale_price = this.state.salePrice;
+        var unit_short = this.state.shortUnitName;
+        var factor = this.state.unitValue;
+        var sales_price = this.state.salePrice;
         var purchase_price = this.state.purchasePrice; 
 
         // push to the array
-        this.setState({
-            prices_list: [...]
-        })
+        this.setState((prevState) => {
+            
+            var updates = {
+                local_id,
+                product_local_id,
+                unit_name,
+                unit_short,
+                is_default_price,
+                factor,
+                sales_price,
+                purchase_price
+            }
+            
 
+            // new list 
+            var old_list = prevState.prices_list; 
+
+            if( is_default_price == true ) {
+                old_list = old_list.map( x => {
+                    x.is_default_price = false; 
+                    return x;
+                });
+            }
+
+            // check data exists 
+            var index = old_list.findIndex( x => x.local_id == local_id );
+            if( index == -1 ) {
+                old_list.push(updates);
+            } else {
+                old_list[index].local_id = local_id
+                old_list[index].product_local_id = product_local_id
+                old_list[index].unit_name = unit_name
+                old_list[index].unit_short = unit_short
+                old_list[index].is_default_price = is_default_price
+                old_list[index].factor = factor
+                old_list[index].sales_price = sales_price
+                old_list[index].purchase_price = purchase_price
+            }
+
+            return {
+                prices_list: old_list
+            };
+            
+        });
+
+        this.setLocalId()
+        this.setUnitName('')
+        this.setShortUnitName('')
+        this.setUnitValue('')
+        this.setSalePrice('')
+        this.setPurchasePrice('')
+        this.isDefaultPrice(false);  
+        
+        this.toggleModalOfPricesPackage();
+    }
+
+    validateInput = (setValue, value) => {
+        const regex = /^[0-9]*\.?[0-9]*$/;
+        if (regex.test(value)) {
+          setValue(value);
+        }
     }
     
     PricesPackagesModal = ({ isVisible, toggleModal }) => {
 
-        isVisible = true; 
+        // isVisible = true; 
         return (
         
             <Modal isVisible={isVisible}>
@@ -640,7 +713,8 @@ class AddNewProductComponents extends Component {
                                 <Text style={styles.inputLabelText}>( Based on the Unit Name )</Text>
                             </View>
                             <View style={{...styles.textInput, borderColor: this.state.requiredFields.unit}}> 
-                                <TextInput onChangeText={(value) => {this.setUnitValue(value)}} style={{flex: 1}} placeholder='Example:- 1' value={this.state.unitValue} />
+                            
+                                <TextInput value={this.state.unitValue.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setUnitValue, text)} style={{flex: 1}} placeholder='Example:- 1' />
                             </View>
                         </View>
                         <View style={{flex: 1}}>
@@ -649,7 +723,7 @@ class AddNewProductComponents extends Component {
                                 <Text style={styles.inputLabelText}>( Per Unit )</Text>
                             </View>
                             <View style={{...styles.textInput, borderColor: this.state.requiredFields.price}}>
-                                <TextInput onChangeText={(value) => {this.setSalePrice(value)}} style={{flex: 1}} placeholder='Example:- 8.5' value={this.state.salePrice} />
+                                <TextInput value={this.state.salePrice.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setSalePrice, text)} style={{flex: 1}} placeholder='Example:- 8.5' />
                             </View>
                         </View>
                         <View style={{flex: 1}}>
@@ -658,7 +732,7 @@ class AddNewProductComponents extends Component {
                                 <Text style={styles.inputLabelText}>( Per Unit )</Text>
                             </View>
                             <View style={styles.textInput}>
-                                <TextInput onChangeText={(text) => this.setPurchasePrice(text)} style={{flex: 1}} placeholder='Example:- 15' value={this.state.purchasePrice} />
+                                <TextInput keyboardType="numeric" onChangeText={(text) => this.validateInput(this.setPurchasePrice, text)} style={{flex: 1}}  value={this.state.purchasePrice.toString()}  placeholder='Example:- 15'/>
                             </View> 
                             <View style={{flex:1,  marginBottom: 30, marginTop: -30}}>
                                 <Text style={{...styles.product_price_text}}>Note: You don't have a purchase price? We are planning to add a calculator for raw materials in the next update.</Text>
@@ -718,6 +792,68 @@ class AddNewProductComponents extends Component {
         })
     }
     
+    trash_price_list = (id) => {
+        this.setState((prevState) => {
+
+            var update = prevState.prices_list.filter( x => x.local_id != id );
+
+            return {
+                prices_list: update
+            }
+
+        })
+    }
+
+    edit_price_package = (item) => {
+
+        this.setLocalId(item.local_id)
+        this.setUnitName(item.unit_name)
+        this.setShortUnitName(item.unit_short)
+        this.setUnitValue(item.factor)
+        this.setSalePrice(item.sales_price)
+        this.setPurchasePrice(item.purchase_price)
+        this.isDefaultPrice(item.is_default_price);  
+        this.setBtnPriceEditText("Update");  
+        
+        this.toggleModalOfPricesPackage();
+
+    }
+
+    ListOfPricesComponents = ({item}) => {
+          
+        return (
+            <TouchableOpacity key={item.local_id} onPress={() => this.edit_price_package(item)} style={{...styles.product_price_container}}>
+                <View style={{alignItems: "center", ...styles.direction_row}}> 
+                    <Text style={{...styles.product_price_text}}>{item.unit_name}</Text>
+                </View>
+                <View style={{...styles.direction_row, ...styles.gap_15, alignItems: "center"}}>
+                    <Text style={{...styles.product_price_text}}>{item.purchase_price}</Text>
+                    <Text style={{...styles.product_price_text}}>{item.sales_price}</Text>
+                </View>
+                <TouchableOpacity onPress={() => this.trash_price_list(item.local_id)}>
+                    <Image
+                        source={require('./../../assets/icons/trash-icon.png')}
+                        style={{height: 25, width:25}}
+                        resizeMode="cover"
+                        PlaceholderContent={<ActivityIndicator />}
+                    />
+                </TouchableOpacity>
+            </TouchableOpacity> 
+        );
+    }
+
+    setDiscountValue = (value) => {
+        this.setState({
+            discountValue: value
+        })
+    }
+
+    setDiscountPercentage = (value) => {
+        this.setState({
+            discountPercentage: value
+        })
+    }
+
     render() {
         return(
             <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>
@@ -805,10 +941,10 @@ class AddNewProductComponents extends Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={styles.textInputNoMargins}>
-                                <TextInput status='checked' style={{flex: 2}} placeholder='Discount Value' />
+                                <TextInput value={this.state.discountValue.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setDiscountValue, text)} status='checked' style={{flex: 2}} placeholder='Discount Value' />
                                 {
                                     this.state.enabled_discount_percentage ?
-                                    <TextInput status='checked' style={{flex: 1, borderLeftWidth: 1, borderLeftColor: "#ddd", paddingLeft: 10}} placeholder='%' />
+                                    <TextInput status='checked' value={this.state.discountPercentage.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setDiscountPercentage, text)} style={{flex: 1, borderLeftWidth: 1, borderLeftColor: "#ddd", paddingLeft: 10}} placeholder='%' />
                                     : ""
                                 }
                                 
@@ -824,23 +960,15 @@ class AddNewProductComponents extends Component {
                                 </TouchableOpacity>
                             </View>
 
-                            <TouchableOpacity style={{...styles.product_price_container}}>
-                                <View style={{alignItems: "center", ...styles.direction_row}}> 
-                                    <Text style={{...styles.product_price_text}}>Hello world</Text>
-                                </View>
-                                <View style={{...styles.direction_row, ...styles.gap_15, alignItems: "center"}}>
-                                    <Text style={{...styles.product_price_text}}>$95.00</Text>
-                                    <Text style={{...styles.product_price_text}}>$1000.00</Text>
-                                </View>
-                                <TouchableOpacity>
-                                    <Image
-                                        source={require('./../../assets/icons/trash-icon.png')}
-                                        style={{height: 25, width:25}}
-                                        resizeMode="cover"
-                                        PlaceholderContent={<ActivityIndicator />}
-                                    />
-                                </TouchableOpacity>
-                            </TouchableOpacity> 
+                            
+                            {
+                                this.state.prices_list.length ?
+                                    this.state.prices_list.map( x => <this.ListOfPricesComponents item={x}/> ) :
+                                    <View style={{justifyContent: "center", flexDirection: "row", flex: 1, borderColor: "#eee", marginTop: 5, borderWidth: 1, padding: 10}}><Text style={{color: "#999"}}>No prices found, click on "add new"</Text></View>
+                            }
+                            
+
+
                             <this.PricesPackagesModal isVisible={this.state.isPricesPackageModalOpen} toggleModal={this.toggleModalOfPricesPackage} />
                         </View>
 

@@ -44,7 +44,7 @@ var styles = StyleSheet.create({
 
     product_price_text: {
         fontSize: 12,
-        color:"#999"
+        color:"#999",
     }, 
     boxStyle: {
         borderWidth: 1,   
