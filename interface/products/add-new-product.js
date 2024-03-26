@@ -21,6 +21,7 @@ import {styles} from "../../controllers/styles.js";
 import {get_setting, add_last_session_form, get_last_session_form, delete_session_form} from "../../controllers/cores/settings.js";
 import {get_lang} from '../../controllers/languages.js'; 
 import { SelectList } from 'react-native-dropdown-select-list';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 // Controller 
 import { BranchInstance } from "../../controllers/storage/branches.js"
@@ -63,6 +64,8 @@ class AddNewProductComponents extends Component {
             isModificationPrice: false,
             validatedTextEnabled: false, 
             currentIndex: -1,
+
+            isBrowseImagesOpen: false, 
 
             requiredFields: {
                 unit:  "#dfdfdf",
@@ -148,6 +151,12 @@ class AddNewProductComponents extends Component {
         
         this.setState({
             isPricesPackageModalOpen: !this.state.isPricesPackageModalOpen
+        })
+    }
+
+    toggleBrowseImagesOpen = () => {
+        this.setState({
+            isBrowseImagesOpen: !this.state.isBrowseImagesOpen
         })
     }
 
@@ -265,6 +274,7 @@ class AddNewProductComponents extends Component {
             <Text style={{...styles.intenet_connection_text}}>
                 {this.state.language.internet_msg_box}
             </Text>
+            
             
         </View>
     )
@@ -528,6 +538,53 @@ class AddNewProductComponents extends Component {
         );
     };
     
+    openCamera = () => {
+
+    }
+    
+    openGallery = async () => {
+        /// this.toggleBrowseImagesOpen();
+        var img = await launchImageLibrary({ mediaType: 'photo' });
+        console.log(img);
+    }
+
+    BrowseImages = ({ isVisible, toggleModal }) => {
+        isVisible = true;
+        return ( 
+            <Modal isVisible={isVisible}>  
+                <View style={{backgroundColor:'#fff', height: 120, flexDirection: "row", alignItems: "center"}}>
+                    <TouchableOpacity onPress={this.openGallery} style={{flex: 1, backgroundColor: '#fff',borderRightColor:"#eee", borderRightWidth: 0.5, height: '100%', alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 5}}>
+                        <Image
+                            source={require('./../../assets/icons/image-icon.png')}
+                            style={{height: 35, width:35}}
+                            resizeMode="cover"
+                            PlaceholderContent={<ActivityIndicator />}
+                        />
+                        <Text style={{color: "#515151"}}>Upload Image</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={this.openCamera} style={{flex: 1, backgroundColor: '#fff', borderLeftColor:"#eee", borderLeftWidth: 0.5, height: '100%', alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 5}}>
+                         <Image
+                            source={require('./../../assets/icons/camera-icon.png')}
+                            style={{height: 35, width:35}}
+                            resizeMode="cover"
+                            PlaceholderContent={<ActivityIndicator />}
+                        />
+                        <Text style={{color: "#515151"}}>Use Camera</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{backgroundColor: "transparent", position: "absolute", top: 0, right: 0, padding: 5}}>
+                    <TouchableOpacity onPress={this.toggleBrowseImagesOpen}>
+                        <Image
+                            source={require('./../../assets/icons/close.png')}
+                            style={{height: 25, width:25}}
+                            resizeMode="cover"
+                            PlaceholderContent={<ActivityIndicator />}
+                        />
+                    </TouchableOpacity>
+                </View>
+            </Modal>
+        )   
+    }
 
     CategoriesModal = ({ isVisible, toggleModal }) => (
         <Modal isVisible={isVisible}>
@@ -792,6 +849,12 @@ class AddNewProductComponents extends Component {
         })
     }
     
+    setBarcodeDataField = (val) => {
+        this.setState({
+            barcode_data: val
+        });
+    }
+
     trash_price_list = (id) => {
         this.setState((prevState) => {
 
@@ -868,7 +931,7 @@ class AddNewProductComponents extends Component {
                             
                             <TouchableOpacity 
                                 style={{width: "100%",  marginTop: 5, flexDirection: "row",  justifyContent: "center"}}
-                                onPress={() => console.log( "Upload Product Image ..." )}
+                                onPress={this.toggleBrowseImagesOpen}
                                 > 
                                 <Image
                                     source={require('./../../assets/icons/product-placeholder.png')}
@@ -877,6 +940,9 @@ class AddNewProductComponents extends Component {
                                     PlaceholderContent={<ActivityIndicator />} 
                                 />
                             </TouchableOpacity> 
+
+                            <this.BrowseImages isVisible={this.state.isBrowseImagesOpen} toggleModal={this.toggleBrowseImagesOpen} />
+
                         </View>
 
                         <View style={{...styles.field_container}}>
@@ -925,7 +991,7 @@ class AddNewProductComponents extends Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={{...styles.textInputNoMargins}}>
-                                <TextInput onChangeText={(text) => this.setState({barcode_data: text})} style={{flex: 1}} value={this.state.barcode_data} placeholder='Barcode' />
+                                <TextInput value={this.state.barcode_data.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setBarcodeDataField, text)} style={{flex: 1}} placeholder='Barcode' />
                             </View>
 
                             <this.BarcodeScannerModal isVisible={this.state.isBarcodeScannerOpen} toggleModal={this.toggleBarcodeScannerOpen} />
@@ -941,7 +1007,7 @@ class AddNewProductComponents extends Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={styles.textInputNoMargins}>
-                                <TextInput value={this.state.discountValue.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setDiscountValue, text)} status='checked' style={{flex: 2}} placeholder='Discount Value' />
+                                <TextInput value={this.state.discountValue.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setDiscountValue, text)} style={{flex: 2}} placeholder='Discount Value' />
                                 {
                                     this.state.enabled_discount_percentage ?
                                     <TextInput status='checked' value={this.state.discountPercentage.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setDiscountPercentage, text)} style={{flex: 1, borderLeftWidth: 1, borderLeftColor: "#ddd", paddingLeft: 10}} placeholder='%' />
