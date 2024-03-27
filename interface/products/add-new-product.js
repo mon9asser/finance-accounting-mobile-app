@@ -32,7 +32,7 @@ import {CategoryInstance} from "./../../controllers/storage/categories.js";
 import { generateId } from "../../controllers/helpers.js";
 import { PriceInstance } from "../../controllers/storage/prices.js";
 import { ProductInstance } from "../../controllers/storage/products.js";
- 
+
  
 
 
@@ -55,8 +55,9 @@ var cls = {
 class AddNewProductComponents extends Component {
 
     constructor(props) {
+
         super(props);
-        
+
         this.state = {
 
             language: {}, 
@@ -115,10 +116,17 @@ class AddNewProductComponents extends Component {
             notificationMessage: "",
 
             product_name_hlgt: "",
-            price_list_hlgt: ""
+            price_list_hlgt: "",
+            blob_image: ""
         };
 
     }
+
+    fetchImage = async (uri) => {
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        return blob;
+    } 
 
     setNotificationMessage = (text) => {
         this.setState({
@@ -992,7 +1000,7 @@ class AddNewProductComponents extends Component {
         }
 
         this.setPressBtn(true);
-
+         
         (async() => {
             
               
@@ -1003,9 +1011,11 @@ class AddNewProductComponents extends Component {
 
             // price list 
             var prices = this.state.prices_list;
-
-           
-            // product 
+            console.log("image");
+            return;
+            var image = typeof this.state.product_thumbnail == 'number'? "": await this.fetchImage(this.state.product_thumbnail)
+            
+           // product 
             var productObject = {
                 product_name: this.state.product_name, 
                 category_id: this.state.selected_category, 
@@ -1015,7 +1025,7 @@ class AddNewProductComponents extends Component {
                     percentage: this.state.discountPercentage,
                     value: this.state.discountValue
                 }, 
-                thumbnail: this.state.product_thumbnail, 
+                thumbnail: image, 
                 param_id: this.state.product_local_id
             };
 
