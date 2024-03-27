@@ -21,7 +21,8 @@ import {styles} from "../../controllers/styles.js";
 import {get_setting, add_last_session_form, get_last_session_form, delete_session_form} from "../../controllers/cores/settings.js";
 import {get_lang} from '../../controllers/languages.js'; 
 import { SelectList } from 'react-native-dropdown-select-list';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from 'expo-file-system';
 
 // Controller 
 import { BranchInstance } from "../../controllers/storage/branches.js"
@@ -30,6 +31,9 @@ import { usr } from "../../controllers/storage/user.js";
 import {CategoryInstance} from "./../../controllers/storage/categories.js";
 import { generateId } from "../../controllers/helpers.js";
  
+ 
+
+
 var cls = { 
     
     // Delete Button 
@@ -64,8 +68,7 @@ class AddNewProductComponents extends Component {
             isModificationPrice: false,
             validatedTextEnabled: false, 
             currentIndex: -1,
-
-            isBrowseImagesOpen: false, 
+ 
 
             requiredFields: {
                 unit:  "#dfdfdf",
@@ -101,9 +104,16 @@ class AddNewProductComponents extends Component {
             
             prices_list: [],
             discountValue: '', 
-            discountPercentage: ''
+            discountPercentage: '',
+            product_thumbnail: require('./../../assets/icons/product-placeholder.png')
         };
 
+    }
+
+    setProductThumbnail = (image) => {
+        this.setState({
+            product_thumbnail: image
+        })
     }
 
     setBtnPriceEditText= ( value ) => {
@@ -154,12 +164,7 @@ class AddNewProductComponents extends Component {
         })
     }
 
-    toggleBrowseImagesOpen = () => {
-        this.setState({
-            isBrowseImagesOpen: !this.state.isBrowseImagesOpen
-        })
-    }
-
+     
     
     setLanguage = async (lang ) => {
  
@@ -537,55 +542,36 @@ class AddNewProductComponents extends Component {
             </Modal>
         );
     };
-    
-    openCamera = () => {
-
-    }
+     
     
     openGallery = async () => {
-        /// this.toggleBrowseImagesOpen();
-        var img = await launchImageLibrary({ mediaType: 'photo' });
-        console.log(img);
+ 
+        /// this.toggleBrowseImagesOpen(); 
+        var reqs = await ImagePicker.launchImageLibraryAsync({ 
+            mediaType: 'photo',
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+
+        }); 
+
+        if( reqs.canceled || reqs.assets == null ) {
+            return; 
+        }
+
+        var file_url = reqs.assets[0].uri; 
+        const fileInfo = await FileSystem.getInfoAsync(file_url);
+
+        if( ! fileInfo.exists ) {
+            this.setProductThumbnail(require('./../../assets/icons/product-placeholder.png'));
+        } else {
+            this.setProductThumbnail({uri: file_url });
+        }
+
+        
     }
 
-    BrowseImages = ({ isVisible, toggleModal }) => {
-        isVisible = true;
-        return ( 
-            <Modal isVisible={isVisible}>  
-                <View style={{backgroundColor:'#fff', height: 120, flexDirection: "row", alignItems: "center"}}>
-                    <TouchableOpacity onPress={this.openGallery} style={{flex: 1, backgroundColor: '#fff',borderRightColor:"#eee", borderRightWidth: 0.5, height: '100%', alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 5}}>
-                        <Image
-                            source={require('./../../assets/icons/image-icon.png')}
-                            style={{height: 35, width:35}}
-                            resizeMode="cover"
-                            PlaceholderContent={<ActivityIndicator />}
-                        />
-                        <Text style={{color: "#515151"}}>Upload Image</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={this.openCamera} style={{flex: 1, backgroundColor: '#fff', borderLeftColor:"#eee", borderLeftWidth: 0.5, height: '100%', alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 5}}>
-                         <Image
-                            source={require('./../../assets/icons/camera-icon.png')}
-                            style={{height: 35, width:35}}
-                            resizeMode="cover"
-                            PlaceholderContent={<ActivityIndicator />}
-                        />
-                        <Text style={{color: "#515151"}}>Use Camera</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={{backgroundColor: "transparent", position: "absolute", top: 0, right: 0, padding: 5}}>
-                    <TouchableOpacity onPress={this.toggleBrowseImagesOpen}>
-                        <Image
-                            source={require('./../../assets/icons/close.png')}
-                            style={{height: 25, width:25}}
-                            resizeMode="cover"
-                            PlaceholderContent={<ActivityIndicator />}
-                        />
-                    </TouchableOpacity>
-                </View>
-            </Modal>
-        )   
-    }
-
+     
     CategoriesModal = ({ isVisible, toggleModal }) => (
         <Modal isVisible={isVisible}>
             <View style={{...styles.modalContainer, flex: 1}}>
@@ -931,18 +917,15 @@ class AddNewProductComponents extends Component {
                             
                             <TouchableOpacity 
                                 style={{width: "100%",  marginTop: 5, flexDirection: "row",  justifyContent: "center"}}
-                                onPress={this.toggleBrowseImagesOpen}
+                                onPress={this.openGallery}
                                 > 
                                 <Image
-                                    source={require('./../../assets/icons/product-placeholder.png')}
+                                    source={this.state.product_thumbnail}
                                     style={{height: 200, width:"100%", borderRadius: 25, width: "100%"}}
                                     resizeMode="cover"
                                     PlaceholderContent={<ActivityIndicator />} 
                                 />
-                            </TouchableOpacity> 
-
-                            <this.BrowseImages isVisible={this.state.isBrowseImagesOpen} toggleModal={this.toggleBrowseImagesOpen} />
-
+                            </TouchableOpacity>  
                         </View>
 
                         <View style={{...styles.field_container}}>

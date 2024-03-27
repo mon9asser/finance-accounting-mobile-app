@@ -1,4 +1,31 @@
 
+This is not a good solution! The best way to do this is:
+* Rename in app.json
+* expo prebuild --clean
+The second command will do all changes in the project.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 notofications
 

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "nextdailysales",
-    "slug": "nextdailysales",
+    "name": "salespoint",
+    "slug": "salespoint",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,16 +15,26 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.montasser88.salespoint"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.montasser88.salespoint"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The application accesses your photos, enabling you to share and upload the necessary images such as products, customers, suppliers, etc with your team."
+        }
+      ]
+    ]
   }
 }
