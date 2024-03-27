@@ -30,6 +30,8 @@ import { usr } from "../../controllers/storage/user.js";
 
 import {CategoryInstance} from "./../../controllers/storage/categories.js";
 import { generateId } from "../../controllers/helpers.js";
+import { PriceInstance } from "../../controllers/storage/prices.js";
+import { ProductInstance } from "../../controllers/storage/products.js";
  
  
 
@@ -68,7 +70,7 @@ class AddNewProductComponents extends Component {
             isModificationPrice: false,
             validatedTextEnabled: false, 
             currentIndex: -1,
- 
+            isPressed: false, 
 
             requiredFields: {
                 unit:  "#dfdfdf",
@@ -105,14 +107,48 @@ class AddNewProductComponents extends Component {
             prices_list: [],
             discountValue: '', 
             discountPercentage: '',
-            product_thumbnail: require('./../../assets/icons/product-placeholder.png')
+            product_thumbnail: require('./../../assets/icons/product-placeholder.png'),
+
+            notificationBox: { display: 'none' },
+            notificationCssClass: {},
+            notificationTextCssClass: {},
+            notificationMessage: "",
+
+            product_name_hlgt: "",
+            price_list_hlgt: ""
         };
 
     }
 
+    setNotificationMessage = (text) => {
+        this.setState({
+            notificationMessage: text
+        })
+    }
+
+    setNotificationBox = (value) => {
+        this.setState({
+            notificationBox: {
+                display: value
+            }
+        })
+    }
+    
+    setNotificationCssClass = (cssObject) => {
+        this.setState({
+            notificationCssClass: cssObject
+        })
+    }
+
+    setNotificationCssTextClass = (cssObject) => {
+        this.setState({
+            notificationTextCssClass: cssObject
+        })
+    }
+
     setProductThumbnail = (image) => {
         this.setState({
-            product_thumbnail: image
+            product_thumbnail: image == "" ? require('./../../assets/icons/product-placeholder.png'): image
         })
     }
 
@@ -186,20 +222,38 @@ class AddNewProductComponents extends Component {
 
     restore_data_to_fields = async () => {
 
-
+        /**
+         * data_object: {
+                            prices: prices,
+                            product: product
+                        }
+         */
         var session_ = await get_last_session_form("add-new-product"); 
         if( session_ == null ) {
             return; 
-        }
+        } 
 
-        /*
-        this.setBranchName(session_.branch_name);
-        this.setBranchCountry(session_.branch_country);
-        this.setBranchCity(session_.branch_city);
-        this.setBranchAddress(session_.branch_address);
-        this.setBranchNumber(session_.branch_number);
-        this.setBranchNote(session_.note);*/
+        var prices = session_.prices.length? session_.prices: [];
+        var product = session_.product;
 
+         
+
+        this.setPricesList( prices );
+        this.setProductThumbnail(product.thumbnail);
+        this.setProductName(product.product_name);
+        this.setCategoryOjbect(product.category_id);
+        this.setBarcodeDataField(product.barcode);
+        this.setPercentageDiscount(product.discount.is_percentage);
+        this.setDiscountPercentage(product.discount.percentage);
+        this.setDiscountValue(product.discount.value);
+        
+
+    }
+
+    setPricesList = ( val ) => {
+        this.setState({
+            prices_list: val
+        })
     }
 
     // internet connection
@@ -247,6 +301,8 @@ class AddNewProductComponents extends Component {
 
     componentDidMount = async () => {
          
+        
+
         // setup language
         this.setup_params();  
         
@@ -798,13 +854,19 @@ class AddNewProductComponents extends Component {
         )
     }
 
-    selecte_category_object( val ) {
-        
+    setCategoryOjbect = ( value ) => {
+        this.setState({
+            selected_category: value
+        })
+    }
+
+    selecte_category_object( val  ) {
+         
         var index = this.state.db_categories.products.findIndex( x => x.category_name == val );
         if( index == -1 ) {
             return;
         }
-        this.state.selected_category = this.state.db_categories.products[index];
+        this.setCategoryOjbect(this.state.db_categories.products[index]);
 
 
     }
@@ -868,7 +930,7 @@ class AddNewProductComponents extends Component {
 
     }
 
-    ListOfPricesComponents = ({item}) => {
+    ListOfPricesComponents = (item) => {
           
         return (
             <TouchableOpacity key={item.local_id} onPress={() => this.edit_price_package(item)} style={{...styles.product_price_container}}>
@@ -903,6 +965,134 @@ class AddNewProductComponents extends Component {
         })
     }
 
+    setPressBtn = ( value ) => {
+        this.setState({
+            isPressed: value
+        });
+    }
+
+    setProductHlght = (value) => {
+        this.setState({
+            product_name_hlgt: value
+        })
+    }
+
+    setPricesHlght = (value) => {
+        this.setState({
+            price_list_hlgt: value
+        })
+    }
+
+    saveData = () => {
+
+
+        if( this.state.isPressed ) {
+            alert(this.state.language.btn_clicked_twice);
+            return;
+        }
+
+        this.setPressBtn(true);
+
+        (async() => {
+            
+              
+
+            this.setPricesHlght(false);
+            this.setProductHlght(false);
+            this.setNotificationBox("none") 
+
+            // price list 
+            var prices = this.state.prices_list;
+
+           
+            // product 
+            var productObject = {
+                product_name: this.state.product_name, 
+                category_id: this.state.selected_category, 
+                barcode: this.state.barcode_data, 
+                discount: {
+                    is_percentage: this.state.enabled_discount_percentage,
+                    percentage: this.state.discountPercentage,
+                    value: this.state.discountValue
+                }, 
+                thumbnail: this.state.product_thumbnail, 
+                param_id: this.state.product_local_id
+            };
+
+            // required data 
+            if( ! prices.length ||  this.state.product_name == "") {
+
+                this.setPressBtn(false); 
+
+                if( ! prices.length ) {
+                    this.setPricesHlght(true)
+                } 
+
+                if( this.state.product_name == "" ) {
+                    this.setProductHlght(true)
+                }
+
+                this.setNotificationBox("flex")
+                this.setNotificationCssClass(styles.error_message);
+                this.setNotificationCssTextClass(styles.error_text)
+                this.setNotificationMessage(`Please ensure that you have entered at least one value in the "Price" list and have not left the "Product Name" field empty.`);
+
+                return; 
+            }
+
+            // insert data 
+            var priceReqs = await PriceInstance.bulk_create_update(prices);
+            var ProcReqs = await ProductInstance.bulk_create_update([productObject]);
+            console.log(ProcReqs);
+            
+            if(priceReqs.login_redirect || ProcReqs.login_redirect) {
+
+                this.setPressBtn(false);  
+
+                this.setNotificationBox("flex")
+                this.setNotificationCssClass(styles.error_message);
+                this.setNotificationCssTextClass(styles.error_text)
+                this.setNotificationMessage(priceReqs.message);
+
+                
+                // store data of form in session 
+                setTimeout(async () => {
+                
+                    await add_last_session_form({
+                        name: "add-new-product",
+                        data_object: {
+                            prices: prices,
+                            product: product
+                        }
+                    });
+    
+                    this.props.navigation.navigate("Login", { redirect_to: "add-new-product" });
+                
+                }, 1500);
+
+                return; 
+            }
+            
+            if( priceReqs.is_error || ProcReqs.is_error ) {
+
+                this.setPressBtn(false);  
+                this.setNotificationBox("flex")
+                this.setNotificationCssClass(styles.error_message);
+                this.setNotificationCssTextClass(styles.error_text); 
+                this.setNotificationMessage(priceReqs.is_error ? priceReqs.message: ProcReqs.message);
+                
+                return; 
+            }
+
+            this.setPressBtn(false);   
+            this.setNotificationBox("flex")
+            this.setNotificationCssClass(styles.success_message);
+            this.setNotificationCssTextClass(styles.success_text); 
+            this.setNotificationMessage(ProcReqs.message);
+
+        })()
+    }
+
     render() {
         return(
             <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>
@@ -932,7 +1122,7 @@ class AddNewProductComponents extends Component {
                             <View style={styles.inputLabel}>
                                 <Text style={styles.inputLabelText}>Product Name</Text>
                             </View>
-                            <View style={{...styles.textInputNoMargins}}>
+                            <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.product_name_hlgt) ? 'red': '#dfdfdf' }}>
                                 <TextInput value={this.state.product_name} onChangeText={text => this.setProductName(text)} style={{flex: 1}} placeholder='Product Name' />
                             </View>
                         </View> 
@@ -952,7 +1142,7 @@ class AddNewProductComponents extends Component {
                                     dropdownStyles={{flex: 1, width: '100%', borderColor:'#eee'}}
                                     placeholder="Select Category" 
                                     setSelected={(val) => this.selecte_category_object(val)}   
-                                    onSelect={() => console.log(this.state.selected_category)}
+                                    defaultOption={ this.state.selected_category == null? undefined: {key: this.state.selected_category.key, value: this.state.selected_category.value}} 
                                     data={this.state.db_categories.products.map( item => {
                                         item.key = item.local_id;
                                         item.value = item.category_name
@@ -1011,15 +1201,17 @@ class AddNewProductComponents extends Component {
 
                             
                             {
-                                this.state.prices_list.length ?
-                                    this.state.prices_list.map( x => <this.ListOfPricesComponents item={x}/> ) :
-                                    <View style={{justifyContent: "center", flexDirection: "row", flex: 1, borderColor: "#eee", marginTop: 5, borderWidth: 1, padding: 10}}><Text style={{color: "#999"}}>No prices found, click on "add new"</Text></View>
+                                this.state.prices_list.length ? 
+                                    this.state.prices_list.map( x => this.ListOfPricesComponents(x) ) :
+                                    <View style={{justifyContent: "center", flexDirection: "row", flex: 1, borderColor:(this.state.price_list_hlgt) ? 'red': '#dfdfdf', marginTop: 5, borderWidth: 1, padding: 10}}><Text style={{color: "#999"}}>No prices found, click on "add new"</Text></View>
                             }
-                            
-
-
+                             
                             <this.PricesPackagesModal isVisible={this.state.isPricesPackageModalOpen} toggleModal={this.toggleModalOfPricesPackage} />
                         </View>
+
+                        <View style={{ ...styles.wrapper, ...this.state.notificationBox, ...this.state.notificationCssClass, ...styles.space_top_25}}>
+                            <Text style={this.state.notificationTextCssClass}>{this.state.notificationMessage}</Text>
+                        </View> 
 
                         <View style={{...styles.space_bottom_10, ...styles.space_top_25}}>
                             <Button onPress={this.saveData} style={{...styles.default_btn, backgroundColor: this.state.default_color }}>
@@ -1031,11 +1223,8 @@ class AddNewProductComponents extends Component {
                                 }
                             </Button>
                         </View>                      
-                    </View >
-                
+                    </View > 
 
-                    
-                     
                  </ScrollView> 
  
                  

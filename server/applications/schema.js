@@ -45,7 +45,7 @@ var allSchema = {
         category_id: { type: String, default: ""},
         barcode: { type: String, default: ""},
         discount: {
-            is_percentage: { type: String, default: ""},
+            is_percentage: { type: Boolean, default: false},
             percentage: { type: String, default: ""},
             value: { type: String, default: ""}
         },

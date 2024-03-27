@@ -91,6 +91,16 @@ var styles = StyleSheet.create({
         borderColor: "#dfdfdf", 
         borderRadius: 10
     },
+
+    textInputNoMarginsChanged: {
+        borderWidth: 1, 
+        justifyContent: "space-between", 
+        alignItems: 'center', 
+        padding: 10, 
+        flexDirection: "row",  
+        borderRadius: 10
+    },
+
     direction_row: {
         flexDirection: 'row'
     },

@@ -259,15 +259,14 @@ class EditCurrentBranchComponents extends Component {
 
     saveData = async () => {
 
-        this.setNotificationBox("none")
-        this.setPressBtn(true); 
-        
-
         if( this.state.isPressed ) {
             alert(this.state.language.btn_clicked_twice);
             return;
         }
 
+        this.setNotificationBox("none")
+        this.setPressBtn(true); 
+         
          
         var obj_data = { 
             branch_name: this.state.branch_name, 
