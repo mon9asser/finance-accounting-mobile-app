@@ -1032,8 +1032,8 @@ class AddNewProductComponents extends Component {
             var prices = this.state.prices_list;
  
             var image = typeof this.state.product_thumbnail == 'number'? "": await this.fetchImage(this.state.product_thumbnail);
-             
-           // product  
+            
+            // product  
             var productObject = {
                 product_name: this.state.product_name, 
                 category_id: this.state.selected_category, 
@@ -1085,14 +1085,14 @@ class AddNewProductComponents extends Component {
                 
                 // store data of form in session 
                 setTimeout(async () => {
-                
+                    /*
                     await add_last_session_form({
                         name: "add-new-product",
                         data_object: {
                             prices: prices,
                             product: product
                         }
-                    });
+                    });*/
     
                     this.props.navigation.navigate("Login", { redirect_to: "add-new-product" });
                 
