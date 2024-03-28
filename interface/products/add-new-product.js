@@ -21,8 +21,10 @@ import {styles} from "../../controllers/styles.js";
 import {get_setting, add_last_session_form, get_last_session_form, delete_session_form} from "../../controllers/cores/settings.js";
 import {get_lang} from '../../controllers/languages.js'; 
 import { SelectList } from 'react-native-dropdown-select-list';
+import { decode as atob } from 'base-64';
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from 'expo-file-system';
+
 
 // Controller 
 import { BranchInstance } from "../../controllers/storage/branches.js"
@@ -122,10 +124,21 @@ class AddNewProductComponents extends Component {
 
     }
 
-    fetchImage = async (uri) => {
-        const response = await fetch(uri);
-        const blob = await response.blob();
-        return blob;
+    fetchImage = (image) => {
+
+        var {uri} = image;
+
+        const fileName = uri.split('/').pop();
+        const fileType = fileName.split('.').pop();
+        const formData = new FormData();
+        formData.append('file', { 
+            uri, 
+            name: fileName, 
+            type: `image/${fileType}` 
+        });
+        
+        return formData;
+
     } 
 
     setNotificationMessage = (text) => {
@@ -321,7 +334,7 @@ class AddNewProductComponents extends Component {
         this.screen_options(); 
 
         // add data to fields if session already expired before 
-        this.restore_data_to_fields();
+        // this.restore_data_to_fields();
 
         // getting all products async 
         await this.get_categories_async();
@@ -443,9 +456,8 @@ class AddNewProductComponents extends Component {
                     ...prevState.db_categories,
                     products: updatedProductsCats,
                 },
-            };
-        
-
+            }; 
+            
         });
         
     }
@@ -609,7 +621,14 @@ class AddNewProductComponents extends Component {
      
     
     openGallery = async () => {
- 
+        
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            alert("You've refused to allow this app to access your photos!");
+            return;
+        } 
+
         /// this.toggleBrowseImagesOpen(); 
         var reqs = await ImagePicker.launchImageLibraryAsync({ 
             mediaType: 'photo',
@@ -626,6 +645,7 @@ class AddNewProductComponents extends Component {
         var file_url = reqs.assets[0].uri; 
         const fileInfo = await FileSystem.getInfoAsync(file_url);
 
+         
         if( ! fileInfo.exists ) {
             this.setProductThumbnail(require('./../../assets/icons/product-placeholder.png'));
         } else {
@@ -885,8 +905,7 @@ class AddNewProductComponents extends Component {
     }
 
     checkCameraPermission = () => {
-
-       
+        
         if( this.state.hasPermission == false || this.state.hasPermission == null ) {
             alert("To scan the barcode, you need to let the app use your camera. Please turn on camera permission.")
             return;
@@ -997,7 +1016,7 @@ class AddNewProductComponents extends Component {
         if( this.state.isPressed ) {
             alert(this.state.language.btn_clicked_twice);
             return;
-        }
+        } 
 
         this.setPressBtn(true);
          
@@ -1011,11 +1030,10 @@ class AddNewProductComponents extends Component {
 
             // price list 
             var prices = this.state.prices_list;
-            console.log("image");
-            return;
-            var image = typeof this.state.product_thumbnail == 'number'? "": await this.fetchImage(this.state.product_thumbnail)
-            
-           // product 
+ 
+            var image = typeof this.state.product_thumbnail == 'number'? "": await this.fetchImage(this.state.product_thumbnail);
+             
+           // product  
             var productObject = {
                 product_name: this.state.product_name, 
                 category_id: this.state.selected_category, 
@@ -1025,10 +1043,10 @@ class AddNewProductComponents extends Component {
                     percentage: this.state.discountPercentage,
                     value: this.state.discountValue
                 }, 
-                thumbnail: image, 
+                thumbnail: "",  
                 param_id: this.state.product_local_id
             };
-
+            console.log("Outside :" + this.state.product_local_id)
             // required data 
             if( ! prices.length ||  this.state.product_name == "") {
 
@@ -1052,8 +1070,8 @@ class AddNewProductComponents extends Component {
 
             // insert data 
             var priceReqs = await PriceInstance.bulk_create_update(prices);
-            var ProcReqs = await ProductInstance.bulk_create_update([productObject]);
-            console.log(ProcReqs);
+            var ProcReqs = await ProductInstance.create_update(productObject);
+             
             
             if(priceReqs.login_redirect || ProcReqs.login_redirect) {
 

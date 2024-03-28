@@ -11,19 +11,17 @@ const {get_schema_object} = require("../applications/schema.js");
 
 var apiRouters = express.Router();
 
- 
-  
-// add data by one row + update by one row 
-apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res) => {
+
+var create_update = async (req, res, image = null ) => {
      
     // handling current language
     var current_language = req.body.language == undefined? "en": req.body.language; 
     var localize = language[current_language];
- 
+     
     //preparing response object 
     var response = {
         is_error: true, 
-        data: [],
+        data: [], 
         message: localize.something_wrong
     }
 
@@ -118,7 +116,10 @@ apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res) 
         }
 
     } 
-});
+}
+
+// add data by one row + update by one row 
+apiRouters.post("/create_update", verify_user_tokens_and_keys, ( req, res ) => create_update( req, res ));
   
 // Bulk insert data + bulk update
 apiRouters.post("/bulk_create_update", verify_user_tokens_and_keys, async (req, res) => {

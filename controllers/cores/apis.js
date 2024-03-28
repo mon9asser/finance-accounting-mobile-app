@@ -150,10 +150,11 @@ class A_P_I_S {
      * Core Async: Updates from local device to remote server 
      */
     async coreAsync( mobject, obj_data, parameter_id = null ) {
-
+         
         // getting settings and language
         var settings, user_data, param_id, param_id_object, old_data, is_update;
-        
+        console.log("arrived id object :")
+        console.log(parameter_id);
         try{
             settings = await get_setting();
             user_data = await usr.get_session();
@@ -234,18 +235,19 @@ class A_P_I_S {
                     email: user_data.email 
                 },
             }
-        }
-        
-        
+        } 
+
+        console.log("param_id_object :");
+        console.log(param_id_object);
         // check if it is update or insert process 
         var objectIndex = old_data.findIndex(x => {
                 
             if( typeof param_id_object == 'object'  ) {
                 var key__ = Object.keys(param_id_object)[0]; 
-                console.log("checking index ",  x[key__], param_id_object[key__]);
+                 
                 return x[key__] == param_id_object[key__]; 
             }
-            console.log("checking index ",x.local_id, param_id)
+             
             return x.local_id == param_id;
 
         });
@@ -308,7 +310,7 @@ class A_P_I_S {
         } 
         
         if( objectIndex === -1) {
-            console.log(__object.local_id + " is added", objectIndex);
+             
             rowData = {
                 ...__object, 
                 remote_saved: request.is_error? false: true,
@@ -1096,7 +1098,7 @@ class A_P_I_S {
         
         // => Model data 
         if( type != "login" && mobject != null ) {
-            console.log(mobject);
+             
             var {key} = mobject; 
             var {doc_type} = mobject; 
             

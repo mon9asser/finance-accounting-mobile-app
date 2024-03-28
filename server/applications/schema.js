@@ -42,14 +42,14 @@ var allSchema = {
 
     products: {
         product_name: { type: String, default: ""},
-        category_id: { type: String, default: ""},
+        category_id: {},
         barcode: { type: String, default: ""},
         discount: {
             is_percentage: { type: Boolean, default: false},
             percentage: { type: String, default: ""},
             value: { type: String, default: ""}
         },
-        thumbnail: { type: String, default: ""},
+        thumbnail: { type: String, default: ""}, 
         ...default_properties,
     },
 
