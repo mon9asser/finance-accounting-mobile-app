@@ -27,8 +27,12 @@ const upload = multer({ storage: storage });
 var apiRouters = express.Router();
 
 
-var create_update = async (req, res, image = null ) => {
-     
+var create_update = async (req, res ) => {
+    
+    if(req.body.data_object.doc_name == 'products') {
+     console.log(req.body.data_object);   
+    }
+
     // handling current language
     var current_language = req.body.language == undefined? "en": req.body.language; 
     var localize = language[current_language];

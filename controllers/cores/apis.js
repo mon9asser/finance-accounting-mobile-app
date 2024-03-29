@@ -7,7 +7,7 @@ import {get_setting} from '../cores/settings';
 import {config} from '../../settings/config';
 import {usr} from '../storage/user';
 import {Models} from "./models";
-
+import { Platform } from "react-native";
 
 
 class A_P_I_S {
@@ -18,9 +18,9 @@ class A_P_I_S {
 
     
     // HTTP Request 
-    axiosRequest = async ({ api, dataObject, method, headers, model_name } = null) => {
+    axiosRequest = async ({ api, dataObject, method, headers, model_name, is_form } = null) => {
          
-
+       
         // disable internet 
         if( ! config.enable_remote_server_apis ) {
 
@@ -72,18 +72,62 @@ class A_P_I_S {
             };
         }
         
-         // assign default values for request 
-         dataObject['language'] = settings.language;
-         dataObject['database_name'] = user_data.database_name;
-         dataObject['model_name'] = model_name;
+        
+        // assign default values for request 
+        dataObject['language'] = settings.language;
+        dataObject['database_name'] = user_data.database_name;
+        dataObject['model_name'] = model_name;
+        const formData = new FormData();
+
+        if( is_form == true ) { 
+            console.log("trace 1")
+            // check for file property 
+            if( ! dataObject.file ) {
+                return {
+                    login_redirect: false, 
+                    message: language.api_connection_error, 
+                    is_error: true , 
+                    data: []
+                }; 
+
+            }
+
+            console.log("trace 2")
+
+            if( !dataObject.file.name || !dataObject.file.property_name || ! dataObject.file.type || ! dataObject.file.uri ) {
+                return {
+                    login_redirect: false, 
+                    message: language.api_connection_error, 
+                    is_error: true , 
+                    data: []
+                };
+            }
+
+            console.log("trace 3")
+            // attach file into object 
+            formData.append("file", {
+                property_name: dataObject.file.property_name,
+                name: dataObject.file.fileName || 'upload.jpg',
+                type: dataObject.file.type || 'image/jpeg',
+                uri: Platform.OS === "android" ? dataObject.file.uri : dataObject.file.uri.replace("file://", ""),
+            });
+
+            // append others 
+            var { file, ...others } = dataObject;
+
+            // setup data into form object 
+            Object.keys(others).forEach(key => formData.append(key, others[key]));
+
+
+        }
         
 
         let options = {
             method: method, // Can be 'get', 'put', 'delete', etc.
             url: config.api(api), // 'api/application/login'
-            data: dataObject,
+            data:  ( is_form )? formData:dataObject,
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': ( is_form )? 'multipart/form-data' : 'application/json',
                 'X-api-public-key': config.keys.public,
                 'X-api-secret-key': config.keys.secret,
                 'X-api-tokens': user_data.token  
@@ -97,6 +141,8 @@ class A_P_I_S {
                 options.headers[key] = value;
             });
         }
+
+        
 
 
         var error_callback = (error) => {
@@ -149,8 +195,7 @@ class A_P_I_S {
          
         // getting settings and language
         var settings, user_data, param_id, param_id_object, old_data, is_update;
-        console.log("arrived id object :")
-        console.log(parameter_id);
+ 
         try{
             settings = await get_setting();
             user_data = await usr.get_session();
@@ -232,9 +277,7 @@ class A_P_I_S {
                 },
             }
         } 
-
-        console.log("param_id_object :");
-        console.log(param_id_object);
+        
         // check if it is update or insert process 
         var objectIndex = old_data.findIndex(x => {
                 
@@ -259,10 +302,10 @@ class A_P_I_S {
             // update an existing object 
             is_update = true; 
         }
-        
        
         __object = {...__object, ...obj_data}; 
-       
+        
+         
         // case it is update 
         if( (obj_data.local_id != undefined || parameter_id != null) && is_update && objectIndex == -1 ) {
             return {
@@ -272,7 +315,9 @@ class A_P_I_S {
                 is_error: true 
             };
         } 
+
         
+       
         // prepare data of remote server 
         var axiosOptions = { 
             api: "api/create_update", 
@@ -281,9 +326,12 @@ class A_P_I_S {
                 param_id: param_id_object
             }, 
             method: "post",  
-            model_name: key
+            model_name: key,
+            is_form: __object.file ? true: false
         };
-         
+        
+  
+
         // send request for remote server 
         var request = await this.axiosRequest(axiosOptions); 
          

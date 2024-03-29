@@ -24,16 +24,19 @@ class Products extends A_P_I_S {
     }
 
     /** Insert and update a record */
-    create_update = async ({product_name, category_id, barcode, discount, thumbnail, param_id} = null ) => {
+    create_update = async ({product_name, category_id, barcode, discount, file, param_id} = null ) => {
        
          
         var _object =  {
             product_name: product_name == undefined? "": product_name ,
             category_id: category_id == undefined? -1: category_id, 
             barcode: barcode == undefined? "": barcode, 
-            discount: discount == undefined? "": discount, 
-            thumbnail: thumbnail == undefined? "": thumbnail, 
+            discount: discount == undefined? "": discount
         };
+         
+        if( file != undefined ) {
+            _object.file = file;
+        }
 
         var param_value = null;
 
@@ -50,6 +53,8 @@ class Products extends A_P_I_S {
         if( typeof param_id == 'object' && param_id != null ) {
             param_value = {...param_id};
         }  
+
+        
          
         var asynced = await this.coreAsync(
             this.Schema,
