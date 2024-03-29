@@ -34,6 +34,8 @@ import {CategoryInstance} from "./../../controllers/storage/categories.js";
 import { generateId } from "../../controllers/helpers.js";
 import { PriceInstance } from "../../controllers/storage/prices.js";
 import { ProductInstance } from "../../controllers/storage/products.js";
+import { A_P_I_S } from "../../controllers/cores/apis.js";
+import { Models } from "../../controllers/cores/models.js";
 
  
 
@@ -322,8 +324,7 @@ class AddNewProductComponents extends Component {
 
     componentDidMount = async () => {
          
-        
-
+         
         // setup language
         this.setup_params();  
         
@@ -1010,6 +1011,61 @@ class AddNewProductComponents extends Component {
         })
     }
 
+
+
+
+
+    createFormData = (photo, body) => {
+        const data = new FormData();
+      
+        data.append("photo", {
+          name: photo.fileName,
+          type: photo.type,
+          uri:
+            Platform.OS === "android" ? photo.uri : photo.uri.replace("file://", "")
+        });
+      
+        Object.keys(body).forEach(key => {
+          data.append(key, body[key]);
+        });
+      
+        return data;
+    };
+
+      
+    storeImage = async () => {
+        const photo = this.state.product_thumbnail; // Assuming this is an object with { uri, type, name }
+        const url = "http://192.168.100.7:3000/api/create_update_w_image";
+    
+        // Prepare FormData
+        const formData = new FormData(); 
+        formData.append("photo", {
+            name: photo.fileName || 'upload.jpg', // Ensure a filename is present
+            type: photo.type || 'image/jpeg', // Ensure a file type is present, default to 'image/jpeg'
+            uri: Platform.OS === "android" ? photo.uri : photo.uri.replace("file://", ""),
+        });
+        formData.append("id", "142544"); // Example of adding another field
+    
+        // Configure Axios options
+        const options = {
+            method: "post",
+            url: url,
+            data: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data', // This header is important for 'multipart/form-data'
+            },
+        };
+    
+        // Perform the request
+        try {
+            const response = await axios(options);
+            console.log("Upload success:", response.data);
+        } catch (error) {
+            console.error("Upload error:", error.message);
+        }
+    }
+    
+
     saveData = () => {
 
 
@@ -1031,8 +1087,8 @@ class AddNewProductComponents extends Component {
             // price list 
             var prices = this.state.prices_list;
  
-            var image = typeof this.state.product_thumbnail == 'number'? "": await this.fetchImage(this.state.product_thumbnail);
-            
+            var image = typeof this.state.product_thumbnail == 'number'? "": this.state.product_thumbnail.uri;
+             
             // product  
             var productObject = {
                 product_name: this.state.product_name, 
@@ -1045,8 +1101,7 @@ class AddNewProductComponents extends Component {
                 }, 
                 thumbnail: "",  
                 param_id: this.state.product_local_id
-            };
-            console.log("Outside :" + this.state.product_local_id)
+            }; 
             // required data 
             if( ! prices.length ||  this.state.product_name == "") {
 
@@ -1242,6 +1297,13 @@ class AddNewProductComponents extends Component {
                         </View> 
 
                         <View style={{...styles.space_bottom_10, ...styles.space_top_25}}>
+
+                            <Button onPress={this.storeImage} style={{...styles.default_btn, backgroundColor: this.state.default_color }}>
+                                <Text>
+                                    Store Image 
+                                </Text>
+                            </Button>
+
                             <Button onPress={this.saveData} style={{...styles.default_btn, backgroundColor: this.state.default_color }}>
                                 {
                                     this.state.isPressed ?

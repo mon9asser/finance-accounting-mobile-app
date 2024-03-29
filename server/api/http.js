@@ -8,6 +8,21 @@ const { create_connection, flat_schema_name } = require("../applications/db.js")
 const {language} = require("../localize/language.js");
 const { verify_user_tokens_and_keys } = require("./middleware/tokens.js")
 const {get_schema_object} = require("../applications/schema.js");
+const multer = require('multer');
+const path = require('path');
+
+// Multer configuration for file upload
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './images') // Make sure this path exists and your app has write permissions to it
+    },
+    filename: function(req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname)) // Use Date.now() to get a unique name for the uploaded file
+    } 
+});
+
+const upload = multer({ storage: storage });
+  
 
 var apiRouters = express.Router();
 
@@ -117,6 +132,23 @@ var create_update = async (req, res, image = null ) => {
 
     } 
 }
+
+
+apiRouters.post("/create_update_w_image", upload.single('photo'),  ( req, res ) => {
+    
+    console.log('file', req.file); // Multer processes the file and it's available at req.file
+    console.log('body', req.body); // Additional fields are available at req.body
+
+    res.status(200).json({
+        message: 'Upload successful!',
+        fileInfo: req.file
+    });
+
+
+}); 
+  
+
+
 
 // add data by one row + update by one row 
 apiRouters.post("/create_update", verify_user_tokens_and_keys, ( req, res ) => create_update( req, res ));
@@ -519,9 +551,7 @@ apiRouters.post("/delete", verify_user_tokens_and_keys, async (req, res) => {
     */
     db_connection.deleteMany(parameters)
     .then((obRes)=> {
-        
-        console.log(obRes);
-
+         
         return res.send({
             is_error: false, 
             data: [], 
@@ -539,6 +569,8 @@ apiRouters.post("/delete", verify_user_tokens_and_keys, async (req, res) => {
     });
     
 });
+
+
 
 // update all records based on keys 
 apiRouters.post("/update_by_keys", verify_user_tokens_and_keys, async (req, res) => {
@@ -636,5 +668,10 @@ apiRouters.post("/update_by_keys", verify_user_tokens_and_keys, async (req, res)
      }
 });
   
+
+
+apiRouters.get("/", (req, res) => {
+    res.send("Its working !")
+})
 
 module.exports = { apiRouters };

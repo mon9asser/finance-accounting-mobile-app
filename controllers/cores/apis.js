@@ -138,11 +138,7 @@ class A_P_I_S {
                 .catch(error => error_callback(error));
         } catch (error) {
             return error_callback(error)
-        }
-        
-
-
-        return options;
+        } 
 
     }
 

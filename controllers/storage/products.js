@@ -50,9 +50,7 @@ class Products extends A_P_I_S {
         if( typeof param_id == 'object' && param_id != null ) {
             param_value = {...param_id};
         }  
-        
-        console.log("param_value ===>");
-        console.log(param_value);
+         
         var asynced = await this.coreAsync(
             this.Schema,
             _object,
