@@ -1060,12 +1060,27 @@ class AddNewProductComponents extends Component {
             // insert data 
             var priceReqs = await PriceInstance.bulk_create_update(prices); 
             var ProcReqs = await ProductInstance.create_update(productObject);
-            await upload_image({
+            
+            var file_object = {
                 new_name: "", 
-                file: this.state.file, 
-                property_name: "thumbnail",   
+                property_name: "thumbnail",  
                 post_id: this.state.product_local_id
-            });            
+            }
+
+            if( this.state.file != null ) {
+
+                file_object["file"] = {
+                    uri: this.state.file.uri 
+                };
+
+                await ProductInstance.upload_image({
+                    new_name: "", 
+                    file: file_object, 
+                    property_name: "thumbnail",   
+                    post_id: this.state.product_local_id
+                });            
+
+            }
             
             if(priceReqs.login_redirect || ProcReqs.login_redirect) { 
 
