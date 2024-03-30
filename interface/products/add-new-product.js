@@ -121,25 +121,9 @@ class AddNewProductComponents extends Component {
 
             product_name_hlgt: "",
             price_list_hlgt: "",
-            blob_image: ""
+            blob_image: "",
+            file: null 
         };
-
-    }
-
-    fetchImage = (image) => {
-
-        var {uri} = image;
-
-        const fileName = uri.split('/').pop();
-        const fileType = fileName.split('.').pop();
-        const formData = new FormData();
-        formData.append('file', { 
-            uri, 
-            name: fileName, 
-            type: `image/${fileType}` 
-        });
-        
-        return formData;
 
     } 
 
@@ -620,6 +604,12 @@ class AddNewProductComponents extends Component {
         );
     };
      
+
+    setFileObject = (value) => {
+        this.setState({
+            file: value
+        })
+    }
     
     openGallery = async () => {
         
@@ -644,13 +634,13 @@ class AddNewProductComponents extends Component {
         }
 
         var file_url = reqs.assets[0].uri; 
-        const fileInfo = await FileSystem.getInfoAsync(file_url);
-
+        const fileInfo = await FileSystem.getInfoAsync(file_url); 
          
         if( ! fileInfo.exists ) {
             this.setProductThumbnail(require('./../../assets/icons/product-placeholder.png'));
         } else {
             this.setProductThumbnail({uri: file_url });
+            this.setFileObject( reqs.assets[0] );
         }
 
         
@@ -1030,10 +1020,8 @@ class AddNewProductComponents extends Component {
             this.setNotificationBox("none") 
 
             // price list 
-            var prices = this.state.prices_list;
- 
-            var image = typeof this.state.product_thumbnail == 'number'? "": this.state.product_thumbnail.uri;
-             
+            var prices = this.state.prices_list; 
+              
             // product  
             var productObject = {
                 product_name: this.state.product_name, 
@@ -1043,17 +1031,11 @@ class AddNewProductComponents extends Component {
                     is_percentage: this.state.enabled_discount_percentage,
                     percentage: this.state.discountPercentage,
                     value: this.state.discountValue
-                },   
-                param_id: this.state.product_local_id
+                },
+                param_id: this.state.product_local_id,
+                thumbnail: ""
             }; 
-
-            if( typeof this.state.product_thumbnail != 'number' ) {
-                productObject.file = {
-                    ...typeof this.state.product_thumbnail,
-                    property_name: "thumbnail"
-                }
-            }
-
+            
             // required data 
             if( ! prices.length ||  this.state.product_name == "") {
 
@@ -1076,13 +1058,13 @@ class AddNewProductComponents extends Component {
             }
 
             // insert data 
-            var priceReqs = await PriceInstance.bulk_create_update(prices);
+            var priceReqs = await PriceInstance.bulk_create_update(prices); 
             var ProcReqs = await ProductInstance.create_update(productObject);
-             
             
-            if(priceReqs.login_redirect || ProcReqs.login_redirect) {
+            
+            if(priceReqs.login_redirect || ProcReqs.login_redirect) { 
 
-                this.setPressBtn(false);  
+                this.setPressBtn(false);    
 
                 this.setNotificationBox("flex")
                 this.setNotificationCssClass(styles.error_message);

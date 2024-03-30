@@ -26,12 +26,23 @@ const upload = multer({ storage: storage });
 
 var apiRouters = express.Router();
 
+ 
 
-var create_update = async (req, res ) => {
+// upload.single('photo'), 
+apiRouters.post("/upload_media", async (req, res ) =>{
     
-    if(req.body.data_object.doc_name == 'products') {
-     console.log(req.body.data_object);   
-    }
+    console.log(req._part)  
+
+    res.send("Data");
+    
+}); 
+  
+
+
+
+// add data by one row + update by one row 
+apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res ) => {
+     
 
     // handling current language
     var current_language = req.body.language == undefined? "en": req.body.language; 
@@ -135,27 +146,7 @@ var create_update = async (req, res ) => {
         }
 
     } 
-}
-
-
-apiRouters.post("/create_update_w_image", upload.single('photo'),  ( req, res ) => {
-    
-    console.log('file', req.file); // Multer processes the file and it's available at req.file
-    console.log('body', req.body); // Additional fields are available at req.body
-
-    res.status(200).json({
-        message: 'Upload successful!',
-        fileInfo: req.file
-    });
-
-
-}); 
-  
-
-
-
-// add data by one row + update by one row 
-apiRouters.post("/create_update", verify_user_tokens_and_keys, ( req, res ) => create_update( req, res ));
+});
   
 // Bulk insert data + bulk update
 apiRouters.post("/bulk_create_update", verify_user_tokens_and_keys, async (req, res) => {

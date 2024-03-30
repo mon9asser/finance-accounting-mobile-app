@@ -7,7 +7,7 @@ import {get_setting} from '../cores/settings';
 import {config} from '../../settings/config';
 import {usr} from '../storage/user';
 import {Models} from "./models";
-import { Platform } from "react-native";
+
 
 
 class A_P_I_S {
@@ -18,9 +18,9 @@ class A_P_I_S {
 
     
     // HTTP Request 
-    axiosRequest = async ({ api, dataObject, method, headers, model_name, is_form } = null) => {
-         
-       
+    axiosRequest = async ({ api, dataObject, method, headers, model_name, is_media } = null) => {
+        
+
         // disable internet 
         if( ! config.enable_remote_server_apis ) {
 
@@ -40,7 +40,7 @@ class A_P_I_S {
 
         var language =  get_lang(settings.language);
         
-        
+       
         // if session is expired generate a new one  
         if( ! Object.keys(user_data).length ) { 
             
@@ -63,7 +63,7 @@ class A_P_I_S {
         }
 
 
-        if( ( dataObject.data_object == undefined || typeof dataObject.data_object != 'object' ) && ( dataObject.data_array == undefined || ! Array.isArray(dataObject.data_array) )  ) {
+        if( ! is_media && ( dataObject.data_object == undefined || typeof dataObject.data_object != 'object' ) && ( dataObject.data_array == undefined || ! Array.isArray(dataObject.data_array) )  ) {
             return {
                 login_redirect: false, 
                 message: language.required_data, 
@@ -72,67 +72,43 @@ class A_P_I_S {
             };
         }
         
-        
-        // assign default values for request 
+         // assign default values for request 
         dataObject['language'] = settings.language;
         dataObject['database_name'] = user_data.database_name;
         dataObject['model_name'] = model_name;
-        const formData = new FormData();
+        
+        var content_type = {
+            'Content-Type': 'application/json'
+        }
 
-        if( is_form == true ) { 
-            console.log("trace 1")
-            // check for file property 
-            if( ! dataObject.file ) {
-                return {
-                    login_redirect: false, 
-                    message: language.api_connection_error, 
-                    is_error: true , 
-                    data: []
-                }; 
+        var formData = new FormData();
 
-            }
+        
 
-            console.log("trace 2")
+        if( is_media ) {
 
-            if( !dataObject.file.name || !dataObject.file.property_name || ! dataObject.file.type || ! dataObject.file.uri ) {
-                return {
-                    login_redirect: false, 
-                    message: language.api_connection_error, 
-                    is_error: true , 
-                    data: []
-                };
-            }
+            // attach basic info to form data 
+            Object.keys(dataObject).forEach(key => formData.append(key, dataObject[key]));  
+            dataObject = formData;
 
-            console.log("trace 3")
-            // attach file into object 
-            formData.append("file", {
-                property_name: dataObject.file.property_name,
-                name: dataObject.file.fileName || 'upload.jpg',
-                type: dataObject.file.type || 'image/jpeg',
-                uri: Platform.OS === "android" ? dataObject.file.uri : dataObject.file.uri.replace("file://", ""),
-            });
-
-            // append others 
-            var { file, ...others } = dataObject;
-
-            // setup data into form object 
-            Object.keys(others).forEach(key => formData.append(key, others[key]));
-
+            content_type = {
+                'Content-Type': 'multipart/form-data'
+            };
 
         }
-        
+       
 
         let options = {
             method: method, // Can be 'get', 'put', 'delete', etc.
             url: config.api(api), // 'api/application/login'
-            data:  ( is_form )? formData:dataObject,
+            data: dataObject,
             headers: {
-                'Content-Type': ( is_form )? 'multipart/form-data' : 'application/json',
+                ...content_type, 
                 'X-api-public-key': config.keys.public,
                 'X-api-secret-key': config.keys.secret,
                 'X-api-tokens': user_data.token  
             }
-        };  
+        };   
         
         if( headers !== undefined ) {
             Object.keys(headers).forEach((element) => {
@@ -141,10 +117,7 @@ class A_P_I_S {
                 options.headers[key] = value;
             });
         }
-
         
-
-
         var error_callback = (error) => {
             
             var message = language.something_error;
@@ -154,10 +127,12 @@ class A_P_I_S {
                 // that falls out of the range of 2xx
                 message = language.api_connection_error;
                 
+                
             } else if (error.request !== undefined &&  error.request) {
                 // The request was made but no response was received
                 // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
                 // http.ClientRequest in node.js
+                 console.log(error.request);
                 message = language.api_connection_error; 
                 
             } else {
@@ -188,14 +163,44 @@ class A_P_I_S {
 
     }
 
+
+    /**
+     * Upload media, remotely and locally 
+     */
+    async upload_media (mobject, {new_name, file, property_name, post_id} ) {
+        
+        var modal_name = "";
+
+        if( mobject.key.indexOf("-") != -1 ) {
+            modal_name = mobject.key.replaceAll(new RegExp("-", 'g'), "_");
+        }
+
+        var new_file_name = `${post_id}-${Date.now()}-${new_name}-`;
+        
+        var dataObject = {
+            name: new_file_name, file, property_name, post_id
+        }
+        
+        var axiosOptions = { 
+            api: "api/upload_media", 
+            dataObject, 
+            method: "post",  
+            model_name: modal_name, 
+            is_media: true 
+        }
+         
+        var request = await this.axiosRequest(axiosOptions); 
+        return request;
+    }   
+
     /**
      * Core Async: Updates from local device to remote server 
      */
     async coreAsync( mobject, obj_data, parameter_id = null ) {
          
         // getting settings and language
-        var settings, user_data, param_id, param_id_object, old_data, is_update;
- 
+        var settings, user_data, param_id, param_id_object, old_data, is_update; 
+
         try{
             settings = await get_setting();
             user_data = await usr.get_session();
@@ -277,7 +282,8 @@ class A_P_I_S {
                 },
             }
         } 
-        
+
+       
         // check if it is update or insert process 
         var objectIndex = old_data.findIndex(x => {
                 
@@ -302,10 +308,10 @@ class A_P_I_S {
             // update an existing object 
             is_update = true; 
         }
+        
        
         __object = {...__object, ...obj_data}; 
-        
-         
+       
         // case it is update 
         if( (obj_data.local_id != undefined || parameter_id != null) && is_update && objectIndex == -1 ) {
             return {
@@ -315,9 +321,7 @@ class A_P_I_S {
                 is_error: true 
             };
         } 
-
         
-       
         // prepare data of remote server 
         var axiosOptions = { 
             api: "api/create_update", 
@@ -326,12 +330,9 @@ class A_P_I_S {
                 param_id: param_id_object
             }, 
             method: "post",  
-            model_name: key,
-            is_form: __object.file ? true: false
+            model_name: key
         };
-        
-  
-
+         
         // send request for remote server 
         var request = await this.axiosRequest(axiosOptions); 
          
