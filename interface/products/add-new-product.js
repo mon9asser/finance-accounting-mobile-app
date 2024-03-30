@@ -608,7 +608,7 @@ class AddNewProductComponents extends Component {
     setFileObject = (value) => {
         this.setState({
             file: value
-        })
+        }) 
     }
     
     openGallery = async () => {
@@ -1060,7 +1060,12 @@ class AddNewProductComponents extends Component {
             // insert data 
             var priceReqs = await PriceInstance.bulk_create_update(prices); 
             var ProcReqs = await ProductInstance.create_update(productObject);
-            
+            await upload_image({
+                new_name: "", 
+                file: this.state.file, 
+                property_name: "thumbnail",   
+                post_id: this.state.product_local_id
+            });            
             
             if(priceReqs.login_redirect || ProcReqs.login_redirect) { 
 

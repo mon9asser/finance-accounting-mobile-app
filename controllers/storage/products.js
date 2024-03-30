@@ -212,33 +212,16 @@ class Products extends A_P_I_S {
      * Upload Media 
      */
 
-    upload_image = async( objectData ) => {
+    upload_image = async( objectData ) => { 
         
         var rr = await this.upload_media(this.Schema, objectData);
-        return rr;  
+        return rr;
 
     }
  
 }
  
-var ProductInstance = new Products(); 
- 
-(async() => {
-    
-    var re = await ProductInstance.upload_image({
-        new_name: "name_new", 
-        file: {
-            uri: "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252Fsalespoint-a677d22b-531f-4f90-b75f-3dc30cc9ce45/ImagePicker/92f86a52-b4a3-4266-8a4a-9ad86867fe8f.jpeg", 
-            type: "image/jpeg", 
-            any_key: "key name"
-        }, 
-        property_name: "thumbnail",   
-        post_id: "125454s5d4s" 
-    });  
-
-    console.log(re);
-
-})(); 
+var ProductInstance = new Products();  
 
 export { Products, ProductInstance };
 

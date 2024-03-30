@@ -53,8 +53,8 @@ class A_P_I_S {
 
         var error_callback = (error) => {
             
-            var message = language.something_error;
-            console.log(error);
+            var message = language.something_error; 
+            
             if (error.response !== undefined && error.response) {
                 // The request was made and the server responded with a status code
                 // that falls out of the range of 2xx

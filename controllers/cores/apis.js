@@ -21,7 +21,7 @@ class A_P_I_S {
     axiosRequest = async ({ api, dataObject, method, headers, model_name, is_media } = null) => {
         
 
-        // disable internet 
+        // disable internet    
         if( ! config.enable_remote_server_apis ) {
 
             return {
@@ -36,23 +36,24 @@ class A_P_I_S {
         try{
             settings = await get_setting();
             user_data = await usr.get_session();
-        } catch(error){}
+        } catch(error){
+            console.log(error);
+        }
 
         var language =  get_lang(settings.language);
-        
-       
+         
         // if session is expired generate a new one  
-        if( ! Object.keys(user_data).length ) { 
+        if( !user_data || ! Object.keys(user_data).length ) { 
             
             return {
                 login_redirect: true, 
                 message: language.user_session_expired, 
                 is_error: true , 
-                data: []
+                data: [] 
             };
 
         }  
-        
+         
         if( model_name == undefined ) {
             return {
                 login_redirect: false, 
@@ -84,20 +85,33 @@ class A_P_I_S {
         var formData = new FormData();
 
         
-
+        
         if( is_media ) {
 
             // attach basic info to form data 
-            Object.keys(dataObject).forEach(key => formData.append(key, dataObject[key]));  
-            dataObject = formData;
+            Object.keys(dataObject).forEach(key => {
+                
+                if (key === 'file') { 
+                    const file = dataObject[key];
+                     
+                    formData.append(key, {
+                        uri: file.uri,
+                        type: file.type || 'image/jpeg', // Ensure the type is correctly set
+                        name: file.name || 'upload.jpg'
+                    });
+
+                } else {
+                    formData.append(key, dataObject[key]);
+                }
+            });  
+            dataObject = formData; 
 
             content_type = {
                 'Content-Type': 'multipart/form-data'
             };
 
         }
-       
-
+        
         let options = {
             method: method, // Can be 'get', 'put', 'delete', etc.
             url: config.api(api), // 'api/application/login'
@@ -131,8 +145,7 @@ class A_P_I_S {
             } else if (error.request !== undefined &&  error.request) {
                 // The request was made but no response was received
                 // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                // http.ClientRequest in node.js
-                 console.log(error.request);
+                // http.ClientRequest in node.js 
                 message = language.api_connection_error; 
                 
             } else {
@@ -169,27 +182,52 @@ class A_P_I_S {
      */
     async upload_media (mobject, {new_name, file, property_name, post_id} ) {
         
-        var modal_name = "";
+        var settings, user_data; 
+
+        try{
+            settings = await get_setting();
+            user_data = await usr.get_session();
+        } catch(error){}
+
+        var language =  get_lang(settings.language);
+        
+        // getting user data and check for session expiration 
+        if( user_data == null || ! Object.keys(user_data).length ) {
+            return {
+                login_redirect: true, 
+                message: language.user_session_expired, 
+                is_error: true , 
+                data: []
+            };
+        }
+
+
+        var modal_name = mobject.key;   
+        
 
         if( mobject.key.indexOf("-") != -1 ) {
             modal_name = mobject.key.replaceAll(new RegExp("-", 'g'), "_");
-        }
-
-        var new_file_name = `${post_id}-${Date.now()}-${new_name}-`;
-        
-        var dataObject = {
-            name: new_file_name, file, property_name, post_id
-        }
-        
+        } 
+       
+        var new_file_name = `${user_data.database_name}-${modal_name}-${post_id}`;
+        var dataObject = { 
+            name: new_file_name,
+            file,  
+            property_name, 
+            post_id
+        }; 
+       
         var axiosOptions = { 
             api: "api/upload_media", 
             dataObject, 
             method: "post",  
-            model_name: modal_name, 
+            model_name: modal_name,  
             is_media: true 
         }
-         
+ 
+        
         var request = await this.axiosRequest(axiosOptions); 
+        
         return request;
     }   
 
