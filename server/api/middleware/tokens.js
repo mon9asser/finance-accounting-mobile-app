@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 let { User, Application } = require("./../../applications/confguration");
 
 var verify_user_tokens_and_keys = async (req, res, next) => {
- 
+    
     // checking for language property 
     if( req.body.language == undefined ) {
 
@@ -56,4 +56,8 @@ var verify_user_tokens_and_keys = async (req, res, next) => {
     next(); 
 }
 
-module.exports = {verify_user_tokens_and_keys};
+
+
+
+ 
+module.exports = { verify_user_tokens_and_keys};

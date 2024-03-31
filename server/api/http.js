@@ -23,11 +23,13 @@ const storage = multer.diskStorage({
       cb(null, uploadsDir);
     }, 
     filename: function (req, file, cb) {    
-      // Name the file uniquely to avoid overwriting existing files
+      
+        // Name the file uniquely to avoid overwriting existing files
         req.body.exten = path.extname(file.originalname);
+         
+        // file.fieldname + '-' + Date.now() + path.extname(file.originalname)
+        cb(null, req.body.name + path.extname(file.originalname) );
 
-      // file.fieldname + '-' + Date.now() + path.extname(file.originalname)
-      cb(null, req.body.name + path.extname(file.originalname) );
     } 
 });
 
@@ -37,62 +39,11 @@ const upload = multer({ storage: storage });
 
 var apiRouters = express.Router(); 
 
-// upload.single('photo')
-apiRouters.post("/upload_media", [upload.single('file'), verify_user_tokens_and_keys], async (req, res ) =>{
-    
-    
+// upload.single('photo')  [verify_user_tokens_and_keys, upload.single('file')]
+apiRouters.post("/upload_media", upload.single('file'), async (req, res ) =>{
     var file_extension = req.body.exten || ".jpg";
-    var image_name = req.body.name; 
-    
-    // handling current language
-    var current_language = req.body.language == undefined? "en": req.body.language; 
-    var localize = language[current_language];
-     
-    //preparing response object 
-    var response = {
-        is_error: true, 
-        data: [], 
-        message: localize.something_wrong
-    }
-
-    // Basics Of Each API: checking for database name and model 
-    var database = req.body.database_name;
-    var model = req.body.model_name;
-    var param_id = req.body.param_id == undefined? -1: req.body.param_id;
-
-    if( database == undefined || model == undefined ) {
-        response.is_error = true;
-        response.message = localize.peroperties_required;
-        return res.send(response);
-    }
-     
-    var model_name = flat_schema_name(model);
-    var schema_object = get_schema_object(model_name);
-    
-    
-    var db_connection = await create_connection(database, {
-        model: model_name, 
-        schemaObject:schema_object
-    }); 
-    
-    if( ! db_connection ) {
-        response["data"] = [];
-        response["is_error"] = true;
-        response["message"] = localize.services_disabled; 
-        return res.send(response); 
-    } 
-
-    
-    // stored image name 
-    var image_name = `${image_name}${file_extension}`;
-    var local_id = req.body.post_id;
-    var pname = req.body.property_name;
-
-    var updater = {};
-    updater[pname] = image_name;
-    var uptodate = await db_connection.findOneAndUpdate({local_id}, updater );
-    res.send(uptodate);   
-
+    var image_name = req.body; 
+    res.send(image_name);
 }); 
   
 

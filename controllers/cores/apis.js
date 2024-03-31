@@ -228,6 +228,10 @@ class A_P_I_S {
         
         var request = await this.axiosRequest(axiosOptions); 
         
+        // storing image in local storage 
+        console.log( request );
+        
+
         return request;
     }   
 
