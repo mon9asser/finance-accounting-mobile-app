@@ -1289,8 +1289,5 @@ class AddNewProductComponents extends Component {
     }
 }
  
-(async()=>{
-    var locs = await ProductInstance.get_data_locally(ProductInstance.Schema);
-    console.log(locs);
-})() 
+ 
 export {AddNewProductComponents}
