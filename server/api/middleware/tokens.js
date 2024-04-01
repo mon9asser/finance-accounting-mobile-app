@@ -32,21 +32,24 @@ var verify_user_tokens_and_keys = async (req, res, next) => {
     var user_token = req.header("X-api-tokens");
 
     if( secretKey === undefined || secretKey === "" || publicKey === undefined || publicKey === "" ) {
+        
         objx.message = localize.access_denied
         return res.send(objx);
     } 
- 
+    
     if( publicKey !== conf.server.keys.public || secretKey !== conf.server.keys.secret ) {
         return res.send(objx);
     }   
-
+    
     // Verify User Token 
     if( user_token === undefined ) {
+        
         objx.message = localize.missing_token
         return res.send(objx);
     }   
-
+    
     var isToken = await User.findOne({token: user_token});
+     
     if( isToken == null ) {
         objx.message = localize.missing_token
         return res.send(objx);

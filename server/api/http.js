@@ -13,23 +13,62 @@ const fs = require('fs');
 
 var apiRouters = express.Router(); 
   
+
+function removeDynamicPrefix(text) {
+    // The indexOf() method finds the position of the first occurrence of an underscore.
+    const position = text.indexOf('_');
+
+    // The substring() method extracts characters from a string, starting at a specified start position,
+    // and through the specified number of character, here from position+1 to get the string after the underscore.
+    // If no underscore is found, the original string is returned.
+    return position !== -1 ? text.substring(position + 1) : text;
+}
+
  
 apiRouters.post("/upload_media", verify_user_tokens_and_keys, async(req, res) => {
 
 
-    const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+    var current_language = req.body.language == undefined? "en": req.body.language; 
+    var localize = language[current_language];
+
+
+    if( req.body.file == undefined || req.body.file.base_64 == undefined || req.body.file.extension == undefined  ) {
+        
+        var objx = {
+            is_error: true, 
+            message: localize.missing_properties,
+            data: [] 
+        }
+
+        return res.send(objx);
+    }
+
+    // getting image data 
+    var base64 = req.body.file.base_64;
+    var extension = req.body.file.extension;
+
+    // generate image name ( modal name - database name - post id - small random - extenstion  )
+    var rename = "";
+
+    var base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(base64Data, 'base64');
 
+    const uploadsDir = "./uploads";
+    if (!fs.existsSync(uploadsDir)){
+        fs.mkdirSync(uploadsDir);
+    }
+    
+      
     // Save buffer to a file, process it, or do anything you need
-    fs.writeFile('path/to/save/image.jpg', buffer, (err) => {
+    fs.writeFile(`${uploadsDir}/image.jpg`, buffer, (err) => {
         if (err) {
-        return res.status(500).send({ message: 'Error saving the image' });
+            return res.status(500).send({ message: 'Error saving the image', err });
         }
         res.send({ message: 'Image uploaded successfully' });
     });
 
 
-    res.send("Data");
+     
     
 })
 
@@ -52,6 +91,7 @@ apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res )
     var database = req.body.database_name;
     var model = req.body.model_name;
     var param_id = req.body.param_id == undefined? -1: req.body.param_id;
+    var image_name;
 
     if( database == undefined || model == undefined ) {
         response.is_error = true;
@@ -60,8 +100,7 @@ apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res )
     }
      
     var model_name = flat_schema_name(model);
-    var schema_object = get_schema_object(model_name);
-    
+    var schema_object = get_schema_object(model_name); 
     
     var db_connection = await create_connection(database, {
         model: model_name, 
@@ -93,10 +132,63 @@ apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res )
     if( typeof param_id == 'object' ) {
         finderObject = {...param_id}; 
     } 
+    
+
+    // handling file data 
+    if( data_object.file != undefined && data_object.file.base_64 != undefined && data_object.file.uri != undefined && data_object.file.property_name   != undefined ) {
+        
+        var localid = data_object.local_id;
+        if( data_object.local_id == undefined || data_object.local_id == "" ) {
+            localid = "undefined";
+        }
+
+        var uri = data_object.file.uri;
+        var extension = ".jpg";
+        if( uri.indexOf(".jpeg") != -1 )
+            extension = ".jpg";
+        else if ( uri.indexOf(".png") != -1  )
+            extension = ".png";
+        else {
+
+            response["data"] = [];
+            response["is_error"] = true;
+            response["message"] = localize.file_type_not_supported; 
+
+            return res.send(response);
+        }
+
+        var db_slug = removeDynamicPrefix(database); 
+        
+        // ( modal name - database name - post id - small random - extenstion  )
+        image_name = `${model}-${db_slug}-${localid}${extension}`;
+        var field_name = data_object.file.property_name; 
+
+        const directory = "./uploads";
+        if (!fs.existsSync(directory)){
+            fs.mkdirSync(directory);
+        }
+
+        var base64Data = data_object.file.base_64.replace(/^data:image\/\w+;base64,/, "");
+        var buffer = Buffer.from(base64Data, 'base64');
+
+        fs.writeFileSync(`${directory}/${image_name}`, buffer, (err) => {
+            
+            if (err) {
+                return res.send({ 
+                    data: [], 
+                    is_error: true, 
+                    message: localize.saving_img_error
+                });
+            } 
+        }); 
+    }
+
+    // store image in field
+    data_object[field_name] = image_name;
 
     // build data object 
     var finder = await db_connection.findOne(finderObject);
-
+    console.log(data_object);
     // insert data 
     if( finder == null ) {
 

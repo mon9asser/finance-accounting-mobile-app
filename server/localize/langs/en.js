@@ -22,7 +22,9 @@ var en = {
         any_concern_text: "Should you have any concerns, please do not hesitate to contact our support team. Thank you.",
         happy_selling: "Happy Selling!",
         reset_password: "Reset password",
-
+        missing_properties: "Missing Properties",
+        file_type_not_supported: "The file type is not supported. Please choose an image in either JPG or PNG format.",
+        saving_img_error: "Error saving the image",
         services_disabled: "The service provider has encountered an error; please contact us for assistance.",
         updated_successfully: "Updated Successfully!",
         deleted_successfully: "Deleted Successfully!",
