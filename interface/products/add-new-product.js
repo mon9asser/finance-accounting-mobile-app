@@ -10,7 +10,7 @@ import Modal from "react-native-modal";
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
+import { Animated, Alert, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
 import { Button, Checkbox } from "react-native-paper"; 
 import { LineChart } from "react-native-chart-kit";
 import { Camera } from 'expo-camera';
@@ -101,13 +101,12 @@ class AddNewProductComponents extends Component {
             product_name: '',
 
             enabled_discount_percentage: false, 
-            PricePackageButtonText: "Add",
+            PricePackageButtonText: this.props.route.params.langs.add,
 
             is_pressed_category_save: false, 
             
             hasPermission: null,
-            scanned: false, 
-            scanText: "Not scanned yet", 
+            scanned: false,
             
             prices_list: [],
             discountValue: '', 
@@ -155,7 +154,7 @@ class AddNewProductComponents extends Component {
 
     setProductThumbnail = (image) => {
         this.setState({
-            product_thumbnail: image == "" ? require('./../../assets/icons/product-placeholder.png'): image
+            product_thumbnail: image == "" ? require('./../../assets/icons/product-placeholder.png'): {uri: image}
         })
     }
 
@@ -186,14 +185,7 @@ class AddNewProductComponents extends Component {
         this.setState({
             scanned: value
        }); 
-    }
-
-    setscanText = (value) => {
-        this.setState({
-            scanText: value
-       }); 
-    }
-
+    } 
     setPressedBtnCategorySave = (value) => {
         this.setState({
             is_pressed_category_save: value
@@ -243,10 +235,10 @@ class AddNewProductComponents extends Component {
         var prices = session_.prices.length? session_.prices: [];
         var product = session_.product;
 
-         
+          
 
         this.setPricesList( prices );
-        this.setProductThumbnail(product.thumbnail);
+        this.setProductThumbnail(product.file.uri);
         this.setProductName(product.product_name);
         this.setCategoryOjbect(product.category_id);
         this.setBarcodeDataField(product.barcode);
@@ -319,7 +311,7 @@ class AddNewProductComponents extends Component {
         this.screen_options(); 
 
         // add data to fields if session already expired before 
-        // this.restore_data_to_fields();
+        this.restore_data_to_fields();
 
         // getting all products async 
         await this.get_categories_async();
@@ -481,7 +473,7 @@ class AddNewProductComponents extends Component {
             <View key={item.local_id}  style={{...styles.textInputNoMargins, marginBottom: 10}}>
                 <TextInput
                         style={{flex: 1}} 
-                        placeholder='Category Name' 
+                        placeholder={this.state.language.category_name}
                         value={item.category_name} 
                         onChangeText={(text) => this.handleInputChange(text, item.local_id)}
                     />
@@ -583,14 +575,14 @@ class AddNewProductComponents extends Component {
                     <View style={{maxHeight: 500, flex: 1}}>
                         <View style={{flexDirection: "column", justifyContent: 'space-between', alignItems: 'center', marginBottom:5}}>
                             <Text style={{fontWeight: 'bold', marginBottom: 5, fontSize: 22}}>
-                                Barcode Scanner
+                                {this.state.language.barcode_scanner}
                             </Text>  
-                            <Text style={{color:"#666", textAlign: "center"}}>Please ensure to scan the barcode present on the box.</Text> 
+                            <Text style={{color:"#666", textAlign: "center"}}>{this.state.language.ensure_to_scan_barcode}</Text> 
                         </View>
 
-                        {this.state.validatedTextEnabled ? <Text style={{backgroundColor: "red", borderRadius: 5, color: "#fff", padding: 7, textAlign: "center"}}>Invalid barcode. Please scan a valid barcode.</Text> :"" }
+                        {this.state.validatedTextEnabled ? <Text style={{backgroundColor: "red", borderRadius: 5, color: "#fff", padding: 7, textAlign: "center"}}>{this.state.language.invalid_barcode}</Text> :"" }
 
-                        <TouchableOpacity style={{marginTop: 10, textAlign:"center", width: "100%", justifyContent: "center", alignItems: "center"}} onPress={this.toggleBarcodeScannerOpen}><Text>Cancel</Text></TouchableOpacity>
+                        <TouchableOpacity style={{marginTop: 10, textAlign:"center", width: "100%", justifyContent: "center", alignItems: "center"}} onPress={this.toggleBarcodeScannerOpen}><Text>{this.state.language.cancel}</Text></TouchableOpacity>
                         <View style={{marginTop: 10, height: 250, justifyContent: 'center', alignItems: 'center'}}> 
                             <Camera style={{height: "100%", width: "100%", aspectRatio: 1}} onBarCodeScanned={this.state.scanned ? undefined : this.handleBarCodeScanned}></Camera>
                         </View> 
@@ -616,7 +608,7 @@ class AddNewProductComponents extends Component {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
         if (permissionResult.granted === false) {
-            alert("You've refused to allow this app to access your photos!");
+            Alert.alert(this.state.language.photo_permission_required, this.state.language.photo_perm_open);
             return;
         } 
 
@@ -637,9 +629,9 @@ class AddNewProductComponents extends Component {
         const fileInfo = await FileSystem.getInfoAsync(file_url); 
          
         if( ! fileInfo.exists ) {
-            this.setProductThumbnail(require('./../../assets/icons/product-placeholder.png'));
+            this.setProductThumbnail("");
         } else {
-            this.setProductThumbnail({uri: file_url });
+            this.setProductThumbnail(file_url);
             this.setFileObject( reqs.assets[0] );
         }
 
@@ -654,11 +646,11 @@ class AddNewProductComponents extends Component {
 
                     <View style={{flex:1, flexDirection: "row", justifyContent: 'space-between', alignItems: 'center', marginBottom:5}}>
                         <Text style={{fontWeight: 'bold', flex:1, alignItems: 'center', fontSize: 22}}>
-                            Categories
+                            {this.state.language.categorie_s}
                         </Text> 
 
                         <TouchableOpacity onPress={this.add_new_category}>
-                            <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>Add New Field</Text>
+                            <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>{this.state.add_new_field}</Text>
                         </TouchableOpacity>
                     </View>
                     
@@ -669,7 +661,7 @@ class AddNewProductComponents extends Component {
                                 this.state.db_categories.products.map(item => this.RenderDBCategories(item))
                             : 
                                 <View style={{flex: 1, backgroundColor: '#ffffff', padding: 10, marginTop: 20}}>
-                                    <Text style={{color: '#999', lineHeight:20, textAlign:"center"}}>No categories were found. Please click the 'Add New Field' button to create a new category.</Text>
+                                    <Text style={{color: '#999', lineHeight:20, textAlign:"center"}}>{this.state.language.no_categories_found}</Text>
                                 </View>
                         } 
 
@@ -680,7 +672,7 @@ class AddNewProductComponents extends Component {
                            
 
                             <TouchableOpacity style={{ height: 50, marginTop: 10, borderWidth:1, borderColor:cls.btnDeleteBorderColor, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 5 }} onPress={this.toggleCategoryModalOpen}>
-                                <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnDeleteBorderTextColor}}>Cancel</Text>
+                                <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnDeleteBorderTextColor}}>{this.state.language.cancel}</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity style={{ height: 50, marginTop: 10, backgroundColor:cls.btnPrimaryBg, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 5 }} onPress={this.store_categories}>
@@ -688,7 +680,7 @@ class AddNewProductComponents extends Component {
                                     {
                                         this.state.is_pressed_category_save?
                                         <ActivityIndicator color={'#fff'} />: 
-                                        'Save'
+                                        this.state.language.save
                                     }
                                 </Text>
                             </TouchableOpacity>
@@ -719,6 +711,11 @@ class AddNewProductComponents extends Component {
         var factor = this.state.unitValue;
         var sales_price = this.state.salePrice;
         var purchase_price = this.state.purchasePrice; 
+
+        if( sales_price== "" || purchase_price== "" ) {
+            Alert.alert(this.state.language.required_fields, this.state.language.sale_purch_price_required)
+            return;
+        }
 
         // push to the array
         this.setState((prevState) => {
@@ -794,7 +791,7 @@ class AddNewProductComponents extends Component {
                     <ScrollView style={{maxHeight: 600}}>
                     <View style={{flex:1, marginBottom:20}}>
                         <Text style={{fontWeight: 'bold', fontSize: 22}}>
-                            Price Package
+                            {this.state.language.price_package}
                         </Text>
                     </View>
     
@@ -802,7 +799,7 @@ class AddNewProductComponents extends Component {
                         <View style={{flex: 1}}>
                             <TouchableOpacity onPress={() => this.isDefaultPrice(!this.state.defaultPrice)} style={{flexDirection: "row", alignItems: "center", alignContent: "center", marginBottom: 20, justifyContent: "space-between"}}>
                                 <View>
-                                    <Text style={{fontWeight: "bold"}}>Mark as a default price</Text>
+                                    <Text style={{fontWeight: "bold"}}>{this.state.language.mark_default_price}</Text>
                                 </View> 
 
                                 <Checkbox status={this.state.defaultPrice ? "checked": "unchecked"}/>
@@ -811,55 +808,55 @@ class AddNewProductComponents extends Component {
                         </View>
                         <View style={{flex: 1}}>
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Unit Name</Text>
+                                <Text style={styles.inputLabelText}>{this.state.language.unit_name}</Text>
                             </View>
                             <View style={styles.textInput}>
-                                <TextInput onChangeText={(value) => {this.setUnitName(value)}} style={{flex: 1}} placeholder='Example:- Gram' value={this.state.unitName} />
+                                <TextInput onChangeText={(value) => {this.setUnitName(value)}} style={{flex: 1}} placeholder={this.state.language.example_gram} value={this.state.unitName} />
                             </View>
                         </View>
                         <View style={{flex: 1}}>
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Unit Short Name</Text>
+                                <Text style={styles.inputLabelText}>{this.state.language.unit_short_name}</Text>
                             </View>
                             <View style={styles.textInput}>
-                                <TextInput onChangeText={(value) => {this.setShortUnitName(value)}} style={{flex: 1}} placeholder='Example:- gm' value={this.state.shortUnitName}  />
+                                <TextInput onChangeText={(value) => {this.setShortUnitName(value)}} style={{flex: 1}} placeholder={this.state.language.example_gm} value={this.state.shortUnitName}  />
                             </View>
                         </View>
                         <View style={{flex: 1}}>
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Unit Value</Text>
-                                <Text style={styles.inputLabelText}>( Based on the Unit Name )</Text>
+                                <Text style={styles.inputLabelText}>{this.state.language.unit_value}</Text>
+                                <Text style={styles.inputLabelText}>( {this.state.language.based_in_unit} )</Text>
                             </View>
                             <View style={{...styles.textInput, borderColor: this.state.requiredFields.unit}}> 
                             
-                                <TextInput value={this.state.unitValue.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setUnitValue, text)} style={{flex: 1}} placeholder='Example:- 1' />
+                                <TextInput value={this.state.unitValue.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setUnitValue, text)} style={{flex: 1}} placeholder={`${this.state.language.example} :- 1`} />
                             </View>
                         </View>
                         <View style={{flex: 1}}>
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Sale Price</Text>
-                                <Text style={styles.inputLabelText}>( Per Unit )</Text>
+                                <Text style={styles.inputLabelText}>{this.state.language.sale_price}</Text>
+                                <Text style={styles.inputLabelText}>( {this.state.language.per_unit} )</Text>
                             </View>
                             <View style={{...styles.textInput, borderColor: this.state.requiredFields.price}}>
-                                <TextInput value={this.state.salePrice.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setSalePrice, text)} style={{flex: 1}} placeholder='Example:- 15' />
+                                <TextInput value={this.state.salePrice.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setSalePrice, text)} style={{flex: 1}} placeholder={`${this.state.language.example} :- 15`} />
                             </View>
                         </View>
                         <View style={{flex: 1}}>
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Purchase Price</Text>
-                                <Text style={styles.inputLabelText}>( Per Unit )</Text>
+                                <Text style={styles.inputLabelText}>{this.state.language.purchase_price}</Text>
+                                <Text style={styles.inputLabelText}>( {this.state.language.per_unit} )</Text>
                             </View>
                             <View style={styles.textInput}>
-                                <TextInput keyboardType="numeric" onChangeText={(text) => this.validateInput(this.setPurchasePrice, text)} style={{flex: 1}}  value={this.state.purchasePrice.toString()}  placeholder='Example:- 8.5'/>
+                                <TextInput keyboardType="numeric" onChangeText={(text) => this.validateInput(this.setPurchasePrice, text)} style={{flex: 1}}  value={this.state.purchasePrice.toString()}  placeholder={`${this.state.language.example} :- 8.5`}/>
                             </View> 
                             <View style={{flex:1,  marginBottom: 30, marginTop: -30}}>
-                                <Text style={{...styles.product_price_text}}>Note: You don't have a purchase price? We are planning to add a calculator for raw materials in the next update.</Text>
+                                <Text style={{...styles.product_price_text}}>{this.state.language.note_of_no_purchase_price}</Text>
                             </View>
                         </View>
                         <View style={{flex: 1, flexDirection: "row", height: 80, gap: 10}}>
                         
                             <TouchableOpacity style={{ height: 50, marginTop: 10, borderWidth:1, borderColor:cls.btnDeleteBorderColor, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 5 }} onPress={this.toggleModalOfPricesPackage}>
-                                <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnDeleteBorderTextColor}}>Cancel</Text>
+                                <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnDeleteBorderTextColor}}>{this.state.language.cancel}</Text>
                             </TouchableOpacity>
     
                             <TouchableOpacity style={{ height: 50, marginTop: 10, backgroundColor:cls.btnPrimaryBg, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 5 }} onPress={this.StoreModalPricesPackage}>
@@ -898,7 +895,7 @@ class AddNewProductComponents extends Component {
     checkCameraPermission = () => {
         
         if( this.state.hasPermission == false || this.state.hasPermission == null ) {
-            alert("To scan the barcode, you need to let the app use your camera. Please turn on camera permission.")
+            Alert.alert(this.state.language.camera_permission_required, this.state.language.camera_perm_barcode);
             return;
         }    
         
@@ -942,7 +939,7 @@ class AddNewProductComponents extends Component {
         this.setSalePrice(item.sales_price)
         this.setPurchasePrice(item.purchase_price)
         this.isDefaultPrice(item.is_default_price);  
-        this.setBtnPriceEditText("Update");  
+        this.setBtnPriceEditText(this.state.language.update);  
         
         this.toggleModalOfPricesPackage();
 
@@ -1001,11 +998,21 @@ class AddNewProductComponents extends Component {
         })
     } 
 
+
+    generate_base64_data = async ( uri ) => {
+        try {
+            const base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+            return `data:image/jpeg;base64,${base64}`;
+        } catch (e) {
+            return false; 
+        }
+    }
+
     saveData = () => {
 
 
         if( this.state.isPressed ) {
-            alert(this.state.language.btn_clicked_twice);
+            Alert.alert(this.state.language.please_wait, this.state.language.btn_clicked_twice);
             return;
         } 
 
@@ -1033,8 +1040,36 @@ class AddNewProductComponents extends Component {
                     value: this.state.discountValue
                 },
                 param_id: this.state.product_local_id,
-                thumbnail: ""
+                thumbnail: "",
+                thumbnail_url: ""
             }; 
+
+            // case is there image 
+            if( this.state.file != null ) {
+                
+                // default uri for local storage 
+                productObject.thumbnail_url = this.state.file.uri; 
+
+                // Base 64
+                var base64 = await this.generate_base64_data( this.state.file.uri );
+               
+                if(!base64) {
+                    this.setPressBtn(false); 
+                    this.setNotificationBox("flex")
+                    this.setNotificationCssClass(styles.error_message);
+                    this.setNotificationCssTextClass(styles.error_text)
+                    this.setNotificationMessage(this.state.language.failed_to_save_image);
+                    return; 
+                }
+
+                // storing file object 
+                productObject.file = {
+                    base_64: base64,
+                    uri: this.state.file.uri,
+                    property_name: "thumbnail"
+                };
+
+            }
             
             // required data 
             if( ! prices.length ||  this.state.product_name == "") {
@@ -1052,7 +1087,7 @@ class AddNewProductComponents extends Component {
                 this.setNotificationBox("flex")
                 this.setNotificationCssClass(styles.error_message);
                 this.setNotificationCssTextClass(styles.error_text)
-                this.setNotificationMessage(`Please ensure that you have entered at least one value in the "Price" list and have not left the "Product Name" field empty.`);
+                this.setNotificationMessage(this.state.language.ensure_last_price_field);
 
                 return; 
             }
@@ -1060,27 +1095,7 @@ class AddNewProductComponents extends Component {
             // insert data 
             var priceReqs = await PriceInstance.bulk_create_update(prices); 
             var ProcReqs = await ProductInstance.create_update(productObject);
-            
-            var file_object = {
-                new_name: "", 
-                property_name: "thumbnail",  
-                post_id: this.state.product_local_id
-            }
-
-            if( this.state.file != null ) {
-
-                file_object["file"] = {
-                    uri: this.state.file.uri 
-                };
-
-                await ProductInstance.upload_image({
-                    new_name: "", 
-                    file: file_object, 
-                    property_name: "thumbnail",   
-                    post_id: this.state.product_local_id
-                });            
-
-            }
+             
             
             if(priceReqs.login_redirect || ProcReqs.login_redirect) { 
 
@@ -1094,14 +1109,14 @@ class AddNewProductComponents extends Component {
                 
                 // store data of form in session 
                 setTimeout(async () => {
-                    /*
+                    
                     await add_last_session_form({
                         name: "add-new-product",
                         data_object: {
                             prices: prices,
-                            product: product
+                            product: productObject
                         }
-                    });*/
+                    }); 
     
                     this.props.navigation.navigate("Login", { redirect_to: "add-new-product" });
                 
@@ -1120,6 +1135,9 @@ class AddNewProductComponents extends Component {
                 
                 return; 
             }
+
+            // delete restored data 
+            await delete_session_form();
 
             this.setPressBtn(false);   
             this.setNotificationBox("flex")
@@ -1157,19 +1175,19 @@ class AddNewProductComponents extends Component {
 
                         <View style={{...styles.field_container}}>
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Product Name</Text>
+                                <Text style={styles.inputLabelText}>{this.state.language.product_name}</Text>
                             </View>
                             <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.product_name_hlgt) ? 'red': '#dfdfdf' }}>
-                                <TextInput value={this.state.product_name} onChangeText={text => this.setProductName(text)} style={{flex: 1}} placeholder='Product Name' />
+                                <TextInput value={this.state.product_name} onChangeText={text => this.setProductName(text)} style={{flex: 1}} placeholder={this.state.language.product_name} />
                             </View>
                         </View> 
             
 
                         <View style={{...styles.field_container}}>
                             <View style={{...styles.inputLabel, flexDirection: "row", justifyContent:"space-between"}}> 
-                                <View><Text style={styles.inputLabelText}>Category</Text></View>
+                                <View><Text style={styles.inputLabelText}>{this.state.language.category}</Text></View>
                                 <TouchableOpacity onPress={this.toggleCategoryModalOpen}>
-                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>Add New</Text>
+                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>{this.state.language.add_new}</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{flexDirection: "column", marginTop: 5}}> 
@@ -1177,7 +1195,7 @@ class AddNewProductComponents extends Component {
                                     boxStyles={styles.boxStyle} 
                                     inputStyles={{color: '#999',  flex: 1}}
                                     dropdownStyles={{flex: 1, width: '100%', borderColor:'#eee'}}
-                                    placeholder="Select Category" 
+                                    placeholder={this.state.language.select_category}
                                     setSelected={(val) => this.selecte_category_object(val)}   
                                     defaultOption={ this.state.selected_category == null? undefined: {key: this.state.selected_category.key, value: this.state.selected_category.value}} 
                                     data={this.state.db_categories.products.map( item => {
@@ -1194,14 +1212,14 @@ class AddNewProductComponents extends Component {
 
                         <View style={{...styles.field_container}}>
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Barcode</Text>
+                                <Text style={styles.inputLabelText}>{this.state.language.barcode}</Text>
 
                                  <TouchableOpacity onPress={this.checkCameraPermission}>
-                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>Scan Barcode</Text>
+                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>{this.state.language.scan_barcode}</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{...styles.textInputNoMargins}}>
-                                <TextInput value={this.state.barcode_data.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setBarcodeDataField, text)} style={{flex: 1}} placeholder='Barcode' />
+                                <TextInput value={this.state.barcode_data.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setBarcodeDataField, text)} style={{flex: 1}} placeholder={this.state.language.barcode} />
                             </View>
 
                             <this.BarcodeScannerModal isVisible={this.state.isBarcodeScannerOpen} toggleModal={this.toggleBarcodeScannerOpen} />
@@ -1209,15 +1227,15 @@ class AddNewProductComponents extends Component {
 
                         <View style={{...styles.field_container}}>
                             <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
-                                <Text style={styles.inputLabelText}>Discount</Text>
+                                <Text style={styles.inputLabelText}>{this.state.language.discount}</Text>
 
                                 <TouchableOpacity onPress={() => { this.setPercentageDiscount(!this.state.enabled_discount_percentage); }} style={{flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
                                     <Checkbox status={this.state.enabled_discount_percentage ? 'checked' : 'unchecked'} />
-                                    <Text style={{fontSize: 12}}>Enable Percentage (%)</Text>                                
+                                    <Text style={{fontSize: 12}}>{this.state.language.enable_percentage}</Text>                                
                                 </TouchableOpacity>
                             </View>
                             <View style={styles.textInputNoMargins}>
-                                <TextInput value={this.state.discountValue.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setDiscountValue, text)} style={{flex: 2}} placeholder='Discount Value' />
+                                <TextInput value={this.state.discountValue.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setDiscountValue, text)} style={{flex: 2}} placeholder={this.state.language.discount_value} />
                                 {
                                     this.state.enabled_discount_percentage ?
                                     <TextInput status='checked' value={this.state.discountPercentage.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setDiscountPercentage, text)} style={{flex: 1, borderLeftWidth: 1, borderLeftColor: "#ddd", paddingLeft: 10}} placeholder='%' />
@@ -1230,9 +1248,9 @@ class AddNewProductComponents extends Component {
                         <View style={{...styles.field_container}}>
 
                             <View style={styles.inputLabel}>
-                                <View><Text style={styles.inputLabelText}>Prices List</Text></View>
+                                <View><Text style={styles.inputLabelText}>{this.state.language.prices_list}</Text></View>
                                 <TouchableOpacity onPress={this.setModificaionAdd}>
-                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>Add New</Text>
+                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>{this.state.language.add_new}</Text>
                                 </TouchableOpacity>
                             </View>
 
@@ -1240,7 +1258,7 @@ class AddNewProductComponents extends Component {
                             {
                                 this.state.prices_list.length ? 
                                     this.state.prices_list.map( x => this.ListOfPricesComponents(x) ) :
-                                    <View style={{justifyContent: "center", flexDirection: "row", flex: 1, borderColor:(this.state.price_list_hlgt) ? 'red': '#dfdfdf', marginTop: 5, borderWidth: 1, padding: 10}}><Text style={{color: "#999"}}>No prices found, click on "add new"</Text></View>
+                                    <View style={{justifyContent: "center", flexDirection: "row", flex: 1, borderColor:(this.state.price_list_hlgt) ? 'red': '#dfdfdf', marginTop: 5, borderWidth: 1, padding: 10}}><Text style={{color: "#999"}}>{this.state.language.no_prices_found}</Text></View>
                             }
                              
                             <this.PricesPackagesModal isVisible={this.state.isPricesPackageModalOpen} toggleModal={this.toggleModalOfPricesPackage} />
@@ -1270,5 +1288,9 @@ class AddNewProductComponents extends Component {
         )
     }
 }
-
+ 
+(async()=>{
+    var locs = await ProductInstance.get_data_locally(ProductInstance.Schema);
+    console.log(locs);
+})() 
 export {AddNewProductComponents}

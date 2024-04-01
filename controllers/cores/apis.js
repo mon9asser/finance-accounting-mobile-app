@@ -377,7 +377,9 @@ class A_P_I_S {
          
         // send request for remote server 
         var request = await this.axiosRequest(axiosOptions); 
-         
+        
+        
+
         var rowData = {};
 
         // store data locally 
@@ -391,6 +393,11 @@ class A_P_I_S {
                 _id: request.data._id == undefined? "": request.data._id
            };
             rowData = updator;
+            
+            if( updator.file !=undefined && updator.file.base_64 != undefined ) {
+                delete updator.file.base_64;
+            }
+
             old_data[objectIndex] = updator;
 
              
@@ -404,7 +411,10 @@ class A_P_I_S {
                 _id: request.data._id == undefined? "": request.data._id
             };
 
-            
+            if( rowData.file !=undefined && rowData.file.base_64 != undefined ) {
+                delete rowData.file.base_64;
+            }
+
             old_data.push(rowData); 
 
         }

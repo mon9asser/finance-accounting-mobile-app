@@ -10,7 +10,7 @@ const { verify_user_tokens_and_keys } = require("./middleware/tokens.js")
 const {get_schema_object} = require("../applications/schema.js"); 
 const path = require('path');
 const fs = require('fs'); 
-
+const sharp = require('sharp');
 var apiRouters = express.Router(); 
   
 
@@ -24,53 +24,36 @@ function removeDynamicPrefix(text) {
     return position !== -1 ? text.substring(position + 1) : text;
 }
 
+
+const compressBase64Image = async (base64String) => {
+    try {
+      // Convert the Base64 string to a Buffer, omitting the data URL scheme if present
+      const base64Data = base64String.replace(/^data:image\/\w+;base64,/, "");
+      const inputBuffer = Buffer.from(base64Data, 'base64');
+  
+      // Use sharp to compress and resize the image
+      const outputBuffer = await sharp(inputBuffer)
+        .resize({ width: 400, height: 400, fit: 'inside' }) // Adjust as needed
+        .jpeg({ quality: 85 }) // Start with a quality setting and adjust as needed
+        .toBuffer();
+  
+      // If you want to save the output to a file
+      /*if (outputPath) {
+        await sharp(outputBuffer).toFile(outputPath);
+        console.log('Image compressed and saved to file.');
+      }*/
+  
+      // Optionally, convert back to Base64 (if you need the result as a Base64 string)
+      const outputBase64 = `data:image/jpeg;base64,${outputBuffer.toString('base64')}`;
+  
+      return outputBase64;
+    } catch (error) {
+      console.error('Error compressing the Base64 image:', error);
+      return undefined;
+    }
+};
+  
  
-apiRouters.post("/upload_media", verify_user_tokens_and_keys, async(req, res) => {
-
-
-    var current_language = req.body.language == undefined? "en": req.body.language; 
-    var localize = language[current_language];
-
-
-    if( req.body.file == undefined || req.body.file.base_64 == undefined || req.body.file.extension == undefined  ) {
-        
-        var objx = {
-            is_error: true, 
-            message: localize.missing_properties,
-            data: [] 
-        }
-
-        return res.send(objx);
-    }
-
-    // getting image data 
-    var base64 = req.body.file.base_64;
-    var extension = req.body.file.extension;
-
-    // generate image name ( modal name - database name - post id - small random - extenstion  )
-    var rename = "";
-
-    var base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
-    const buffer = Buffer.from(base64Data, 'base64');
-
-    const uploadsDir = "./uploads";
-    if (!fs.existsSync(uploadsDir)){
-        fs.mkdirSync(uploadsDir);
-    }
-    
-      
-    // Save buffer to a file, process it, or do anything you need
-    fs.writeFile(`${uploadsDir}/image.jpg`, buffer, (err) => {
-        if (err) {
-            return res.status(500).send({ message: 'Error saving the image', err });
-        }
-        res.send({ message: 'Image uploaded successfully' });
-    });
-
-
-     
-    
-})
 
 // add data by one row + update by one row 
 apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res ) => {
@@ -168,7 +151,8 @@ apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res )
             fs.mkdirSync(directory);
         }
 
-        var base64Data = data_object.file.base_64.replace(/^data:image\/\w+;base64,/, "");
+        var updated_base64 = await compressBase64Image(data_object.file.base_64);
+        var base64Data = updated_base64.replace(/^data:image\/\w+;base64,/, "");
         var buffer = Buffer.from(base64Data, 'base64');
 
         fs.writeFileSync(`${directory}/${image_name}`, buffer, (err) => {
@@ -181,10 +165,12 @@ apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res )
                 });
             } 
         }); 
+
+        // store image in field
+        data_object[field_name] = image_name;
     }
 
-    // store image in field
-    data_object[field_name] = image_name;
+    
 
     // build data object 
     var finder = await db_connection.findOne(finderObject);
