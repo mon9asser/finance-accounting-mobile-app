@@ -7,26 +7,31 @@ const nodemailer = require('nodemailer');
 const { create_connection, flat_schema_name } = require("../applications/db.js");
 const {language} = require("../localize/language.js");
 const { verify_user_tokens_and_keys } = require("./middleware/tokens.js")
-const {get_schema_object} = require("../applications/schema.js");
-const multer = require('multer');
+const {get_schema_object} = require("../applications/schema.js"); 
 const path = require('path');
-const fs = require('fs');
-
-
-
-  
+const fs = require('fs'); 
 
 var apiRouters = express.Router(); 
-
-// upload.single('photo')  [verify_user_tokens_and_keys, upload.single('file')]
-apiRouters.post("/upload_media", upload.single('file'), async (req, res ) =>{
-    var file_extension = req.body.exten || ".jpg";
-    var image_name = req.body; 
-    res.send(image_name);
-}); 
   
+ 
+apiRouters.post("/upload_media", verify_user_tokens_and_keys, async(req, res) => {
 
 
+    const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    // Save buffer to a file, process it, or do anything you need
+    fs.writeFile('path/to/save/image.jpg', buffer, (err) => {
+        if (err) {
+        return res.status(500).send({ message: 'Error saving the image' });
+        }
+        res.send({ message: 'Image uploaded successfully' });
+    });
+
+
+    res.send("Data");
+    
+})
 
 // add data by one row + update by one row 
 apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res ) => {

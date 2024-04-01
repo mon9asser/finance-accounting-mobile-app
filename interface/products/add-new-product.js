@@ -605,7 +605,7 @@ class AddNewProductComponents extends Component {
     };
      
 
-    setFileObject = (value) => {
+    setFileObject = async (value) => { 
         this.setState({
             file: value
         }) 
