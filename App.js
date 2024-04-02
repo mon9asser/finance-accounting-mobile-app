@@ -24,8 +24,10 @@ import { AddNewBranchComponents } from "./interface/branches/add-branch.js";
 import { EditCurrentBranchComponents } from "./interface/branches/edit-branch.js";
 import { BranchesComponents } from "./interface/branches/all-branches.js";
 
+import { AddNewProductComponents } from "./interface/products/add-new-product.js";
+import { ProductsComponents } from "./interface/products/all-products.js";
 
-
+ 
 import {HomeComponents} from './interface/home.js';
 import {LoginComponents} from './interface/user/login.js';
 import {ResetPasswordComponents} from './interface/user/password-reset.js';
@@ -42,8 +44,7 @@ import { SubscriptionComponents } from './interface/subscription.js';
 import { TestComponent } from "./interface/test.js";
 
 import { usr } from "./controllers/storage/user.js";
-import { AddNewProductComponents } from "./interface/products/add-new-product.js";
-import { AddProductComponents } from "./interface/products/add-product.js";
+
 
 // Functions 
 const Stack = createStackNavigator(); 
@@ -277,8 +278,8 @@ const App = () => {
                 <Stack.Screen name="add-new-branch" options={{headerTitle: language.add_new_branch}}  component={AddNewBranchComponents} initialParams={{ langs: language }} />
                 <Stack.Screen name="edit-branch" options={{headerTitle: language.edit_branch}}  component={EditCurrentBranchComponents} initialParams={{ langs: language }} />
                 
-                {/* Branches Screens */}
-                <Stack.Screen name="add-product" component={AddProductComponents}/>
+                {/* Products Screens */}
+                <Stack.Screen name="products" options={{headerTitle: language.products}} component={ProductsComponents} initialParams={{ langs: language }}/>
                 <Stack.Screen name="add-new-product" options={{headerTitle: language.add_new_product}} component={AddNewProductComponents} initialParams={{ langs: language }}/>
 
                 <Stack.Screen name="Login" component={LoginComponents}/>
