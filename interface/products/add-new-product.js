@@ -650,7 +650,7 @@ class AddNewProductComponents extends Component {
                         </Text> 
 
                         <TouchableOpacity onPress={this.add_new_category}>
-                            <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>{this.state.add_new_field}</Text>
+                            <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>{this.state.language.add_new_field}</Text>
                         </TouchableOpacity>
                     </View>
                     

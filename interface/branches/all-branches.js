@@ -6,7 +6,6 @@ import NetInfo from '@react-native-community/netinfo';
 import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';  
 import _ from "lodash";
-
 // Distruct 
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -23,6 +22,9 @@ import {config} from "../../settings/config.js" ;
 import {styles} from "../../controllers/styles.js"; 
 import {get_setting, add_last_session_form, get_last_session_form, delete_session_form} from "../../controllers/cores/settings.js";
 import {get_lang} from '../../controllers/languages.js'; 
+
+// this.state.setSearchMode(false);
+
 
 // Controller 
 import { BranchInstance } from "../../controllers/storage/branches.js"
@@ -61,6 +63,7 @@ class BranchesComponents extends PureComponent {
             open_date_from_modal: false,
             open_date_to_modal: false,
 
+            no_more_results: this.props.route.params.langs.no_more_records,
 
             // checked ids 
             checkbox_checked: false, 
@@ -82,15 +85,23 @@ class BranchesComponents extends PureComponent {
             // show stats when screen is loaded
             loaded_page: false,
             refreshing: false, 
-            data_status: this.props.route.params.langs.no_records_found  
-        }
+            data_status: this.props.route.params.langs.no_records_found,
 
+            is_search_mode: false,  
+        }
+        
         this.internetState = null;
         this.internetStateBox = new Animated.Value(0);
         this.animationHeight = new Animated.Value(0);
         this.animationSlider = new Animated.Value(0);
     }
 
+    setSearchMode = (value) => { 
+        this.setState({
+            is_search_mode: value,
+            no_more_results: value ? this.props.route.params.langs.no_records_found_in_this_search : this.props.route.params.langs.no_more_records
+        })
+    }
     
     setLoading = (value) => {
         this.setState({
@@ -442,7 +453,13 @@ class BranchesComponents extends PureComponent {
     }
 
     filter_by_texts = (text) => {
-       
+        
+        if( text == "" ) {
+            this.setSearchMode(false);
+        } else {
+            this.setSearchMode(true);
+        }
+
         var all = this.state.all_data.flat();
         if( text == "" ) {
 
@@ -466,13 +483,13 @@ class BranchesComponents extends PureComponent {
         });
 
         var chunked =  searched_items.length ? _.chunk(searched_items, this.state.records): [];
-
+         
         this.setState({
             all_searched_data:chunked,
             searched_data: chunked.length? chunked[0]: []
         }); 
 
-
+        
     }
     
     toggleExpansion = () => {
@@ -546,7 +563,7 @@ class BranchesComponents extends PureComponent {
     
     
     searchOnDataByDate = () => {
-
+        this.setSearchMode(true);
         var flats = this.state.all_data.flat();
         var values = flats.filter(obj => {
             
@@ -651,9 +668,15 @@ class BranchesComponents extends PureComponent {
                             </View> 
                         </View> 
 
-                        <TouchableHighlight onPress={this.searchOnDataByDate} style={{borderColor: this.state.default_color, borderWidth: 1, marginTop: 15, borderRadius: 8, backgroundColor: "#fff", flex: 1, justifyContent: 'center', alignItems: "center" }}>
-                            <Text style={{color: this.state.default_color}}>{this.state.language.search_by_date}</Text>
-                        </TouchableHighlight>
+                        <View style={{flexDirection: "row", height: 60, gap: 10}}>
+                            <TouchableHighlight onPress={() => this.setSearchMode(false)} style={{borderColor: this.state.default_color, borderWidth: 1, marginTop: 15, borderRadius: 8, backgroundColor: "#fff", flex: 1, justifyContent: 'center', alignItems: "center" }}>
+                                <Text style={{color: this.state.default_color}}>{this.state.language.cancel}</Text>
+                            </TouchableHighlight>
+                            <TouchableHighlight onPress={this.searchOnDataByDate} style={{borderColor: this.state.default_color, borderWidth: 1, marginTop: 15, borderRadius: 8, backgroundColor: "#fff", flex: 1, justifyContent: 'center', alignItems: "center" }}>
+                                <Text style={{color: this.state.default_color}}>{this.state.language.search_by_date}</Text>
+                            </TouchableHighlight>
+                        </View>
+                        
                     </Animated.View>
 
                 </View>
@@ -735,7 +758,7 @@ class BranchesComponents extends PureComponent {
 
             <View>
                 
-                { this.state.is_last_page ? <View style={{justifyContent: "center", alignItems: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.language.no_more_records}</Text></View> : <ActivityIndicator size={"small"} color={this.state.default_color} /> }
+                { this.state.is_last_page ? <View style={{justifyContent: "center", alignItems: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.no_more_results}</Text></View> : <ActivityIndicator size={"small"} color={this.state.default_color} /> }
 
                 <View style={{flex: 1, marginTop: 15, borderTopColor: "#eee", borderTopWidth: 2, height: 40, alignItems:"center", flexDirection: "row", justifyContent: "space-between"}}>
                     <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.all_data.flat().length} {this.state.all_data.flat().length > 1? this.state.language.branches: this.state.language.branch}</Text>
@@ -758,7 +781,8 @@ class BranchesComponents extends PureComponent {
                         <View style={{width: "100%",  alignContent: "center", alignItems: "center", padding: 10, borderRadius: 3, flex: 1, justifyContent: "center"}}><ActivityIndicator color={this.state.default_color} size={"large"}></ActivityIndicator></View> :
                         ( this.state.all_data.length ) ?
                             <FlatList
-                                data={this.state.searched_data.length? this.state.searched_data: this.state.loaded_data}
+                                // data={this.state.searched_data.length? this.state.searched_data: this.state.loaded_data}
+                                data={this.state.is_search_mode? this.state.searched_data: this.state.loaded_data}
                                 renderItem={ (item) => <this.Item_Data data={item}/>}
                                 keyExtractor={(item, index) => item.local_id.toString()} 
                                 onEndReached={() => this.Load_More()} 

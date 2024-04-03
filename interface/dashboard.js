@@ -345,7 +345,7 @@ class DashboardComponents extends Component {
                                 <Text style={{...styles.bold, ...styles.colors.white}}>Branches</Text>
                             </TouchableOpacity> 
 
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate("products")} style={{backgroundColor: "#6b5353", ...styles.dashboard_cols}}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Products")} style={{backgroundColor: "#6b5353", ...styles.dashboard_cols}}>
                                 <View style={{...styles.space_bottom_10}}>
                                     <Image 
                                         source={require("./../assets/icons/add-new-prdouct.png")}

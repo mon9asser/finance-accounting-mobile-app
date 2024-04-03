@@ -42,7 +42,7 @@ class ProductsComponents extends PureComponent {
             language: {},               //--  
             isConnected: true, 
 
-            default_color: "#6c5ce7",   
+            default_color: "#6b5353",   
  
             select_all: false,   
 
@@ -86,7 +86,7 @@ class ProductsComponents extends PureComponent {
             loaded_page: false,
             refreshing: false, 
             data_status: this.props.route.params.langs.no_records_found,
-
+            is_search_mode: false, 
             prices: []
         }
 
@@ -96,7 +96,13 @@ class ProductsComponents extends PureComponent {
         this.animationSlider = new Animated.Value(0);
     }
 
-    
+    setSearchMode = (value) => { 
+        this.setState({
+            is_search_mode: value,
+            no_more_results: value ? this.props.route.params.langs.no_records_found_in_this_search : this.props.route.params.langs.no_more_records
+        })
+    }
+
     setLoading = (value) => {
         this.setState({
             is_loading: value
@@ -132,7 +138,7 @@ class ProductsComponents extends PureComponent {
         if( reqs.login_redirect ) {
             Alert.alert(reqs.message);
             this.props.navigation.navigate("Login", {
-                redirect_to: "Branches"
+                redirect_to: "Products"
             });
             return;
         }
@@ -414,9 +420,36 @@ class ProductsComponents extends PureComponent {
 
     }
 
+    formatTimestamp = (timestamp) => {
+        const differenceInSeconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
+        const differenceInMinutes = Math.floor(differenceInSeconds / 60);
+        const differenceInHours = Math.floor(differenceInMinutes / 60);
+        const differenceInDays = Math.floor(differenceInHours / 24);
+        const differenceInYears = Math.floor(differenceInDays / 365);
+         
+        if (differenceInSeconds < 60) {
+            return ( <Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>just now</Text>);
+        } else if (differenceInMinutes < 60) {
+            return (<Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{differenceInMinutes} mins ago </Text>);
+        } else if (differenceInHours < 24) {
+            return (<Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{differenceInHours} hrs ago</Text>);
+        } else if (differenceInYears >= 5) {
+            const date = new Date(timestamp);
+            return (<Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{date.getDate().toString().padStart(2, '0')}/{(date.getMonth() + 1).toString().padStart(2, '0')}/{date.getFullYear()}</Text>);
+        } else {
+            const differenceInMonths = Math.floor(differenceInDays / 30);
+            if (differenceInMonths < 12) {
+                return <Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{differenceInMonths} months ago</Text>;
+            } else {
+                return <Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{differenceInYears} years ago</Text>;
+            }
+        }
+    }
+    
+
     Item_Data = ({item, index}) => {
         
-
+         
         // Getting Image from local storage or server 
         var inseatedImage = require("./../../assets/icons/product-placeholder.png");
         var api_img_uri = item.file == undefined || item.file.thumbnail_url == undefined ? "": item.file.thumbnail_url 
@@ -479,9 +512,9 @@ class ProductsComponents extends PureComponent {
                                 <Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>
                                     Price: {price_object.sale}
                                 </Text>
-                                <Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>
-                                    Last update: {item.purchase_price}
-                                </Text>
+
+                                {this.formatTimestamp(item.updated_date)}
+                               
                             </View>
                         </View>
                         <View style={{flex: 1, flexDirection:'row', justifyContent: 'space-between'}}>
@@ -541,6 +574,12 @@ class ProductsComponents extends PureComponent {
 
     filter_by_texts = (text) => {
        
+        if( text == "" ) {
+            this.setSearchMode(false);
+        } else {
+            this.setSearchMode(true);
+        }
+
         var all = this.state.all_data.flat();
         if( text == "" ) {
 
@@ -553,18 +592,16 @@ class ProductsComponents extends PureComponent {
 
         var searched_items = all.filter( item => {
             
-            var index1 = item.branch_name.indexOf(text);
-            var index2 = item.branch_city.indexOf(text);
-            var index3 = item.branch_number.indexOf(text);
+            var index1 = item.product_name.indexOf(text); 
 
-            if(index1 !== -1 || index2 !== -1 || index3 !== -1 ) {
+            if(index1 !== -1 ) {
                 return item; 
             }
 
         });
-
+        
         var chunked =  searched_items.length ? _.chunk(searched_items, this.state.records): [];
-
+       
         this.setState({
             all_searched_data:chunked,
             searched_data: chunked.length? chunked[0]: []
@@ -644,7 +681,7 @@ class ProductsComponents extends PureComponent {
     
     
     searchOnDataByDate = () => {
-
+        this.setSearchMode(true);
         var flats = this.state.all_data.flat();
         var values = flats.filter(obj => {
             
@@ -749,9 +786,14 @@ class ProductsComponents extends PureComponent {
                             </View> 
                         </View> 
 
-                        <TouchableHighlight onPress={this.searchOnDataByDate} style={{borderColor: this.state.default_color, borderWidth: 1, marginTop: 15, borderRadius: 8, backgroundColor: "#fff", flex: 1, justifyContent: 'center', alignItems: "center" }}>
-                            <Text style={{color: this.state.default_color}}>{this.state.language.search_by_date}</Text>
-                        </TouchableHighlight>
+                        <View style={{flexDirection: "row", height: 60, gap: 10}}>
+                            <TouchableHighlight onPress={() => this.setSearchMode(false)} style={{borderColor: this.state.default_color, borderWidth: 1, marginTop: 15, borderRadius: 8, backgroundColor: "#fff", flex: 1, justifyContent: 'center', alignItems: "center" }}>
+                                <Text style={{color: this.state.default_color}}>{this.state.language.cancel}</Text>
+                            </TouchableHighlight>
+                            <TouchableHighlight onPress={this.searchOnDataByDate} style={{borderColor: this.state.default_color, borderWidth: 1, marginTop: 15, borderRadius: 8, backgroundColor: "#fff", flex: 1, justifyContent: 'center', alignItems: "center" }}>
+                                <Text style={{color: this.state.default_color}}>{this.state.language.search_by_date}</Text>
+                            </TouchableHighlight>
+                        </View>
                     </Animated.View>
 
                 </View>
@@ -760,7 +802,7 @@ class ProductsComponents extends PureComponent {
 
                 <TouchableOpacity onPress={ this.select_all_records } style={{flexDirection: "row", alignItems: "center",  marginBottom: 10, marginLeft:-5}}>
                     <Checkbox status={this.state.checkbox_checked ? 'checked' : 'unchecked'} />
-                    <Text style={{color: "#999"}}>{this.state.language.select_all_branches}</Text>                                
+                    <Text style={{color: "#999"}}>{this.state.language.select_all_products}</Text>                                
                 </TouchableOpacity>
                 
                  
@@ -774,7 +816,7 @@ class ProductsComponents extends PureComponent {
 
     add_new = () => {
         this.props.navigation.goBack(null);
-        this.props.navigation.navigate("add-new-branch");
+        this.props.navigation.navigate("add-new-product");
     }
 
     setRefreshing = (value) => {
@@ -833,10 +875,10 @@ class ProductsComponents extends PureComponent {
 
             <View>
                 
-                { this.state.is_last_page ? <View style={{justifyContent: "center", alignItems: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.language.no_more_records}</Text></View> : <ActivityIndicator size={"small"} color={this.state.default_color} /> }
+                { this.state.is_last_page ? <View style={{justifyContent: "center", alignItems: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.no_more_results}</Text></View> : <ActivityIndicator size={"small"} color={this.state.default_color} /> }
 
                 <View style={{flex: 1, marginTop: 15, borderTopColor: "#eee", borderTopWidth: 2, height: 40, alignItems:"center", flexDirection: "row", justifyContent: "space-between"}}>
-                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.all_data.flat().length} {this.state.all_data.flat().length > 1? this.state.language.branches: this.state.language.branch}</Text>
+                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.all_data.flat().length} {this.state.all_data.flat().length > 1? this.state.language.products: this.state.language.product}</Text>
                     <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}> {this.state.all_data.length} {this.state.all_data.length > 1? this.state.language.screens: this.state.language.screen}</Text>
                 </View>
 
@@ -856,7 +898,8 @@ class ProductsComponents extends PureComponent {
                         <View style={{width: "100%",  alignContent: "center", alignItems: "center", padding: 10, borderRadius: 3, flex: 1, justifyContent: "center"}}><ActivityIndicator color={this.state.default_color} size={"large"}></ActivityIndicator></View> :
                         ( this.state.all_data.length ) ?
                             <FlatList
-                                data={this.state.searched_data.length? this.state.searched_data: this.state.loaded_data}
+                                // data={this.state.searched_data.length? this.state.searched_data: this.state.loaded_data}
+                                data={this.state.is_search_mode? this.state.searched_data: this.state.loaded_data}
                                 renderItem={({item, index}) => <this.Item_Data item={item} index={index} />}
                                 keyExtractor={(item, index) => item.local_id.toString()}
                                 onEndReached={() => this.Load_More()} 
@@ -891,7 +934,7 @@ class ProductsComponents extends PureComponent {
                     }
                     
                     <Button onPress={this.add_new}  mode="contained" style={{...styles.add_btn_bg.container, backgroundColor: this.state.default_color, ...styles.flex}}>
-                        <Text style={{...styles.add_btn_bg.text}}>{this.state.language.add_new_branch}</Text> 
+                        <Text style={{...styles.add_btn_bg.text}}>{this.state.language.add_new_product}</Text> 
                     </Button> 
                      
                 </View>

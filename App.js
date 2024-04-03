@@ -279,7 +279,7 @@ const App = () => {
                 <Stack.Screen name="edit-branch" options={{headerTitle: language.edit_branch}}  component={EditCurrentBranchComponents} initialParams={{ langs: language }} />
                 
                 {/* Products Screens */}
-                <Stack.Screen name="products" options={{headerTitle: language.products}} component={ProductsComponents} initialParams={{ langs: language }}/>
+                <Stack.Screen name="Products" options={{headerTitle: language.products}} component={ProductsComponents} initialParams={{ langs: language }}/>
                 <Stack.Screen name="add-new-product" options={{headerTitle: language.add_new_product}} component={AddNewProductComponents} initialParams={{ langs: language }}/>
 
                 <Stack.Screen name="Login" component={LoginComponents}/>
