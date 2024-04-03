@@ -1,6 +1,6 @@
 
 // Default
-import React, { PureComponent } from "react";
+import React, { PureComponent, useState } from "react";
 import NetInfo from '@react-native-community/netinfo'; 
 // import Device from 'react-native-device-info';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -12,6 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationEvents  } from '@react-navigation/native';    
 import DateTimePicker from '@react-native-community/datetimepicker'; 
+import * as FileSystem from 'expo-file-system';
 
 import { FlatList, Alert, RefreshControl, TouchableHighlight, Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions, Touchable } from 'react-native';
 import { Checkbox, Button, Provider as PaperProvider, DefaultTheme } from "react-native-paper"; 
@@ -26,7 +27,9 @@ import {get_lang} from '../../controllers/languages.js';
 
 // Controller  
 import { ProductInstance } from "../../controllers/storage/products.js";
+import { PriceInstance  } from "../../controllers/storage/prices.js";
 import { usr } from "../../controllers/storage/user.js";
+import { conf } from "../../server/settings/config.js";
 
 class ProductsComponents extends PureComponent {
 
@@ -84,7 +87,7 @@ class ProductsComponents extends PureComponent {
             refreshing: false, 
             data_status: this.props.route.params.langs.no_records_found,
 
-            thumbnails: []
+            prices: []
         }
 
         this.internetState = null;
@@ -198,6 +201,17 @@ class ProductsComponents extends PureComponent {
 
     }
 
+    load_all_prices = async() => {
+        
+        var prc = await PriceInstance.get_records();
+
+        if( prc.is_error || ! prc.data.length ) return ;
+        this.setState({
+            prices: prc.data
+        });
+ 
+    }
+
     componentDidMount = async () => { 
         /*
         alert("https://www.npmjs.com/package/react-slidedown")
@@ -216,7 +230,8 @@ class ProductsComponents extends PureComponent {
         // Apply screen and header options 
         this.screen_options();  
 
-        
+        // getting all prices 
+        await this.load_all_prices();
         
          /*
         await ProductInstance.Schema.instance.save({
@@ -391,58 +406,81 @@ class ProductsComponents extends PureComponent {
         const response = await fetch(imageUrl, { method: 'HEAD' });
             const exists = response.ok; // true if the status code is 200-299
             console.log(exists); 
-    };
+    }; 
+    
+    gettingImage = (item, setImageUri, placeholderOrLocalImage) => {
 
-    setImageData = (slugName, index) => {
+        setImageUri(placeholderOrLocalImage)
 
-        var img = {uri: config.api(`uploads/${slugName}`)}
-
-        this.setState((prevState) => {
-            
-            var new_ = this.state.thumbnails[index] = img;
-
-            return {
-                thumbnails: new_
-            };
-            
-        });
-    }
-
-    setImagePlaceHolder = (index) => {
-        this.setState((prevState) => {
-            
-            var new_ = this.state.thumbnails[index] = require('./../../assets/icons/product-placeholder.png');
-
-            return {
-                thumbnails: new_
-            };
-            
-        });
     }
 
     Item_Data = ({item, index}) => {
         
+
+        // Getting Image from local storage or server 
+        var inseatedImage = require("./../../assets/icons/product-placeholder.png");
+        var api_img_uri = item.file == undefined || item.file.thumbnail_url == undefined ? "": item.file.thumbnail_url 
+
+        var imageApi = config.api(`uploads/${api_img_uri}`);
+ 
+        var [image, setImage] = useState({uri: imageApi });
+         
+        if( item.file != undefined &&  item.file.uri != undefined && (item.file.uri != "") ) {
+            
+            inseatedImage = {uri: item.file.uri };
+
+            FileSystem.getInfoAsync(item.file.uri).then( x => {
+                
+                if( ! x.exists ) {
+                    inseatedImage = require("./../../assets/icons/product-placeholder.png");
+                }
+
+            }) 
+            
+        }
+
+        
+
+        // product price
+        var prices = this.state.prices;
+        var price_object = {sale: 0, purchase: 0 };
+        if( prices.length) {
+            
+            var prc_list = prices.filter( x => x.product_local_id == item.local_id );
+            var primary_prc = prc_list.filter( x => x.is_default_price == true );
+
+            if( primary_prc.length ) {
+                price_object.sale = primary_prc[0].sales_price;
+                price_object.purchase = primary_prc[0].purchase_price;
+            } else if (prc_list.length) {
+                price_object.sale = prc_list[0].sales_price;
+                price_object.purchase = prc_list[0].purchase_price;
+            }
+            
+        }
+             
         return (
             <View key={item.local_id} style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15 }}>
-                <TouchableOpacity onPress={() => this.selectThisItem(key)}  style={{borderWidth: 1, gap: 15, marginBottom: 20, padding: 15, flexDirection: "row", borderColor: ( item.is_selected? "red" : "#dfdfdf"), backgroundColor: ( item.is_selected? "#ffe9e9" : "transparent"), borderRadius: 10}}>
+                <TouchableOpacity onPress={() => this.select_this_row(item.local_id)}  style={{borderWidth: 1, gap: 15, marginBottom: 20, padding: 15, flexDirection: "row", borderColor:( this.is_highlighted(item.local_id)? "red" : "#eee"), backgroundColor: ( this.is_highlighted(item.local_id)? "#ffe9e9" : "#fff"), borderRadius: 10}}>
                     <View>
                         <Image
-                            source={""}
+                            source={image}
                             style={{width: 80, height: 80, objectFit: 'cover', borderRadius: 5}}
-                            resizeMode="cover"
+                            resizeMode="cover" 
+                            onError={() => this.gettingImage(item, setImage, inseatedImage)}
                         />
                     </View>
                     <View style={{flexDirection: 'column', justifyContent: 'center',  flex: 1}}>
                         <View style={{flex: 1}}>
-                            <Text style={{fontSize: 18, fontWeight: "bold"}}>
+                            <Text style={{fontSize: 16, color: "#444", fontWeight: "bold"}}>
                                 {item.product_name}
                             </Text>
                             <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
                                 <Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>
-                                    Sale: ${item.sale_price}
+                                    Price: {price_object.sale}
                                 </Text>
                                 <Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>
-                                    Purchase: ${item.purchase_price}
+                                    Last update: {item.purchase_price}
                                 </Text>
                             </View>
                         </View>
@@ -450,11 +488,18 @@ class ProductsComponents extends PureComponent {
                             <Text style={{color:"grey", marginTop: 5}}>
                                 #{item.category} 
                             </Text>
-                            <TouchableOpacity onPress={() => this.editThisItem(item.id)}>
-                                <Text style={{color: "#0B4BAA", fontWeight: "bold", marginTop: 5}}>
-                                    Edit
-                                </Text>
-                            </TouchableOpacity>
+                            <View style={{flexDirection: "row", gap: 10}}>
+                                <TouchableOpacity onPress={() => this.editThisItem(item.id)}>
+                                    <Text style={{color: "#0B4BAA", fontWeight: "bold", marginTop: 5}}>
+                                        Edit
+                                    </Text> 
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => this.editThisItem(item.id)}>
+                                    <Text style={{color: "#0B4BAA", fontWeight: "bold", marginTop: 5}}>
+                                        View
+                                    </Text> 
+                                </TouchableOpacity>
+                            </View>
                         </View>
                         
                     </View>

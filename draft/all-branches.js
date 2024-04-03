@@ -218,9 +218,7 @@ class BranchesComponents extends PureComponent {
                 };
 
             });
-        } 
-         
-        console.log("=====", this.state.pageNumber );
+        }  
     }
 
     // initial first load

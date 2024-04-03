@@ -33,8 +33,7 @@
         model: model_name, 
         schemaObject:schema_object
     }); 
-    
-    console.log("data ++++");
+     
 
     if( ! db_connection ) {
         response["data"] = [];

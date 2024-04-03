@@ -1008,6 +1008,30 @@ class AddNewProductComponents extends Component {
         }
     }
 
+    geneate_image_name = async() => {
+         
+        var user = await usr.get_session();
+         
+        const position = user.database_name.indexOf('_'); 
+        var dbslug  = user.database_name;
+        if ( position !== -1 ) 
+            dbslug = user.database_name.substring(position + 1); 
+
+             
+        var uri = this.state.file.uri;
+        var extension = ".jpg";
+        if( uri.indexOf(".jpeg") != -1 )
+            extension = ".jpg";
+        else if ( uri.indexOf(".png") != -1  )
+            extension = ".png";
+             
+
+        var new_name = `products-${dbslug}-${this.state.product_local_id}${extension}`;
+         
+        return new_name;
+
+    }
+
     saveData = () => {
 
 
@@ -1046,9 +1070,7 @@ class AddNewProductComponents extends Component {
 
             // case is there image 
             if( this.state.file != null ) {
-                
-                // default uri for local storage 
-                productObject.thumbnail_url = this.state.file.uri; 
+                 
 
                 // Base 64
                 var base64 = await this.generate_base64_data( this.state.file.uri );
@@ -1062,9 +1084,13 @@ class AddNewProductComponents extends Component {
                     return; 
                 }
 
+                // generate image name which saved on server  
+                var new_name = await this.geneate_image_name();
+                  
                 // storing file object 
                 productObject.file = {
                     base_64: base64,
+                    thumbnail_url: new_name, 
                     uri: this.state.file.uri,
                     property_name: "thumbnail"
                 };
