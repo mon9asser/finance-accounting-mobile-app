@@ -407,12 +407,6 @@ class ProductsComponents extends PureComponent {
        
 
     } 
-
-    checkImageOnServer = async (imageUrl) => {
-        const response = await fetch(imageUrl, { method: 'HEAD' });
-            const exists = response.ok; // true if the status code is 200-299
-            console.log(exists); 
-    }; 
     
     gettingImage = (item, setImageUri, placeholderOrLocalImage) => {
 
@@ -718,7 +712,7 @@ class ProductsComponents extends PureComponent {
     AnimatedBoxforInternetWarning = () => (
         <View style={{...styles.direction_row, backgroundColor: "red", padding:10, borderRadius: 10, ...styles.item_center, ...styles.gap_15}}>
                 
-                    <Image 
+            <Image 
                 source={require('./../../assets/icons/internet-state.png')}
                 style={{width: 30, height: 30}} 
                 resizeMode="cover"
