@@ -179,6 +179,14 @@ const en = {
         sale_purch_price_required: "Prices of Sale and purchase are required", 
         record: "record",
         add: "Add", 
+
+        just_now: "just now",
+        mins_ago: "mins ago",
+        hrs_ago: "hrs ago",
+        days_ago: "days ago",
+        weeks_ago: "weeks ago",
+        month_ago: "months ago",
+
         __created: "Created",
         __created_a: "Created a",
         __created_an: "Created an",

@@ -425,25 +425,30 @@ class ProductsComponents extends PureComponent {
         const differenceInMinutes = Math.floor(differenceInSeconds / 60);
         const differenceInHours = Math.floor(differenceInMinutes / 60);
         const differenceInDays = Math.floor(differenceInHours / 24);
+        const differenceInWeeks = Math.floor(differenceInDays / 7);
         const differenceInYears = Math.floor(differenceInDays / 365);
-         
+        
         if (differenceInSeconds < 60) {
-            return ( <Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>just now</Text>);
+            return (<Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{this.state.language.just_now}</Text>);
         } else if (differenceInMinutes < 60) {
-            return (<Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{differenceInMinutes} mins ago </Text>);
+            return (<Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{differenceInMinutes} {this.state.language.mins_ago}</Text>);
         } else if (differenceInHours < 24) {
-            return (<Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{differenceInHours} hrs ago</Text>);
+            return (<Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{differenceInHours} {this.state.language.hrs_ago}</Text>);
+        } else if (differenceInDays < 7) {
+            return (<Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{differenceInDays} {this.state.language.days_ago}</Text>);
+        } else if (differenceInWeeks < 4) {
+            // Handling weeks specifically, up to 4 weeks
+            return (<Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{differenceInWeeks} {this.state.language.weeks_ago}</Text>);
         } else if (differenceInYears >= 5) {
             const date = new Date(timestamp);
             return (<Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{date.getDate().toString().padStart(2, '0')}/{(date.getMonth() + 1).toString().padStart(2, '0')}/{date.getFullYear()}</Text>);
         } else {
+            // For months, now that weeks fill the gap between days and months, this becomes more accurate
             const differenceInMonths = Math.floor(differenceInDays / 30);
-            if (differenceInMonths < 12) {
-                return <Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{differenceInMonths} months ago</Text>;
-            } else {
-                return <Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{differenceInYears} years ago</Text>;
-            }
+            return (<Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>{differenceInMonths} {this.state.language.month_ago}</Text>);
         }
+
+
     }
     
 
@@ -683,15 +688,18 @@ class ProductsComponents extends PureComponent {
     searchOnDataByDate = () => {
         this.setSearchMode(true);
         var flats = this.state.all_data.flat();
+        
         var values = flats.filter(obj => {
             
-            if( obj.created_date != null ) {
+            var target_date = obj.created_date == undefined ? obj.updated_date: obj.created_date;
+
+            if( target_date != null ) {
 
                 var from = new Date(this.state.date_from.setHours(0, 0, 0, 0)).getTime();
                 var to = new Date(this.state.date_to.setHours(23, 59, 59, 999)).getTime();
-                var created_date = new Date(obj.created_date).getTime();
+                var the_date = new Date(target_date).getTime();
                 
-                return created_date >= from && created_date <= to;
+                return the_date >= from && the_date <= to;
             }
             
         });
@@ -699,7 +707,7 @@ class ProductsComponents extends PureComponent {
         
         // increase the page with 1 
         var chunked =  values.length ? _.chunk(values, this.state.records): [];
-
+        
         this.setState({
             all_searched_data:chunked,
             searched_data: chunked.length? chunked[0]: []
