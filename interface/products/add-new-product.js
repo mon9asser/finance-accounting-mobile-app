@@ -238,7 +238,23 @@ class AddNewProductComponents extends Component {
           
 
         this.setPricesList( prices );
-        this.setProductThumbnail(product.file.uri);
+        if( product.file != undefined ) {
+
+            var url; 
+            if( product.file.uri != undefined ) {
+                 
+                var fileInfo = await FileSystem.getInfoAsync(product.file.uri); 
+                if( fileInfo.exists ) {
+                    url = product.file.uri;
+                } else if (product.file.thumbnail_url != undefined) {
+                    url = config.api("uploads/" + product.file.thumbnail_url )
+                }
+
+            }
+             
+
+            this.setProductThumbnail(url);
+        }
         this.setProductName(product.product_name);
         this.setCategoryOjbect(product.category_id);
         this.setBarcodeDataField(product.barcode);
@@ -1034,144 +1050,151 @@ class AddNewProductComponents extends Component {
 
     saveData = () => {
 
-
-        if( this.state.isPressed ) {
-            Alert.alert(this.state.language.please_wait, this.state.language.btn_clicked_twice);
-            return;
-        } 
-
-        this.setPressBtn(true);
-         
-        (async() => {
-            
-              
-
-            this.setPricesHlght(false);
-            this.setProductHlght(false);
-            this.setNotificationBox("none") 
-
-            // price list 
-            var prices = this.state.prices_list; 
-              
-            // product  
-            var productObject = {
-                product_name: this.state.product_name, 
-                category_id: this.state.selected_category, 
-                barcode: this.state.barcode_data, 
-                discount: {
-                    is_percentage: this.state.enabled_discount_percentage,
-                    percentage: this.state.discountPercentage,
-                    value: this.state.discountValue
-                },
-                param_id: this.state.product_local_id,
-                thumbnail: "",
-                thumbnail_url: ""
-            }; 
-
-            // case is there image 
-            if( this.state.file != null ) {
-                 
-
-                // Base 64
-                var base64 = await this.generate_base64_data( this.state.file.uri );
-               
-                if(!base64) {
+        try {
+            if( this.state.isPressed ) {
+                Alert.alert(this.state.language.please_wait, this.state.language.btn_clicked_twice);
+                return;
+            } 
+    
+            this.setPressBtn(true);
+             
+            (async() => {
+                
+                  
+    
+                this.setPricesHlght(false);
+                this.setProductHlght(false);
+                this.setNotificationBox("none") 
+    
+                // price list 
+                var prices = this.state.prices_list; 
+                  
+                // product  
+                var productObject = {
+                    product_name: this.state.product_name, 
+                    category_id: this.state.selected_category, 
+                    barcode: this.state.barcode_data, 
+                    discount: {
+                        is_percentage: this.state.enabled_discount_percentage,
+                        percentage: this.state.discountPercentage,
+                        value: this.state.discountValue
+                    },
+                    param_id: this.state.product_local_id,
+                    thumbnail: "",
+                    thumbnail_url: ""
+                }; 
+    
+                // case is there image 
+                if( this.state.file != null ) {
+                     
+    
+                    // Base 64
+                    var base64 = await this.generate_base64_data( this.state.file.uri );
+                   
+                    if(!base64) {
+                        this.setPressBtn(false); 
+                        this.setNotificationBox("flex")
+                        this.setNotificationCssClass(styles.error_message);
+                        this.setNotificationCssTextClass(styles.error_text)
+                        this.setNotificationMessage(this.state.language.failed_to_save_image);
+                        return; 
+                    }
+    
+                    // generate image name which saved on server  
+                    var new_name = await this.geneate_image_name();
+                      
+                    // storing file object 
+                    productObject.file = {
+                        base_64: base64,
+                        thumbnail_url: new_name, 
+                        uri: this.state.file.uri,
+                        property_name: "thumbnail"
+                    };
+    
+                }
+                
+                // required data 
+                if( ! prices.length ||  this.state.product_name == "") {
+    
                     this.setPressBtn(false); 
+    
+                    if( ! prices.length ) {
+                        this.setPricesHlght(true)
+                    } 
+    
+                    if( this.state.product_name == "" ) {
+                        this.setProductHlght(true)
+                    }
+    
                     this.setNotificationBox("flex")
                     this.setNotificationCssClass(styles.error_message);
                     this.setNotificationCssTextClass(styles.error_text)
-                    this.setNotificationMessage(this.state.language.failed_to_save_image);
+                    this.setNotificationMessage(this.state.language.ensure_last_price_field);
+    
                     return; 
                 }
-
-                // generate image name which saved on server  
-                var new_name = await this.geneate_image_name();
-                  
-                // storing file object 
-                productObject.file = {
-                    base_64: base64,
-                    thumbnail_url: new_name, 
-                    uri: this.state.file.uri,
-                    property_name: "thumbnail"
-                };
-
-            }
-            
-            // required data 
-            if( ! prices.length ||  this.state.product_name == "") {
-
-                this.setPressBtn(false); 
-
-                if( ! prices.length ) {
-                    this.setPricesHlght(true)
-                } 
-
-                if( this.state.product_name == "" ) {
-                    this.setProductHlght(true)
-                }
-
-                this.setNotificationBox("flex")
-                this.setNotificationCssClass(styles.error_message);
-                this.setNotificationCssTextClass(styles.error_text)
-                this.setNotificationMessage(this.state.language.ensure_last_price_field);
-
-                return; 
-            }
-
-            // insert data 
-            var priceReqs = await PriceInstance.bulk_create_update(prices); 
-            var ProcReqs = await ProductInstance.create_update(productObject);
-             
-            
-            if(priceReqs.login_redirect || ProcReqs.login_redirect) { 
-
-                this.setPressBtn(false);    
-
-                this.setNotificationBox("flex")
-                this.setNotificationCssClass(styles.error_message);
-                this.setNotificationCssTextClass(styles.error_text)
-                this.setNotificationMessage(priceReqs.message);
-
-                
-                // store data of form in session 
-                setTimeout(async () => {
-                    
-                    await add_last_session_form({
-                        name: "add-new-product",
-                        data_object: {
-                            prices: prices,
-                            product: productObject
-                        }
-                    }); 
     
-                    this.props.navigation.navigate("Login", { redirect_to: "add-new-product" });
+                // insert data 
+
+                 
+                var priceReqs = await PriceInstance.bulk_create_update(prices); 
+                var ProcReqs = await ProductInstance.create_update(productObject);
+                  
                 
-                }, 1500);
-
-                return; 
-            }
-            
-            if( priceReqs.is_error || ProcReqs.is_error ) {
-
-                this.setPressBtn(false);  
+                if(priceReqs.login_redirect || ProcReqs.login_redirect) { 
+    
+                    this.setPressBtn(false);    
+    
+                    this.setNotificationBox("flex")
+                    this.setNotificationCssClass(styles.error_message);
+                    this.setNotificationCssTextClass(styles.error_text)
+                    this.setNotificationMessage(priceReqs.message);
+    
+                    
+                    // store data of form in session 
+                    setTimeout(async () => {
+                        
+                        await add_last_session_form({
+                            name: "add-new-product",
+                            data_object: {
+                                prices: prices,
+                                product: productObject
+                            }
+                        }); 
+        
+                        this.props.navigation.navigate("Login", { redirect_to: "add-new-product" });
+                    
+                    }, 1500);
+    
+                    return; 
+                }
+                
+                if( priceReqs.is_error || ProcReqs.is_error ) {
+    
+                    this.setPressBtn(false);  
+                    this.setNotificationBox("flex")
+                    this.setNotificationCssClass(styles.error_message);
+                    this.setNotificationCssTextClass(styles.error_text); 
+                    this.setNotificationMessage(priceReqs.is_error ? priceReqs.message: ProcReqs.message);
+                    
+                    return; 
+                }
+    
+                // delete restored data 
+                await delete_session_form();
+    
+                this.setPressBtn(false);   
                 this.setNotificationBox("flex")
-                this.setNotificationCssClass(styles.error_message);
-                this.setNotificationCssTextClass(styles.error_text); 
-                this.setNotificationMessage(priceReqs.is_error ? priceReqs.message: ProcReqs.message);
-                
-                return; 
-            }
+                this.setNotificationCssClass(styles.success_message);
+                this.setNotificationCssTextClass(styles.success_text); 
+                this.setNotificationMessage(ProcReqs.message);
+    
+            })()
+        } catch (error) {
+            this.props.navigation.navigate("Login", { redirect_to: "add-new-product" });
+        }
 
-            // delete restored data 
-            await delete_session_form();
-
-            this.setPressBtn(false);   
-            this.setNotificationBox("flex")
-            this.setNotificationCssClass(styles.success_message);
-            this.setNotificationCssTextClass(styles.success_text); 
-            this.setNotificationMessage(ProcReqs.message);
-
-        })()
+        
     }
 
     render() {

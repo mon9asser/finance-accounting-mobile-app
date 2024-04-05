@@ -693,7 +693,7 @@ class A_P_I_S {
         }
 
         var old_data = await this.get_data_locally(mobject);
-
+         
         if(array_data.length == 0 ) {
             array_data = old_data;
         } else {

@@ -445,6 +445,16 @@ class ProductsComponents extends PureComponent {
 
     }
     
+    editThisItem = (item, prc_list) => { 
+        
+        this.props.navigation.navigate("edit-product", {
+            prices: prc_list,
+            item: item 
+        });
+
+
+
+    }
 
     Item_Data = ({item, index}) => {
         
@@ -475,10 +485,11 @@ class ProductsComponents extends PureComponent {
 
         // product price
         var prices = this.state.prices;
+        var prc_list = [];
         var price_object = {sale: 0, purchase: 0 };
         if( prices.length) {
             
-            var prc_list = prices.filter( x => x.product_local_id == item.local_id );
+            prc_list = prices.filter( x => x.product_local_id == item.local_id );
             var primary_prc = prc_list.filter( x => x.is_default_price == true );
 
             if( primary_prc.length ) {
@@ -490,7 +501,16 @@ class ProductsComponents extends PureComponent {
             }
             
         }
-             
+        
+        var __name = "";
+        
+        if( item.created_by != undefined && item.created_by.name != undefined ) {
+            __name = item.created_by.name.indexOf(" ") != -1 ? item.created_by.name.split(" ")[0]: item.created_by.name;
+            console.log(__name);
+        } else if( item.updated_by != undefined && item.updated_by.name != undefined ) {
+            __name = item.updated_by.name.indexOf(" ") != -1 ? item.updated_by.name.split(" ")[0]: item.updated_by.name;
+        } 
+
         return (
             <View key={item.local_id} style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15 }}>
                 <TouchableOpacity onPress={() => this.select_this_row(item.local_id)}  style={{borderWidth: 1, gap: 15, marginBottom: 20, padding: 15, flexDirection: "row", borderColor:( this.is_highlighted(item.local_id)? "red" : "#eee"), backgroundColor: ( this.is_highlighted(item.local_id)? "#ffe9e9" : "#fff"), borderRadius: 10}}>
@@ -518,10 +538,10 @@ class ProductsComponents extends PureComponent {
                         </View>
                         <View style={{flex: 1, flexDirection:'row', justifyContent: 'space-between'}}>
                             <Text style={{color:"grey", marginTop: 5}}>
-                                #{item.category} 
+                                By: {__name}
                             </Text>
                             <View style={{flexDirection: "row", gap: 10}}>
-                                <TouchableOpacity onPress={() => this.editThisItem(item.id)}>
+                                <TouchableOpacity onPress={() => this.editThisItem(item, prc_list)}>
                                     <Text style={{color: "#0B4BAA", fontWeight: "bold", marginTop: 5}}>
                                         Edit
                                     </Text> 
