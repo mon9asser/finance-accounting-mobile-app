@@ -83,17 +83,17 @@ class Usr {
         }
     }
 
-    get_session = () => {
+    get_session = async () => { 
  
         try {
             
-            var userInfo = this.session.load({
+            var userInfo = await this.session.load({
                 key: 'user',
             });
 
             return userInfo;
 
-        } catch (error) { 
+        } catch (error) {
             return null;
 
         }
@@ -103,4 +103,5 @@ class Usr {
 
 var usr = new Usr();
 
+ 
 export {usr};

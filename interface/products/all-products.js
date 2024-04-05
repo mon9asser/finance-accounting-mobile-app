@@ -446,31 +446,28 @@ class ProductsComponents extends PureComponent {
     }
     
     editThisItem = (item, prc_list) => { 
-        
+        this.props.navigation.goBack(null);
         this.props.navigation.navigate("edit-product", {
             prices: prc_list,
             item: item 
         });
-
-
-
     }
 
     Item_Data = ({item, index}) => {
-        
+
          
         // Getting Image from local storage or server 
         var inseatedImage = require("./../../assets/icons/product-placeholder.png");
         var api_img_uri = item.file == undefined || item.file.thumbnail_url == undefined ? "": item.file.thumbnail_url 
 
-        var imageApi = config.api(`uploads/${api_img_uri}`);
+        var imageApi = config.api(`uploads/${api_img_uri}?timestamp=${new Date().getTime()}`);
  
         var [image, setImage] = useState({uri: imageApi });
          
         if( item.file != undefined &&  item.file.uri != undefined && (item.file.uri != "") ) {
             
             inseatedImage = {uri: item.file.uri };
-
+             
             FileSystem.getInfoAsync(item.file.uri).then( x => {
                 
                 if( ! x.exists ) {
@@ -479,9 +476,7 @@ class ProductsComponents extends PureComponent {
 
             }) 
             
-        }
-
-        
+        } 
 
         // product price
         var prices = this.state.prices;
@@ -510,7 +505,7 @@ class ProductsComponents extends PureComponent {
         } else if( item.updated_by != undefined && item.updated_by.name != undefined ) {
             __name = item.updated_by.name.indexOf(" ") != -1 ? item.updated_by.name.split(" ")[0]: item.updated_by.name;
         } 
-
+         
         return (
             <View key={item.local_id} style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15 }}>
                 <TouchableOpacity onPress={() => this.select_this_row(item.local_id)}  style={{borderWidth: 1, gap: 15, marginBottom: 20, padding: 15, flexDirection: "row", borderColor:( this.is_highlighted(item.local_id)? "red" : "#eee"), backgroundColor: ( this.is_highlighted(item.local_id)? "#ffe9e9" : "#fff"), borderRadius: 10}}>

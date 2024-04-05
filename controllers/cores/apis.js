@@ -20,18 +20,15 @@ class A_P_I_S {
     // HTTP Request 
     axiosRequest = async ({ api, dataObject, method, headers, model_name, is_media } = null) => {
         
-
-        // disable internet    
-        if( ! config.enable_remote_server_apis ) {
-
+        if( config.disable_remote_server ) { 
             return {
-                is_error: true, 
-                data: [], 
-                message: ""
-            };  
-        
-        }
-        
+                login_redirect: false, 
+                message: "", 
+                is_error: true , 
+                data: [] 
+            }
+        } 
+
         var settings, user_data;
         try{
             settings = await get_setting();
@@ -177,63 +174,6 @@ class A_P_I_S {
     }
 
 
-    /**
-     * Upload media, remotely and locally 
-     */
-    async upload_media (mobject, {new_name, file, property_name, post_id} ) {
-        
-        var settings, user_data; 
-
-        try{
-            settings = await get_setting();
-            user_data = await usr.get_session();
-        } catch(error){}
-
-        var language =  get_lang(settings.language);
-        
-        // getting user data and check for session expiration 
-        if( user_data == null || ! Object.keys(user_data).length ) {
-            return {
-                login_redirect: true, 
-                message: language.user_session_expired, 
-                is_error: true , 
-                data: []
-            };
-        }
-
-
-        var modal_name = mobject.key;   
-        
-
-        if( mobject.key.indexOf("-") != -1 ) {
-            modal_name = mobject.key.replaceAll(new RegExp("-", 'g'), "_");
-        } 
-       
-        var new_file_name = `${user_data.database_name}-${modal_name}-${post_id}`;
-        var dataObject = { 
-            name: new_file_name,
-            file,  
-            property_name, 
-            post_id
-        }; 
-       
-        var axiosOptions = { 
-            api: "api/upload_media", 
-            dataObject, 
-            method: "post",  
-            model_name: modal_name,  
-            is_media: true 
-        }
- 
-        
-        var request = await this.axiosRequest(axiosOptions); 
-        
-        // storing image in local storage 
-        console.log( request );
-        
-
-        return request;
-    }   
 
     /**
      * Core Async: Updates from local device to remote server 
@@ -376,12 +316,19 @@ class A_P_I_S {
         };
          
         // send request for remote server 
-        var request = await this.axiosRequest(axiosOptions); 
+        var request = {
+            is_error: true,
+            data: [],
+            message: ""
+        };
+        
+        if( ! config.disable_remote_server ) { 
+            request = await this.axiosRequest(axiosOptions);
+        };
         
         
-
         var rowData = {};
-
+        console.log(objectIndex);
         // store data locally 
         if(  objectIndex !== -1 ) {
              

@@ -1025,7 +1025,11 @@ class EditProductComponents extends Component {
     geneate_image_name = async() => {
          
         var user = await usr.get_session();
-         
+        
+        if( user == null ) {
+            return;
+        } 
+        
         const position = user.database_name.indexOf('_'); 
         var dbslug  = user.database_name;
         if ( position !== -1 ) 
@@ -1171,18 +1175,22 @@ class EditProductComponents extends Component {
                     this.setNotificationCssClass(styles.error_message);
                     this.setNotificationCssTextClass(styles.error_text); 
                     this.setNotificationMessage(priceReqs.is_error ? priceReqs.message: ProcReqs.message);
-                    
+                        
                     return; 
                 }
-    
-                // delete restored data 
-                await delete_session_form();
+                
     
                 this.setPressBtn(false);   
                 this.setNotificationBox("flex")
                 this.setNotificationCssClass(styles.success_message);
                 this.setNotificationCssTextClass(styles.success_text); 
                 this.setNotificationMessage(ProcReqs.message);
+
+                // redirect to all products screen 
+                setTimeout(() => {
+                    this.props.navigation.goBack(null);
+                    this.props.navigation.navigate("Products");
+                }, 1500)
     
             })()
         } catch (error) {

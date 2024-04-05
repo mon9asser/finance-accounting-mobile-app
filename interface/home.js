@@ -19,9 +19,9 @@ class HomeComponents extends Component {
         }
     }
 
-    sessionIsConnected = () => {
+    sessionIsConnected = async () => {
         
-        const session = usr.get_session();
+        const session = await usr.get_session();
         if( session !== null ) {
             this.props.navigation.navigate("Dashboard");
         } 
@@ -40,9 +40,9 @@ class HomeComponents extends Component {
       
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.internetConnectionState()
-        this.sessionIsConnected();
+        await this.sessionIsConnected();
     }
 
     componentWillUnmount() { 
