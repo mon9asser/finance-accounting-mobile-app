@@ -1341,8 +1341,7 @@ class AddNewProductComponents extends Component {
     var dd = await ProductInstance.Schema.instance.load({
         key: ProductInstance.Schema.key
     });
-
-    console.log(dd );
+    console.log(dd);
 
 })();
  

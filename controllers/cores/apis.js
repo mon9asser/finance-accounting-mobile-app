@@ -379,18 +379,20 @@ class A_P_I_S {
             if( rowData.file !=undefined && rowData.file.base_64 != undefined ) {
                 delete rowData.file.base_64;
             }
-
-            old_data.push(rowData); 
+            
+            if(! config.disable_local_storage) 
+               old_data.push(rowData); 
 
         }
 
         // assig log history 
         //await this.assign_log(mobject, rowData.local_id, is_update? "update": "create" );
 
-        // update data locally 
+        // update data locally
         try {
 
             if(! config.disable_local_storage) {
+                console.log("stored in local storage")
                 var is_saved = await instance.save({
                     key: key,
                     data: old_data
