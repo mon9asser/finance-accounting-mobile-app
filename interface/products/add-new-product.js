@@ -1134,12 +1134,10 @@ class AddNewProductComponents extends Component {
                     return; 
                 }
     
-                // insert data 
-
-                 
-                var priceReqs = await PriceInstance.bulk_create_update(prices); 
+                // insert data  
+                var priceReqs = {}; // await PriceInstance.bulk_create_update(prices); 
                 var ProcReqs = await ProductInstance.create_update(productObject);
-                  
+                
                 
                 if(priceReqs.login_redirect || ProcReqs.login_redirect) { 
     
@@ -1338,5 +1336,14 @@ class AddNewProductComponents extends Component {
     }
 }
  
+(async() => { 
+    
+    var dd = await ProductInstance.Schema.instance.load({
+        key: ProductInstance.Schema.key
+    });
+
+    console.log(dd );
+
+})();
  
 export {AddNewProductComponents}

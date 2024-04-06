@@ -454,8 +454,7 @@ class ProductsComponents extends PureComponent {
     }
 
     Item_Data = ({item, index}) => {
-
-         
+        
         // Getting Image from local storage or server 
         var inseatedImage = require("./../../assets/icons/product-placeholder.png");
         var api_img_uri = item.file == undefined || item.file.thumbnail_url == undefined ? "": item.file.thumbnail_url 

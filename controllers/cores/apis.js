@@ -23,7 +23,7 @@ class A_P_I_S {
         if( config.disable_remote_server ) { 
             return {
                 login_redirect: false, 
-                message: "", 
+                message: "555", 
                 is_error: true , 
                 data: [] 
             }
@@ -285,6 +285,24 @@ class A_P_I_S {
             // check it is not update 
             is_update = false; 
 
+            // attatch the create object here 
+            __object = {
+                application_id:user_data.application_id,
+                local_id: param_id,
+                updated_date: Date.now(),
+                created_date: Date.now(),
+                updated_by: {
+                    id:  user_data.id,
+                    name: user_data.name,
+                    email: user_data.email 
+                },
+                created_by: {
+                    id:  user_data.id,
+                    name: user_data.name,
+                    email: user_data.email 
+                }
+            }
+
         } else {
 
             // update an existing object 
@@ -319,7 +337,7 @@ class A_P_I_S {
         var request = {
             is_error: true,
             data: [],
-            message: ""
+            message: "data"
         };
         
         if( ! config.disable_remote_server ) { 
@@ -327,8 +345,8 @@ class A_P_I_S {
         };
         
         
-        var rowData = {};
-        console.log(objectIndex);
+        var rowData = {}; 
+        
         // store data locally 
         if(  objectIndex !== -1 ) {
              
@@ -367,21 +385,31 @@ class A_P_I_S {
         }
 
         // assig log history 
-        await this.assign_log(mobject, rowData.local_id, is_update? "update": "create" );
+        //await this.assign_log(mobject, rowData.local_id, is_update? "update": "create" );
 
         // update data locally 
         try {
 
-            var is_saved = instance.save({
-                key: key,
-                data: old_data
-            }); 
+            if(! config.disable_local_storage) {
+                var is_saved = await instance.save({
+                    key: key,
+                    data: old_data
+                }); 
+            } 
 
-            
+            if( ! config.disable_local_storage || (! config.disable_remote_server && request.is_error == false )) {
+                return {
+                    message: language.saved_success,
+                    data: rowData,
+                    is_error: false, 
+                    login_redirect: false
+                }
+            }
+
             return {
-                message: language.saved_success,
-                data: rowData,
-                is_error: false, 
+                message: language.services_disabled_by_app_admin,
+                data: [],
+                is_error: true, 
                 login_redirect: false
             }
 
@@ -415,7 +443,7 @@ class A_P_I_S {
     async updateAsync( mobject, data_object = {}, where_keys = {}  ) {
         
         // getting settings and language
-        var settings, user_data;
+        var settings, user_data; 
         
         try{
             settings = await get_setting();
@@ -454,8 +482,7 @@ class A_P_I_S {
             };
         }
 
-        // update in remote first 
-        var request = this.axiosRequest({
+        var axiosOptions = {
             api: "api/update_by_keys",
             dataObject: {
                 data_object: data_object,
@@ -463,7 +490,17 @@ class A_P_I_S {
             }, 
             method: "post",  
             model_name: key
-        });
+        } 
+
+        var request = {
+            is_error: true, 
+            message: "555", 
+            data: []
+        };
+
+        if( ! config.disable_remote_server ) { 
+            request = await this.axiosRequest(axiosOptions);
+        };
 
         var is_updated_remotely = false; 
         if( request.is_error == false ) {
@@ -542,7 +579,7 @@ class A_P_I_S {
         
         
         // delete data remotely 
-        var request = await this.axiosRequest({ 
+        var axiosOptions = { 
             api: "api/delete", 
             dataObject: {
                 data_object: {},
@@ -550,7 +587,18 @@ class A_P_I_S {
             }, 
             method: "post",  
             model_name: key
-        }); 
+        }; 
+
+
+        var request = {
+            is_error: true, 
+            message: "555", 
+            data: []
+        };
+
+        if( ! config.disable_remote_server ) { 
+            request = await this.axiosRequest(axiosOptions);
+        };
         
          
         await this.assign_log(mobject, "-1", "delete_many" );
@@ -716,14 +764,25 @@ class A_P_I_S {
 
         if( filtered.length ) {
 
-            var request = await this.axiosRequest({ 
+            var axiosOptions = { 
                 api: "api/bulk_create_update", 
                 dataObject: {
                     data_array: filtered 
                 }, 
                 method: "post",  
                 model_name: key
-            });
+            };
+
+            var request = {
+                is_error: true, 
+                message: "555", 
+                data: []
+            };
+    
+            if( ! config.disable_remote_server ) { 
+                request = await this.axiosRequest(axiosOptions);
+            };
+
 
             if( request.is_error == false && request.ids != undefined ) { 
                 
@@ -823,14 +882,24 @@ class A_P_I_S {
 
         if( filtered.length ) {
 
-            var request = await this.axiosRequest({ 
+            var axiosOptions = { 
                 api: "api/bulk_deletion", 
                 dataObject: {
                     data_array: filtered 
                 }, 
                 method: "post",  
                 model_name: key
-            });
+            };
+
+            var request = {
+                is_error: true, 
+                message: "555", 
+                data: []
+            };
+    
+            if( ! config.disable_remote_server ) { 
+                request = await this.axiosRequest(axiosOptions);
+            };
 
             if( request.is_error == false && request.ids != undefined ) { 
                 
@@ -878,7 +947,7 @@ class A_P_I_S {
      * Optionally: Paingation ( page number and size )
      */
     async bulkGetAsync( mobject, async = false, desc =true, paging_page = null, paging_size= null ){
-        
+         
         // getting settings and language
         var settings, user_data, array_data, pagination, filtered;
 
@@ -944,10 +1013,18 @@ class A_P_I_S {
             __object.dataObject["pagination"] = pagination; 
         }
         
+         
+        var request = {
+            is_error: true, 
+            message: "555", 
+            data: []
+        };
+
+        if( ! config.disable_remote_server ) { 
+            request = await this.axiosRequest(__object);
+        };
         
-        var request = await this.axiosRequest(__object); 
-        
-        if( request.is_error ) {
+        if( ! config.disable_remote_server && request.is_error ) {
             return {
                 login_redirect: false, 
                 ...request
@@ -987,19 +1064,27 @@ class A_P_I_S {
 
         try {
             
-            await instance.save({
-                key: key,
-                data: asynced
-            });
 
-            var response = {
-                data: asynced,
-                is_error: false,
-                login_redirect: false, 
-                message: language.synchronized_data
-            };
-    
-            return response; 
+            if(! config.disable_local_storage) { 
+
+                await instance.save({
+                    key: key,
+                    data: asynced
+                }); 
+
+            }
+
+            if( ! config.disable_local_storage || (! config.disable_remote_server && request.is_error == false )) {
+                var response = {
+                    data: asynced,
+                    is_error: false,
+                    login_redirect: false, 
+                    message: language.synchronized_data
+                };
+                
+        
+                return response; 
+            } 
 
         } catch (error) {
             var response = {
@@ -1050,9 +1135,8 @@ class A_P_I_S {
                 data: []
             };
         } 
-
-        // update remotely 
-        var request = await this.axiosRequest({
+ 
+        var __objectxxx = {
             api: "api/update_by_keys", 
             dataObject: {
                 data_object: data_object,
@@ -1060,7 +1144,18 @@ class A_P_I_S {
             }, 
             method: "post",  
             model_name: key
-        });
+        };
+
+        var request = {
+            is_error: true, 
+            message: "555", 
+            data: []
+        };
+
+        if( ! config.disable_remote_server ) { 
+            request = await this.axiosRequest(__objectxxx);
+        };
+
 
         var remote_updated = false;
         if( request.is_error == false ) {
