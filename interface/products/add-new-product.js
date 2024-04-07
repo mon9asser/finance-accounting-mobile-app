@@ -1341,9 +1341,9 @@ class AddNewProductComponents extends Component {
     var dd = await ProductInstance.Schema.instance.load({
         key: ProductInstance.Schema.key
     }); 
-    console.log(dd);    
+    // console.log(dd);    
 
 })(); 
  
-alert("get async + falg not assigned in bulk insert + when search on item name and click on edit it get error");
+// alert("get async + falg not assigned in bulk insert + when search on item name and click on edit it get error");
 export {AddNewProductComponents}

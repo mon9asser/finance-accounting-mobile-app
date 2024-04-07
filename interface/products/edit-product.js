@@ -224,28 +224,35 @@ class EditProductComponents extends Component {
 
         var prices = this.props.route.params.prices;
         var product = this.props.route.params.item;
-
-          
+                 
 
         this.setPricesList( prices );
-
-        if( product.file != undefined ) {
+        
+         
+        
+        if( product.thumbnail != undefined ) {
+            var url = config.api(`uploads/${product.thumbnail}?timestamp=${new Date().getTime()}` ) ;
+            this.setProductThumbnail(url);          
+        }
+        else if( product.file != undefined ) {
 
             var url; 
+
+             
             if( product.file.uri != undefined ) {
                  
                 var fileInfo = await FileSystem.getInfoAsync(product.file.uri); 
                 if( fileInfo.exists ) {
                     url = product.file.uri;
+                    
                 } else if (product.file.thumbnail_url != undefined) {
                     url = config.api("uploads/" + product.file.thumbnail_url )
                 }
 
             }
-             
-
+            
             this.setProductThumbnail(url);
-        }
+        } 
         
         this.setProductParamId(product.local_id);
          
@@ -1022,7 +1029,7 @@ class EditProductComponents extends Component {
         }
     }
 
-    geneate_image_name = async() => {
+    generate_an_image_name = async() => {
          
         var user = await usr.get_session();
         
@@ -1084,14 +1091,15 @@ class EditProductComponents extends Component {
                     thumbnail: "",
                     thumbnail_url: ""
                 }; 
-    
+                
+                
                 // case is there image 
                 if( this.state.file != null ) {
                      
     
                     // Base 64
                     var base64 = await this.generate_base64_data( this.state.file.uri );
-                   
+                    
                     if(!base64) {
                         this.setPressBtn(false); 
                         this.setNotificationBox("flex")
@@ -1102,8 +1110,8 @@ class EditProductComponents extends Component {
                     }
     
                     // generate image name which saved on server  
-                    var new_name = await this.geneate_image_name();
-                      
+                    var new_name = await this.generate_an_image_name();
+                     
                     // storing file object 
                     productObject.file = {
                         base_64: base64,

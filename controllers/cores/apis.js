@@ -630,13 +630,17 @@ class A_P_I_S {
          
         var new_updates;
         if(request.is_error == false ) {
+            
             new_updates = old_data.filter( item => {
                 var index = param_id.indexOf(item.local_id);
                 if( index == -1 ) {
                     return item;
                 }
             });
+
         } else {
+
+            /*
             new_updates = old_data.map( item => {
 
                 var index = param_id.indexOf(item.local_id);
@@ -644,13 +648,27 @@ class A_P_I_S {
                     item.remote_deleted = false;
                     return item;
                 } 
+
                 return item;
+                
+            });*/
+
+            new_updates = old_data.filter( item => {
+
+                var index = param_id.indexOf(item.local_id);
+                if( index == -1 ) { 
+                    return item;
+                }  
+                
             });
+
         }
 
 
         try {
-        
+            
+            console.log(new_updates);
+
             if(! config.disable_local_storage) { 
                 await instance.save({
                     key: key,
@@ -831,6 +849,14 @@ class A_P_I_S {
             try {
                 
                 if(! config.disable_local_storage) { 
+
+                    if( config.disable_remote_server ) {
+                        array_data = array_data.map( x => {
+                            x.remote_saved = false;
+                            return x;
+                        });
+                    }
+
                     await instance.save({
                         key: key, 
                         data: array_data 
@@ -1024,7 +1050,6 @@ class A_P_I_S {
         }
         
         array_data = await this.get_data_locally(mobject);
-
         
 
         try{
@@ -1044,7 +1069,17 @@ class A_P_I_S {
             };
         }
         
-        if( ! config.disable_local_storage && config.disable_remote_server ) {
+        
+        if( config.disable_local_storage && config.disable_remote_server ) {
+            return {
+                login_redirect: false, 
+                message: "", 
+                is_error: true , 
+                data: array_data
+            };       
+        }
+        
+        if( (  ! config.disable_local_storage && config.disable_remote_server ) ) {
             return {
                 data: array_data,
                 is_error: false, 
@@ -1052,7 +1087,7 @@ class A_P_I_S {
                 message: ""
             };
         }
-
+        
         // checking for instance and key in mobject 
         var {key, instance} = mobject;
         if(key == undefined || instance == undefined) {
@@ -1063,22 +1098,24 @@ class A_P_I_S {
                 data: []
             };
         } 
-
+        
         filtered = array_data.filter( item => {
             if( item.remote_updated == false || item.remote_saved == false || item.remote_deleted== false ) {
                 return item;
             }
         }); 
-
-        if( ! filtered.length && async == false) {
-            return {
-                login_redirect: false, 
-                is_error: false,
-                data: [],
-                message: language.uptodate
+         /*
+        if( ! config.disable_local_storage && ! config.disable_remote_server ) {
+            if( ! filtered.length && async == false) {
+               return {
+                    login_redirect: false, 
+                    is_error: false,
+                    data: [],
+                    message: language.uptodate
+                }
             }
-        }
-        
+        }*/
+         
         var __object = {
             api: "api/get", 
             dataObject: {
@@ -1087,36 +1124,40 @@ class A_P_I_S {
             method: "post",  
             model_name: key
         };
-
+        
         if( pagination != undefined ) {
             __object.dataObject["pagination"] = pagination; 
         }
         
-         
+        
+
         var request = {
             is_error: true, 
             message: "", 
             data: []
         };
-
+        
         if( ! config.disable_remote_server ) { 
             request = await this.axiosRequest(__object);
         };
         
         if( ! config.disable_remote_server && request.is_error ) {
+            
             return {
                 login_redirect: false, 
                 ...request
             }; 
         }
-
+        
         if( config.disable_local_storage &&  ! config.disable_remote_server ) {
+            
             return {
                 login_redirect: false, 
                 ...request
             };
-        }
-
+        }  
+        
+        
         // check if filter data already on the remote server so delete the filter
         filtered = filtered.filter(item => {
             var local_id = item.local_id;
@@ -1377,14 +1418,13 @@ class A_P_I_S {
 
 (async () => {
   var ap = new A_P_I_S(); 
- 
+ /*
   var log = await ap.bulkCoreAsync(Models.products, [
-    { product_name: "Fushion" },
-    { product_name: "News" },
-    { product_name: "Politics" } 
+    { product_name: "Mada Visa" },
+    { product_name: "Master Card" }, 
   ], false);  
 
-  console.log(log);  
+  console.log(log);  */
 
 })();
 

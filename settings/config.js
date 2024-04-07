@@ -3,8 +3,8 @@ import { Platform } from 'react-native';
 var config = {
     
     disable_local_storage: false,  
-    disable_remote_server: true,   
-    
+    disable_remote_server: true,    
+     
     application: {
         name: 'next_daily_sales', 
         platform: Platform.OS,

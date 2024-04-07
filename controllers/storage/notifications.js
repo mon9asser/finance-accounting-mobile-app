@@ -133,9 +133,10 @@ class Notifications extends A_P_I_S {
         var param_value = Array.isArray(param_id) ? param_id : []; 
         
         // get data from remote
-        await this.bulkGetAsync(this.Schema, async);
-
-        var array_data = await this.get_data_locally(this.Schema);
+        var async_data = await this.bulkGetAsync(this.Schema, async);
+        var array_data = async_data.data;
+        
+        //var array_data = await this.get_data_locally(this.Schema);
 
         if( desc ) {
             // updated_date ( Desc Asc )

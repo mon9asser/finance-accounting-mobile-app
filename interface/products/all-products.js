@@ -14,9 +14,10 @@ import { NavigationEvents  } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker'; 
 import * as FileSystem from 'expo-file-system';
 
-import { FlatList, Alert, RefreshControl, TouchableHighlight, Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions, Touchable } from 'react-native';
+import { FlatList, Alert, RefreshControl, TouchableHighlight, Animated, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions, Touchable } from 'react-native';
 import { Checkbox, Button, Provider as PaperProvider, DefaultTheme } from "react-native-paper"; 
- 
+import { Image } from 'react-native-elements';
+
 import { LineChart } from "react-native-chart-kit";
 
 // App Files 
@@ -454,29 +455,22 @@ class ProductsComponents extends PureComponent {
     }
 
     Item_Data = ({item, index}) => {
-        
-        // Getting Image from local storage or server 
-        var inseatedImage = require("./../../assets/icons/product-placeholder.png");
-        var api_img_uri = item.file == undefined || item.file.thumbnail_url == undefined ? "": item.file.thumbnail_url 
-
-        var imageApi = config.api(`uploads/${api_img_uri}?timestamp=${new Date().getTime()}`);
- 
-        var [image, setImage] = useState({uri: imageApi });
          
-        if( item.file != undefined &&  item.file.uri != undefined && (item.file.uri != "") ) {
-            
-            inseatedImage = {uri: item.file.uri };
-             
-            FileSystem.getInfoAsync(item.file.uri).then( x => {
-                
-                if( ! x.exists ) {
-                    inseatedImage = require("./../../assets/icons/product-placeholder.png");
-                }
+        var img_placeholder = require("./../../assets/icons/product-placeholder.png"); 
+        var img_local_storage = item.file == undefined || item.file.thumbnail_url == undefined ? "": item.file.thumbnail_url;
+        console.log(item);
+        if( img_local_storage == "" ) {
+            img_local_storage = item.thumbnail == undefined? "": item.thumbnail ;
+        }
+ 
 
-            }) 
-            
-        } 
-
+        var img_remote_server = config.api(`uploads/${img_local_storage}?timestamp=${new Date().getTime()}`);
+        
+        var [image, setImage] = useState({uri: img_remote_server });
+        if( config.disable_remote_server == true ) {
+            image = img_placeholder;
+        }
+         
         // product price
         var prices = this.state.prices;
         var prc_list = [];
@@ -512,8 +506,9 @@ class ProductsComponents extends PureComponent {
                         <Image
                             source={image}
                             style={{width: 80, height: 80, objectFit: 'cover', borderRadius: 5}}
-                            resizeMode="cover" 
-                            onError={() => this.gettingImage(item, setImage, inseatedImage)}
+                            resizeMode="cover"
+                            PlaceholderContent={<ActivityIndicator color="#fff" size="small"/>} 
+                            onError={() => this.gettingImage(item, setImage, img_placeholder)}
                         />
                     </View>
                     <View style={{flexDirection: 'column', justifyContent: 'center',  flex: 1}}>
