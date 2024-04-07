@@ -1014,10 +1014,7 @@ class A_P_I_S {
      */
     async bulkGetAsync( mobject, async = false, desc =true, paging_page = null, paging_size= null ){
         
-        // assign async if is disabled 
-        if(config.disable_remote_server) {
-            async = false; 
-        }
+        // config.disable_remote_server
 
         // getting settings and language
         var settings, user_data, array_data, pagination, filtered;
@@ -1027,6 +1024,8 @@ class A_P_I_S {
         }
         
         array_data = await this.get_data_locally(mobject);
+
+        
 
         try{
             settings = await get_setting();
@@ -1045,6 +1044,15 @@ class A_P_I_S {
             };
         }
         
+        if( ! config.disable_local_storage && config.disable_remote_server ) {
+            return {
+                data: array_data,
+                is_error: false, 
+                login_redirect: true, 
+                message: ""
+            };
+        }
+
         // checking for instance and key in mobject 
         var {key, instance} = mobject;
         if(key == undefined || instance == undefined) {
@@ -1102,6 +1110,12 @@ class A_P_I_S {
             }; 
         }
 
+        if( config.disable_local_storage &&  ! config.disable_remote_server ) {
+            return {
+                login_redirect: false, 
+                ...request
+            };
+        }
 
         // check if filter data already on the remote server so delete the filter
         filtered = filtered.filter(item => {
