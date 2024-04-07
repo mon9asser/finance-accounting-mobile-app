@@ -1345,4 +1345,5 @@ class AddNewProductComponents extends Component {
 
 })(); 
  
+alert("get async + falg not assigned in bulk insert + when search on item name and click on edit it get error");
 export {AddNewProductComponents}
