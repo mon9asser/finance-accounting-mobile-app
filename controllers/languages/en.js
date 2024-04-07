@@ -1,7 +1,7 @@
 const en = {
 
         is_rtl: false, 
-
+        all_records_deleted_succ: "Bulk deletion has successfully deleted records!",
         services_disabled_by_app_admin: "The application author has turned off your endpoint, our services is no longer for you. Please get in touch with us.",
         btn_clicked_twice: "Please wait while the data is being saved.",
         price_package: "Price Package",

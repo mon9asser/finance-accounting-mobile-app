@@ -709,7 +709,7 @@ class A_P_I_S {
                 login_redirect: true, 
                 message: language.user_session_expired, 
                 is_error: true , 
-                data: []
+                data: [] 
             };
         }
 
@@ -840,7 +840,7 @@ class A_P_I_S {
                 if( ! config.disable_local_storage || (! config.disable_remote_server && request.is_error == false )) {
                     return {
                         message: language.saved_success,
-                        data: rowData,
+                        data: array_data,
                         is_error: false, 
                         login_redirect: false
                     }
@@ -854,7 +854,7 @@ class A_P_I_S {
                 }
 
             } catch (error) {
-                
+                console.log(error);
                 return {
                     login_redirect: false, 
                     message: language.something_error, 
@@ -876,8 +876,10 @@ class A_P_I_S {
     }
 
     /**
+     * [ this function is under review]
      * Bulk Deletion Aync ( delete from remote then send array to delete in locally ) 
      */
+    /*
     async bulkDeletionAsync(mobject, array_data = [], consider_flags = true) {
         
         if(array_data.length == 0 ) {
@@ -923,7 +925,11 @@ class A_P_I_S {
                 }
             });
         }
-
+         
+        console.log("--------------------------------")
+        console.log(array_data)
+        console.log("--------------------------------")
+        
         if( filtered.length ) {
 
             var axiosOptions = { 
@@ -946,34 +952,50 @@ class A_P_I_S {
             };
 
             if( request.is_error == false && request.ids != undefined ) { 
-                
                 array_data = array_data.filter(item => {
                     var index = request.ids.findIndex( x => x.local_id == item.local_id); 
                     if( index == -1 ) {
                         return item;
-                    } 
-                    
+                    }  
                 });
-
-                try {
-                    
+            }
+ 
+            try {
+                
+                if(! config.disable_local_storage) { 
                     await instance.save({
                         key: key, 
                         data: array_data 
                     });  
+                }
 
-                } catch (error) {
-                    
+                if( ! config.disable_local_storage || (! config.disable_remote_server && request.is_error == false )) {
                     return {
-                        login_redirect: false, 
-                        message: language.something_error, 
-                        is_error: true , 
-                        data: []
-                    };
+                        message: language.all_records_deleted_succ,
+                        data: [],
+                        is_error: false, 
+                        login_redirect: false
+                    }
+                }
 
-                }  
-            }
+                return {
+                    message: language.services_disabled_by_app_admin,
+                    data: [],
+                    is_error: true, 
+                    login_redirect: false
+                }
 
+            } catch (error) {
+                
+                return {
+                    login_redirect: false, 
+                    message: language.something_error, 
+                    is_error: true , 
+                    data: []
+                };
+
+            }  
+            
             return request;
         }
 
@@ -984,14 +1006,19 @@ class A_P_I_S {
             data: []
         };
     }
-     
+    */
     
     /**
      * Get all: Getting Updates from remote and store it locally 
      * Optionally: Paingation ( page number and size )
      */
     async bulkGetAsync( mobject, async = false, desc =true, paging_page = null, paging_size= null ){
-         
+        
+        // assign async if is disabled 
+        if(config.disable_remote_server) {
+            async = false; 
+        }
+
         // getting settings and language
         var settings, user_data, array_data, pagination, filtered;
 
@@ -1109,26 +1136,20 @@ class A_P_I_S {
         try {
             
 
-            if(! config.disable_local_storage) { 
+            await instance.save({
+                key: key,
+                data: asynced
+            }); 
 
-                await instance.save({
-                    key: key,
-                    data: asynced
-                }); 
-
-            }
-
-            if( ! config.disable_local_storage || (! config.disable_remote_server && request.is_error == false )) {
-                var response = {
-                    data: asynced,
-                    is_error: false,
-                    login_redirect: false, 
-                    message: language.synchronized_data
-                };
-                
-        
-                return response; 
-            } 
+            var response = {
+                data: asynced,
+                is_error: false,
+                login_redirect: false, 
+                message: language.synchronized_data
+            };
+            
+    
+            return response; 
 
         } catch (error) {
             var response = {
@@ -1342,15 +1363,14 @@ class A_P_I_S {
 
 (async () => {
   var ap = new A_P_I_S(); 
-  
+ 
   var log = await ap.bulkCoreAsync(Models.products, [
-    { product_name: "Product 1" },
-    { product_name: "Product 2" },
-    { product_name: "Product 3" },
-    { product_name: "Product 4" },
-  ]);
+    { product_name: "Fushion" },
+    { product_name: "News" },
+    { product_name: "Politics" } 
+  ], false);  
 
-  console.log(log);
+  console.log(log);  
 
 })();
 

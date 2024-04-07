@@ -1336,13 +1336,13 @@ class AddNewProductComponents extends Component {
     }
 }
  
-(async() => { 
-    
+(async() => {  
+      
     var dd = await ProductInstance.Schema.instance.load({
         key: ProductInstance.Schema.key
-    });
-    //console.log(dd);   
+    }); 
+    console.log(dd);    
 
-})();
+})(); 
  
 export {AddNewProductComponents}

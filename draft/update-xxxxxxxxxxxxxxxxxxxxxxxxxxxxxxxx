@@ -1,11 +1,11 @@
 coreAsync
 updateAsync
 deleteAsync
-
-
 bulkCoreAsync
-bulkDeletionAsync
+bulkDeletionAsync =>  under review
+
 bulkGetAsync
+
 async_update_all_by_keys
 get_data_locally
 
