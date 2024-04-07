@@ -500,7 +500,7 @@ class ProductsComponents extends PureComponent {
         
         if( item.created_by != undefined && item.created_by.name != undefined ) {
             __name = item.created_by.name.indexOf(" ") != -1 ? item.created_by.name.split(" ")[0]: item.created_by.name;
-            console.log(__name);
+ 
         } else if( item.updated_by != undefined && item.updated_by.name != undefined ) {
             __name = item.updated_by.name.indexOf(" ") != -1 ? item.updated_by.name.split(" ")[0]: item.updated_by.name;
         } 

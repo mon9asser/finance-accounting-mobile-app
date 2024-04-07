@@ -1,0 +1,32 @@
+coreAsync
+updateAsync
+deleteAsync
+
+
+bulkCoreAsync
+bulkDeletionAsync
+bulkGetAsync
+async_update_all_by_keys
+get_data_locally
+
+
+
+
+if(! config.disable_local_storage) { 
+
+
+if( ! config.disable_local_storage || (! config.disable_remote_server && request.is_error == false )) {
+                return {
+                    message: language.saved_success,
+                    data: rowData,
+                    is_error: false, 
+                    login_redirect: false
+                }
+            }
+
+            return {
+                message: language.services_disabled_by_app_admin,
+                data: [],
+                is_error: true, 
+                login_redirect: false
+            }

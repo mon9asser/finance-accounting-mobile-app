@@ -47,8 +47,7 @@ const create_connection = async (dbname, { model, schemaObject }) => {
         console.error(error);
         return false;
     }
-
-    console.log(database_name);
+ 
 
     // Reuse existing database connection if available
     if (connectionPool[database_name]) {

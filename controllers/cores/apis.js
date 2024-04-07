@@ -23,7 +23,7 @@ class A_P_I_S {
         if( config.disable_remote_server ) { 
             return {
                 login_redirect: false, 
-                message: "555", 
+                message: "", 
                 is_error: true , 
                 data: [] 
             }
@@ -386,13 +386,12 @@ class A_P_I_S {
         }
 
         // assig log history 
-        //await this.assign_log(mobject, rowData.local_id, is_update? "update": "create" );
+        //// await this.assign_log(mobject, rowData.local_id, is_update? "update": "create" );
 
         // update data locally
         try {
 
-            if(! config.disable_local_storage) {
-                console.log("stored in local storage")
+            if(! config.disable_local_storage) { 
                 var is_saved = await instance.save({
                     key: key,
                     data: old_data
@@ -496,7 +495,7 @@ class A_P_I_S {
 
         var request = {
             is_error: true, 
-            message: "555", 
+            message: "", 
             data: []
         };
 
@@ -509,7 +508,8 @@ class A_P_I_S {
             is_updated_remotely = true;
         }
 
-        var old_data = this.get_data_locally(mobject);
+        var old_data = await this.get_data_locally(mobject);
+          
         var last_update = old_data.map( item => {
             item.remote_updated = is_updated_remotely;
             var new_item = {...item, ...data_object};
@@ -520,22 +520,33 @@ class A_P_I_S {
 
         try {
 
-            await instance.save({
-                key: key,
-                data: last_update 
-            }); 
+            if(! config.disable_local_storage) { 
+                await instance.save({
+                    key: key,
+                    data: last_update 
+                }); 
+            }
             
+            if( ! config.disable_local_storage || (! config.disable_remote_server && request.is_error == false )) {
+                return {
+                    message: language.saved_success,
+                    data: is_saved,
+                    is_error: false, 
+                    login_redirect: false
+                }
+            }
+
             return {
-                message: language.saved_success,
-                data: is_saved,
-                is_error: false, 
+                message: language.services_disabled_by_app_admin,
+                data: [],
+                is_error: true, 
                 login_redirect: false
             }
             
         } catch (error) {
             return {
                 message: language.something_error,
-                data: is_saved,
+                data: [],
                 is_error: true, 
                 login_redirect: false
             }
@@ -594,7 +605,7 @@ class A_P_I_S {
 
         var request = {
             is_error: true, 
-            message: "555", 
+            message: "", 
             data: []
         };
 
@@ -603,7 +614,7 @@ class A_P_I_S {
         };
         
          
-        await this.assign_log(mobject, "-1", "delete_many" );
+        // // await this.assign_log(mobject, "-1", "delete_many" );
 
         /**----------------- */
         var old_data = await this.get_data_locally(mobject);
@@ -640,17 +651,30 @@ class A_P_I_S {
 
         try {
         
-            await instance.save({
-                key: key,
-                data: new_updates
-            });
-            
-            return {
-                login_redirect: false, 
-                message: language.deleted_success, 
-                is_error: false , 
-                data: []
+            if(! config.disable_local_storage) { 
+                await instance.save({
+                    key: key,
+                    data: new_updates
+                }); 
             }
+
+            if( ! config.disable_local_storage || (! config.disable_remote_server && request.is_error == false ))  {
+                return {
+                    login_redirect: false, 
+                    message: language.deleted_success, 
+                    is_error: false , 
+                    data: []
+                }
+            }
+
+            return {
+                message: language.services_disabled_by_app_admin,
+                data: [],
+                is_error: true, 
+                login_redirect: false
+            }
+
+
         } catch (error) {
             return {
                 login_redirect: false, 
@@ -658,16 +682,16 @@ class A_P_I_S {
                 is_error: true , 
                 data: []
             }
-        }
-        /**----------------- */
+        } 
          
     }
 
     /**
      * Upload and update the remote server with the local change
-     */
+     */ 
     async bulkCoreAsync( mobject, array_data = [], consider_flags = true ) {
-
+        
+         
         // getting settings and language
         var settings, user_data;
 
@@ -764,6 +788,8 @@ class A_P_I_S {
             });
         }
 
+        
+        
         if( filtered.length ) {
 
             var axiosOptions = { 
@@ -777,7 +803,7 @@ class A_P_I_S {
 
             var request = {
                 is_error: true, 
-                message: "555", 
+                message: "", 
                 data: []
             };
     
@@ -785,7 +811,7 @@ class A_P_I_S {
                 request = await this.axiosRequest(axiosOptions);
             };
 
-
+            
             if( request.is_error == false && request.ids != undefined ) { 
                 
                 array_data = array_data.map(item => {
@@ -797,31 +823,47 @@ class A_P_I_S {
                     }
 
                     return item;
-                });
+                }); 
 
-                try {
-                    
+            }
+
+            
+            try {
+                
+                if(! config.disable_local_storage) { 
                     await instance.save({
                         key: key, 
                         data: array_data 
                     });  
+                }
 
-                } catch (error) {
-                    
+                if( ! config.disable_local_storage || (! config.disable_remote_server && request.is_error == false )) {
                     return {
-                        login_redirect: false, 
-                        message: language.something_error, 
-                        is_error: true , 
-                        data: []
-                    };
+                        message: language.saved_success,
+                        data: rowData,
+                        is_error: false, 
+                        login_redirect: false
+                    }
+                }
+    
+                return {
+                    message: language.services_disabled_by_app_admin,
+                    data: [],
+                    is_error: true, 
+                    login_redirect: false
+                }
 
-                } 
+            } catch (error) {
+                
+                return {
+                    login_redirect: false, 
+                    message: language.something_error, 
+                    is_error: true , 
+                    data: []
+                };
 
-                // update the sent data with remote ids and 
-                // replace remote_saved, remote_updated with true value
             }
-
-            return request;
+            
         }
 
         return {
@@ -895,7 +937,7 @@ class A_P_I_S {
 
             var request = {
                 is_error: true, 
-                message: "555", 
+                message: "", 
                 data: []
             };
     
@@ -1018,7 +1060,7 @@ class A_P_I_S {
          
         var request = {
             is_error: true, 
-            message: "555", 
+            message: "", 
             data: []
         };
 
@@ -1150,7 +1192,7 @@ class A_P_I_S {
 
         var request = {
             is_error: true, 
-            message: "555", 
+            message: "", 
             data: []
         };
 
@@ -1298,4 +1340,18 @@ class A_P_I_S {
 }
  
 
-export { A_P_I_S }
+(async () => {
+  var ap = new A_P_I_S(); 
+  
+  var log = await ap.bulkCoreAsync(Models.products, [
+    { product_name: "Product 1" },
+    { product_name: "Product 2" },
+    { product_name: "Product 3" },
+    { product_name: "Product 4" },
+  ]);
+
+  console.log(log);
+
+})();
+
+export { A_P_I_S }      
