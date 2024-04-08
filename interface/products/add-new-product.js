@@ -1135,7 +1135,7 @@ class AddNewProductComponents extends Component {
                 }
     
                 // insert data  
-                var priceReqs = {}; // await PriceInstance.bulk_create_update(prices); 
+                var priceReqs = await PriceInstance.bulk_create_update(prices); 
                 var ProcReqs = await ProductInstance.create_update(productObject);
                 
                 

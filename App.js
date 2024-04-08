@@ -282,7 +282,7 @@ const App = () => {
                 {/* Products Screens */}
                 <Stack.Screen name="Products" options={{headerTitle: language.products}} component={ProductsComponents} initialParams={{ langs: language }}/>
                 <Stack.Screen name="add-new-product" options={{headerTitle: language.add_new_product}} component={AddNewProductComponents} initialParams={{ langs: language }}/>
-                <Stack.Screen name="edit-product" options={{headerTitle: language.add_new_product}} component={EditProductComponents} initialParams={{ langs: language }}/>
+                <Stack.Screen name="edit-product" options={{headerTitle: language.edit_product}} component={EditProductComponents} initialParams={{ langs: language }}/>
 
                 <Stack.Screen name="Login" component={LoginComponents}/>
                 <Stack.Screen name="Register" component={RegisterComponents} />

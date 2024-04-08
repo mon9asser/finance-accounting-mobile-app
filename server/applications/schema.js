@@ -50,6 +50,7 @@ var allSchema = {
             value: { type: String, default: ""}
         },
         thumbnail: { type: String, default: ""}, 
+        file: {type: {}, default: {}}, 
         ...default_properties,
     },
 

@@ -458,7 +458,9 @@ class ProductsComponents extends PureComponent {
          
         var img_placeholder = require("./../../assets/icons/product-placeholder.png"); 
         var img_local_storage = item.file == undefined || item.file.thumbnail_url == undefined ? "": item.file.thumbnail_url;
-        console.log(item);
+        
+         
+
         if( img_local_storage == "" ) {
             img_local_storage = item.thumbnail == undefined? "": item.thumbnail ;
         }
@@ -468,7 +470,8 @@ class ProductsComponents extends PureComponent {
         
         var [image, setImage] = useState({uri: img_remote_server });
         if( config.disable_remote_server == true ) {
-            image = img_placeholder;
+            image = ( item.file != undefined && item.file.uri != undefined )? {uri: item.file.uri}: img_placeholder;
+             
         }
          
         // product price
@@ -518,7 +521,7 @@ class ProductsComponents extends PureComponent {
                             </Text>
                             <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
                                 <Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>
-                                    Price: {price_object.sale}
+                                    {this.state.language.price}: {price_object.sale}
                                 </Text>
 
                                 {this.formatTimestamp(item.updated_date)}
@@ -527,17 +530,17 @@ class ProductsComponents extends PureComponent {
                         </View>
                         <View style={{flex: 1, flexDirection:'row', justifyContent: 'space-between'}}>
                             <Text style={{color:"grey", marginTop: 5}}>
-                                By: {__name}
+                            {this.state.language.by}: {__name}
                             </Text>
                             <View style={{flexDirection: "row", gap: 10}}>
                                 <TouchableOpacity onPress={() => this.editThisItem(item, prc_list)}>
                                     <Text style={{color: "#0B4BAA", fontWeight: "bold", marginTop: 5}}>
-                                        Edit
+                                        {this.state.language.edit}
                                     </Text> 
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => this.editThisItem(item.id)}>
                                     <Text style={{color: "#0B4BAA", fontWeight: "bold", marginTop: 5}}>
-                                        View
+                                    {this.state.language.view}
                                     </Text> 
                                 </TouchableOpacity>
                             </View>
@@ -945,7 +948,7 @@ class ProductsComponents extends PureComponent {
                     }
                     
                     <Button onPress={this.add_new}  mode="contained" style={{...styles.add_btn_bg.container, backgroundColor: this.state.default_color, ...styles.flex}}>
-                        <Text style={{...styles.add_btn_bg.text}}>{this.state.language.add_new_product}</Text> 
+                        <Text style={{...styles.add_btn_bg.text}}>{this.state.language.add_new}</Text> 
                     </Button> 
                      
                 </View>

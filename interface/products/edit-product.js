@@ -7,7 +7,7 @@ import axios from 'axios';
 import Modal from "react-native-modal"; 
 
 // Distruct 
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from 'expo-status-bar'; 
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Animated, Alert, I18nManager, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
@@ -259,8 +259,12 @@ class EditProductComponents extends Component {
         this.setProductName(product.product_name);
         this.setCategoryOjbect(product.category_id);
         this.setBarcodeDataField(product.barcode);
+
+        if( product.discount != undefined && product.discount.is_percentage != undefined )
         this.setPercentageDiscount(product.discount.is_percentage);
+        if( product.discount != undefined && product.discount.percentage != undefined )
         this.setDiscountPercentage(product.discount.percentage);
+        if( product.discount != undefined && product.discount.value != undefined )
         this.setDiscountValue(product.discount.value);
         
 
@@ -1284,7 +1288,7 @@ class EditProductComponents extends Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={{...styles.textInputNoMargins}}>
-                                <TextInput value={this.state.barcode_data.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setBarcodeDataField, text)} style={{flex: 1}} placeholder={this.state.language.barcode} />
+                                <TextInput value={this.state.barcode_data} keyboardType="numeric" onChangeText={text => this.validateInput(this.setBarcodeDataField, text)} style={{flex: 1}} placeholder={this.state.language.barcode} />
                             </View>
 
                             <this.BarcodeScannerModal isVisible={this.state.isBarcodeScannerOpen} toggleModal={this.toggleBarcodeScannerOpen} />
