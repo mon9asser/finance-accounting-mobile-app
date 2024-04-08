@@ -30,7 +30,7 @@ import * as FileSystem from 'expo-file-system';
 import { BranchInstance } from "../../controllers/storage/branches.js"
 import { usr } from "../../controllers/storage/user.js";
 
-import {CategoryInstance} from "./../../controllers/storage/categories.js";
+import {CategoryInstance} from "../../controllers/storage/categories.js";
 import { generateId } from "../../controllers/helpers.js";
 import { PriceInstance } from "../../controllers/storage/prices.js";
 import { ProductInstance } from "../../controllers/storage/products.js";
@@ -56,7 +56,7 @@ var cls = {
 
 }
 
-class AddNewProductComponents extends Component {
+class AddNewCustomerComponents extends Component {
 
     constructor(props) {
 
@@ -65,7 +65,7 @@ class AddNewProductComponents extends Component {
         this.state = {
 
             language: {}, 
-            default_color: "#6b5353", 
+            default_color: "#c23616", 
 
             isCategoryModalOpen: false,
             isBarcodeScannerOpen: false, 
@@ -98,7 +98,7 @@ class AddNewProductComponents extends Component {
             defaultPrice: false,
 
             barcode_data: '',
-            product_name: '',
+            customer_name: '',
 
             enabled_discount_percentage: false, 
             PricePackageButtonText: this.props.route.params.langs.add,
@@ -111,14 +111,14 @@ class AddNewProductComponents extends Component {
             prices_list: [],
             discountValue: '', 
             discountPercentage: '',
-            product_thumbnail: require('./../../assets/icons/product-placeholder.png'),
+            customer_thumbnail: require('./../../assets/icons/customer-placeholder.png'),
 
             notificationBox: { display: 'none' },
             notificationCssClass: {},
             notificationTextCssClass: {},
             notificationMessage: "",
 
-            product_name_hlgt: "",
+            customer_name_hlgt: "",
             price_list_hlgt: "",
             blob_image: "",
             file: null 
@@ -154,7 +154,7 @@ class AddNewProductComponents extends Component {
 
     setProductThumbnail = (image) => {
         this.setState({
-            product_thumbnail: image == "" ? require('./../../assets/icons/product-placeholder.png'): {uri: image}
+            customer_thumbnail: image == "" ? require('./../../assets/icons/customer-placeholder.png'): {uri: image}
         })
     }
 
@@ -165,7 +165,7 @@ class AddNewProductComponents extends Component {
     }
     setProductName = ( value ) => {
         this.setState({
-            product_name: value
+            customer_name: value
         })
     }
  
@@ -255,7 +255,7 @@ class AddNewProductComponents extends Component {
 
             this.setProductThumbnail(url);
         }
-        this.setProductName(product.product_name);
+        this.setProductName(product.customer_name);
         this.setCategoryOjbect(product.category_id);
         this.setBarcodeDataField(product.barcode);
         this.setPercentageDiscount(product.discount.is_percentage);
@@ -632,7 +632,7 @@ class AddNewProductComponents extends Component {
         var reqs = await ImagePicker.launchImageLibraryAsync({ 
             mediaType: 'photo',
             allowsEditing: true,
-            aspect: [4, 3],
+            aspect: [4, 4],
             quality: 1,
 
         }); 
@@ -1004,7 +1004,7 @@ class AddNewProductComponents extends Component {
 
     setProductHlght = (value) => {
         this.setState({
-            product_name_hlgt: value
+            customer_name_hlgt: value
         })
     }
 
@@ -1071,7 +1071,7 @@ class AddNewProductComponents extends Component {
                   
                 // product  
                 var productObject = {
-                    product_name: this.state.product_name, 
+                    customer_name: this.state.customer_name, 
                     category_id: this.state.selected_category, 
                     barcode: this.state.barcode_data, 
                     discount: {
@@ -1114,7 +1114,7 @@ class AddNewProductComponents extends Component {
                 }
                 
                 // required data 
-                if( ! prices.length ||  this.state.product_name == "") {
+                if( ! prices.length ||  this.state.customer_name == "") {
     
                     this.setPressBtn(false); 
     
@@ -1122,7 +1122,7 @@ class AddNewProductComponents extends Component {
                         this.setPricesHlght(true)
                     } 
     
-                    if( this.state.product_name == "" ) {
+                    if( this.state.customer_name == "" ) {
                         this.setProductHlght(true)
                     }
     
@@ -1212,8 +1212,8 @@ class AddNewProductComponents extends Component {
                                 onPress={this.openGallery}
                                 > 
                                 <Image
-                                    source={this.state.product_thumbnail}
-                                    style={{height: 200, width:"100%", borderRadius: 25, width: "100%"}}
+                                    source={this.state.customer_thumbnail}
+                                    style={{height: 200, width:200, borderRadius: 200, borderWidth: 1, borderColor: "#fff"}}
                                     resizeMode="cover"
                                     PlaceholderContent={<ActivityIndicator />} 
                                 />
@@ -1222,10 +1222,10 @@ class AddNewProductComponents extends Component {
 
                         <View style={{...styles.field_container}}>
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>{this.state.language.product_name}</Text>
+                                <Text style={styles.inputLabelText}>{this.state.language.customer_name}</Text>
                             </View>
-                            <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.product_name_hlgt) ? 'red': '#dfdfdf' }}>
-                                <TextInput value={this.state.product_name} onChangeText={text => this.setProductName(text)} style={{flex: 1}} placeholder={this.state.language.product_name} />
+                            <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf' }}>
+                                <TextInput value={this.state.customer_name} onChangeText={text => this.setProductName(text)} style={{flex: 1}} placeholder={this.state.language.customer_name} />
                             </View>
                         </View> 
             
@@ -1335,7 +1335,8 @@ class AddNewProductComponents extends Component {
         )
     }
 }
-  
+ 
+ 
  
 // alert("get async + falg not assigned in bulk insert + when search on item name and click on edit it get error");
-export {AddNewProductComponents}
+export {AddNewCustomerComponents}

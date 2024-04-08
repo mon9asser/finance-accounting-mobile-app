@@ -28,7 +28,9 @@ import { AddNewProductComponents } from "./interface/products/add-new-product.js
 import { EditProductComponents } from "./interface/products/edit-product.js";
 import { ProductsComponents } from "./interface/products/all-products.js";
 
- 
+import { AddNewCustomerComponents } from "./interface/customers/add-new-customer.js";
+import { CustomersComponents } from "./interface/customers/all-customers.js";
+
 import {HomeComponents} from './interface/home.js';
 import {LoginComponents} from './interface/user/login.js';
 import {ResetPasswordComponents} from './interface/user/password-reset.js';
@@ -283,6 +285,10 @@ const App = () => {
                 <Stack.Screen name="Products" options={{headerTitle: language.products}} component={ProductsComponents} initialParams={{ langs: language }}/>
                 <Stack.Screen name="add-new-product" options={{headerTitle: language.add_new_product}} component={AddNewProductComponents} initialParams={{ langs: language }}/>
                 <Stack.Screen name="edit-product" options={{headerTitle: language.edit_product}} component={EditProductComponents} initialParams={{ langs: language }}/>
+
+                {/* Customers Screens */}
+                <Stack.Screen name="Customers" options={{headerTitle: language.customer_s}} component={CustomersComponents} initialParams={{ langs: language }}/>
+                <Stack.Screen name="add-new-customer" options={{headerTitle: language.add_new_customer}} component={AddNewCustomerComponents} initialParams={{ langs: language }}/>
 
                 <Stack.Screen name="Login" component={LoginComponents}/>
                 <Stack.Screen name="Register" component={RegisterComponents} />

@@ -7,6 +7,7 @@ const en = {
         price_package: "Price Package",
         mark_default_price: "Mark as a default price",
         save: "save",
+        add_new_customer: "Add a new customer",
         add_new: "Add New",
         add_new_field: "Add New Field",
         add_new_branch: "Add a new branch",
@@ -42,6 +43,7 @@ const en = {
         cancel: "Cancel",
         update:"Update",
         product_name: "Product Name",
+        customer_name: "Customer Name",
         ensure_last_price_field: 'Please ensure that you have entered at least one value in the "Price" list and have not left the "Product Name" field empty.',
         failed_to_save_image: "Failed to save image, please try later.",
         camera_permission_required: "Camera Permission Required",
@@ -172,6 +174,8 @@ const en = {
         no_categories_found: "No categories were found. Please click the 'Add New Field' button to create a new category.",
 
         categorie_s: "Categories", 
+        customer_s: "Customers",
+
         categories: "Category",
         products: "Product",
         prices: "Price",

@@ -335,7 +335,7 @@ class DashboardComponents extends Component {
 
 
                         <View style={{...styles.flex, ...styles.direction_row}}>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-branch")} style={{backgroundColor: "#6c5ce7", ...styles.dashboard_cols}}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-customer")} style={{backgroundColor: "#c23616", ...styles.dashboard_cols}}>
                                 <View style={{...styles.space_bottom_10}}>
                                     <Image 
                                         source={require("./../assets/icons/add-new-branch.png")}
@@ -346,7 +346,7 @@ class DashboardComponents extends Component {
                                 <Text style={{...styles.bold, ...styles.colors.white}}>Add Customer</Text>
                             </TouchableOpacity> 
 
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-product")} style={{backgroundColor: "#6b5353", ...styles.dashboard_cols}}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Customers")} style={{backgroundColor: "#c23616", ...styles.dashboard_cols}}>
                                 <View style={{...styles.space_bottom_10}}>
                                     <Image 
                                         source={require("./../assets/icons/add-new-prdouct.png")}
