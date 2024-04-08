@@ -61,9 +61,10 @@ var allSchema = {
         gender: { type: String, default: ""},
         email_address: { type: String, default: ""},
         user_type: { type: Number, default: 0 }, // 0 => customer, 1 => supplier
-        branch_local_id: { type: {}, default: {}}, // => local id, id, name, country name, number  
+        branch: { type: {}, default: {}}, // => local id, id, name, country name, number  
         note: { type: String, default: ""},
-        thumbnail: { type: String, default: ""}
+        thumbnail: { type: String, default: ""},
+        file: {type: {}, default: {}}
     },
 
     branches: {
