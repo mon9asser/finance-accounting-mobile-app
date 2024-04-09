@@ -8,6 +8,23 @@ var styles = StyleSheet.create({
             white: "#fff"
         }
     },
+
+    radioBox: {
+        height: 24,
+        width: 24,
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: '#ddd',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    radioBoxSelected: {
+        height: 12,
+        width: 12,
+        borderRadius: 6,
+        backgroundColor: '#ddd'
+    },
     field_container: {
         marginBottom: 30
     },
@@ -98,6 +115,13 @@ var styles = StyleSheet.create({
         alignItems: 'center', 
         padding: 10, 
         flexDirection: "row",  
+        borderRadius: 10
+    }, 
+
+    textInputNoMarginsPaddingChanged: {
+        borderWidth: 1, 
+        justifyContent: "space-between", 
+        alignItems: 'center',   
         borderRadius: 10
     },
 

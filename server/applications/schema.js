@@ -62,7 +62,7 @@ var allSchema = {
         email_address: { type: String, default: ""},
         user_type: { type: Number, default: 0 }, // 0 => customer, 1 => supplier
         branch: { type: {}, default: {}}, // => local id, id, name, country name, number  
-        note: { type: String, default: ""},
+        address: { type: String, default: ""},
         thumbnail: { type: String, default: ""},
         file: {type: {}, default: {}}
     },

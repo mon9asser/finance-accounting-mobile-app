@@ -5,6 +5,7 @@ import NetInfo from '@react-native-community/netinfo';
 import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';  
 import Modal from "react-native-modal"; 
+import RNPickerSelect from 'react-native-picker-select';
 
 // Distruct 
 import { StatusBar } from 'expo-status-bar';
@@ -39,6 +40,13 @@ import { Models } from "../../controllers/cores/models.js";
 
  
 
+var RadioBox = (props) => {
+    return (
+        <View style={{...styles.radioBox}}>
+            <View style={props.selected ? {...styles.radioBoxSelected}: {}}></View>
+        </View>
+    );
+}
 
 var cls = { 
     
@@ -99,6 +107,7 @@ class AddNewCustomerComponents extends Component {
 
             barcode_data: '',
             customer_name: '',
+            gender: 1,
 
             enabled_discount_percentage: false, 
             PricePackageButtonText: this.props.route.params.langs.add,
@@ -168,13 +177,32 @@ class AddNewCustomerComponents extends Component {
             customer_name: value
         })
     }
- 
+    
+    setGender = (value) => {
+        this.setState({
+            gender: value
+        })
+    }
+
     setBarcodeNumber = (value) => {
         this.setState({
             barcode_data: value
         })
     }
 
+    AllBranchesSelector = () => {
+        return (
+          <RNPickerSelect
+            onValueChange={(value) => console.log(value)}
+            items={[
+              { label: 'Football', value: 'football' },
+              { label: 'Baseball', value: 'baseball' },
+              { label: 'Hockey', value: 'hockey' },
+            ]}
+          />
+        );
+    };
+      
     setHasPermission = (value) => {
        this.setState({
             hasPermission: value
@@ -583,36 +611,7 @@ class AddNewCustomerComponents extends Component {
         this.toggleBarcodeScannerOpen();
     }
 
-    BarcodeScannerModal = ({ isVisible, toggleModal }) => {
-         
-        return (
-            <Modal isVisible={isVisible}>
-                <View style={{...styles.modalContainer, height: 500, borderRadius: 5}}>
-                    <View style={{maxHeight: 500, flex: 1}}>
-                        <View style={{flexDirection: "column", justifyContent: 'space-between', alignItems: 'center', marginBottom:5}}>
-                            <Text style={{fontWeight: 'bold', marginBottom: 5, fontSize: 22}}>
-                                {this.state.language.barcode_scanner}
-                            </Text>  
-                            <Text style={{color:"#666", textAlign: "center"}}>{this.state.language.ensure_to_scan_barcode}</Text> 
-                        </View>
-
-                        {this.state.validatedTextEnabled ? <Text style={{backgroundColor: "red", borderRadius: 5, color: "#fff", padding: 7, textAlign: "center"}}>{this.state.language.invalid_barcode}</Text> :"" }
-
-                        <TouchableOpacity style={{marginTop: 10, textAlign:"center", width: "100%", justifyContent: "center", alignItems: "center"}} onPress={this.toggleBarcodeScannerOpen}><Text>{this.state.language.cancel}</Text></TouchableOpacity>
-                        <View style={{marginTop: 10, height: 250, justifyContent: 'center', alignItems: 'center'}}> 
-                            <Camera style={{height: "100%", width: "100%", aspectRatio: 1}} onBarCodeScanned={this.state.scanned ? undefined : this.handleBarCodeScanned}></Camera>
-                        </View> 
-
-                        <View>  
-                            <ActivityIndicator style={{marginTop: 15}}  color={this.state.default_color} size={'large'}/>
-                        </View> 
-                    </View> 
-                </View>
-            </Modal>
-        );
-    };
-     
-
+      
     setFileObject = async (value) => { 
         this.setState({
             file: value
@@ -653,59 +652,6 @@ class AddNewCustomerComponents extends Component {
 
         
     }
-
-     
-    CategoriesModal = ({ isVisible, toggleModal }) => (
-        <Modal isVisible={isVisible}>
-            <View style={{...styles.modalContainer, flex: 1}}>
-                <ScrollView style={{maxHeight: 600, flex: 1}}>
-
-                    <View style={{flex:1, flexDirection: "row", justifyContent: 'space-between', alignItems: 'center', marginBottom:5}}>
-                        <Text style={{fontWeight: 'bold', flex:1, alignItems: 'center', fontSize: 22}}>
-                            {this.state.language.categorie_s}
-                        </Text> 
-
-                        <TouchableOpacity onPress={this.add_new_category}>
-                            <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>{this.state.language.add_new_field}</Text>
-                        </TouchableOpacity>
-                    </View>
-                    
-                    <View style={{flex: 1, marginTop: 5}}>
-
-                        {
-                            this.state.db_categories.products.length ?
-                                this.state.db_categories.products.map(item => this.RenderDBCategories(item))
-                            : 
-                                <View style={{flex: 1, backgroundColor: '#ffffff', padding: 10, marginTop: 20}}>
-                                    <Text style={{color: '#999', lineHeight:20, textAlign:"center"}}>{this.state.language.no_categories_found}</Text>
-                                </View>
-                        } 
-
-                    </View> 
-                </ScrollView>
-                <View style={{ flexDirection: 'row', gap: 10}}>
-                        <View style={{flex: 1, flexDirection: 'row', gap: 10}}>
-                           
-
-                            <TouchableOpacity style={{ height: 50, marginTop: 10, borderWidth:1, borderColor:cls.btnDeleteBorderColor, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 5 }} onPress={this.toggleCategoryModalOpen}>
-                                <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnDeleteBorderTextColor}}>{this.state.language.cancel}</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{ height: 50, marginTop: 10, backgroundColor:cls.btnPrimaryBg, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 5 }} onPress={this.store_categories}>
-                                <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnPrimaryColor}}>
-                                    {
-                                        this.state.is_pressed_category_save?
-                                        <ActivityIndicator color={'#fff'} />: 
-                                        this.state.language.save
-                                    }
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                </View> 
-            </View>
-        </Modal>
-    )   
-
 
     setButtonPricePackage = (val) => {
         this.setState({
@@ -797,94 +743,7 @@ class AddNewCustomerComponents extends Component {
         }
     }
     
-    PricesPackagesModal = ({ isVisible, toggleModal }) => {
-
-        // isVisible = true; 
-        return (
-        
-            <Modal isVisible={isVisible}>
-                <View style={styles.modalContainer}>
-                    <ScrollView style={{maxHeight: 600}}>
-                    <View style={{flex:1, marginBottom:20}}>
-                        <Text style={{fontWeight: 'bold', fontSize: 22}}>
-                            {this.state.language.price_package}
-                        </Text>
-                    </View>
-    
-                    
-                        <View style={{flex: 1}}>
-                            <TouchableOpacity onPress={() => this.isDefaultPrice(!this.state.defaultPrice)} style={{flexDirection: "row", alignItems: "center", alignContent: "center", marginBottom: 20, justifyContent: "space-between"}}>
-                                <View>
-                                    <Text style={{fontWeight: "bold"}}>{this.state.language.mark_default_price}</Text>
-                                </View> 
-
-                                <Checkbox status={this.state.defaultPrice ? "checked": "unchecked"}/>
-                                
-                            </TouchableOpacity> 
-                        </View>
-                        <View style={{flex: 1}}>
-                            <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>{this.state.language.unit_name}</Text>
-                            </View>
-                            <View style={styles.textInput}>
-                                <TextInput onChangeText={(value) => {this.setUnitName(value)}} style={{flex: 1}} placeholder={this.state.language.example_gram} value={this.state.unitName} />
-                            </View>
-                        </View>
-                        <View style={{flex: 1}}>
-                            <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>{this.state.language.unit_short_name}</Text>
-                            </View>
-                            <View style={styles.textInput}>
-                                <TextInput onChangeText={(value) => {this.setShortUnitName(value)}} style={{flex: 1}} placeholder={this.state.language.example_gm} value={this.state.shortUnitName}  />
-                            </View>
-                        </View>
-                        <View style={{flex: 1}}>
-                            <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>{this.state.language.unit_value}</Text>
-                                <Text style={styles.inputLabelText}>( {this.state.language.based_in_unit} )</Text>
-                            </View>
-                            <View style={{...styles.textInput, borderColor: this.state.requiredFields.unit}}> 
-                            
-                                <TextInput value={this.state.unitValue.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setUnitValue, text)} style={{flex: 1}} placeholder={`${this.state.language.example} :- 1`} />
-                            </View>
-                        </View>
-                        <View style={{flex: 1}}>
-                            <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>{this.state.language.sale_price}</Text>
-                                <Text style={styles.inputLabelText}>( {this.state.language.per_unit} )</Text>
-                            </View>
-                            <View style={{...styles.textInput, borderColor: this.state.requiredFields.price}}>
-                                <TextInput value={this.state.salePrice.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setSalePrice, text)} style={{flex: 1}} placeholder={`${this.state.language.example} :- 15`} />
-                            </View>
-                        </View>
-                        <View style={{flex: 1}}>
-                            <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>{this.state.language.purchase_price}</Text>
-                                <Text style={styles.inputLabelText}>( {this.state.language.per_unit} )</Text>
-                            </View>
-                            <View style={styles.textInput}>
-                                <TextInput keyboardType="numeric" onChangeText={(text) => this.validateInput(this.setPurchasePrice, text)} style={{flex: 1}}  value={this.state.purchasePrice.toString()}  placeholder={`${this.state.language.example} :- 8.5`}/>
-                            </View> 
-                            <View style={{flex:1,  marginBottom: 30, marginTop: -30}}>
-                                <Text style={{...styles.product_price_text}}>{this.state.language.note_of_no_purchase_price}</Text>
-                            </View>
-                        </View>
-                        <View style={{flex: 1, flexDirection: "row", height: 80, gap: 10}}>
-                        
-                            <TouchableOpacity style={{ height: 50, marginTop: 10, borderWidth:1, borderColor:cls.btnDeleteBorderColor, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 5 }} onPress={this.toggleModalOfPricesPackage}>
-                                <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnDeleteBorderTextColor}}>{this.state.language.cancel}</Text>
-                            </TouchableOpacity>
-    
-                            <TouchableOpacity style={{ height: 50, marginTop: 10, backgroundColor:cls.btnPrimaryBg, flex:1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 5 }} onPress={this.StoreModalPricesPackage}>
-                                <Text style={{fontSize: 16, fontWeight: 'bold', color:cls.btnPrimaryColor}}>{this.state.PricePackageButtonText}</Text>
-                            </TouchableOpacity>
-    
-                        </View>
-                    </ScrollView>
-                </View>
-            </Modal>    
-        )
-    }
+     
 
     setCategoryOjbect = ( value ) => {
         this.setState({
@@ -1227,106 +1086,56 @@ class AddNewCustomerComponents extends Component {
                             <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf' }}>
                                 <TextInput value={this.state.customer_name} onChangeText={text => this.setProductName(text)} style={{flex: 1}} placeholder={this.state.language.customer_name} />
                             </View>
-                        </View> 
-            
-
-                        <View style={{...styles.field_container}}>
-                            <View style={{...styles.inputLabel, flexDirection: "row", justifyContent:"space-between"}}> 
-                                <View><Text style={styles.inputLabelText}>{this.state.language.category}</Text></View>
-                                <TouchableOpacity onPress={this.toggleCategoryModalOpen}>
-                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>{this.state.language.add_new}</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={{flexDirection: "column", marginTop: 5}}> 
-                                <SelectList 
-                                    boxStyles={styles.boxStyle} 
-                                    inputStyles={{color: '#999',  flex: 1}}
-                                    dropdownStyles={{flex: 1, width: '100%', borderColor:'#eee'}}
-                                    placeholder={this.state.language.select_category}
-                                    setSelected={(val) => this.selecte_category_object(val)}   
-                                    defaultOption={ this.state.selected_category == null? undefined: {key: this.state.selected_category.key, value: this.state.selected_category.value}} 
-                                    data={this.state.db_categories.products.map( item => {
-                                        item.key = item.local_id;
-                                        item.value = item.category_name
-                                        return item;
-                                    })} 
-                                    save="value"
-                                />
-                            </View>
-
-                            <this.CategoriesModal isVisible={this.state.isCategoryModalOpen} toggleModal={this.toggleCategoryModalOpen} />
                         </View>
 
                         <View style={{...styles.field_container}}>
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>{this.state.language.barcode}</Text>
-
-                                 <TouchableOpacity onPress={this.checkCameraPermission}>
-                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>{this.state.language.scan_barcode}</Text>
+                                <Text style={styles.inputLabelText}>Gender</Text>
+                            </View>
+                            
+                            <View style={{...styles.flex, ...styles.direction_row, justifyContent: "space-between", marginTop: 5}}>
+                                <TouchableOpacity onPress={() => this.setGender(1)} style={{...styles.flex, ...styles.direction_row, gap: 10, alignItems:"center"}}>
+                                    <RadioBox selected={this.state.gender? true: false}/>
+                                    <Text>Male</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => this.setGender(0)} style={{...styles.flex, ...styles.direction_row, gap: 10, alignItems:"center"}}>
+                                    <RadioBox selected={this.state.gender? false: true}/>
+                                    <Text>Female</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={{...styles.textInputNoMargins}}>
-                                <TextInput value={this.state.barcode_data.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setBarcodeDataField, text)} style={{flex: 1}} placeholder={this.state.language.barcode} />
-                            </View>
-
-                            <this.BarcodeScannerModal isVisible={this.state.isBarcodeScannerOpen} toggleModal={this.toggleBarcodeScannerOpen} />
                         </View>
 
                         <View style={{...styles.field_container}}>
-                            <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
-                                <Text style={styles.inputLabelText}>{this.state.language.discount}</Text>
-
-                                <TouchableOpacity onPress={() => { this.setPercentageDiscount(!this.state.enabled_discount_percentage); }} style={{flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
-                                    <Checkbox status={this.state.enabled_discount_percentage ? 'checked' : 'unchecked'} />
-                                    <Text style={{fontSize: 12}}>{this.state.language.enable_percentage}</Text>                                
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.textInputNoMargins}>
-                                <TextInput value={this.state.discountValue.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setDiscountValue, text)} style={{flex: 2}} placeholder={this.state.language.discount_value} />
-                                {
-                                    this.state.enabled_discount_percentage ?
-                                    <TextInput status='checked' value={this.state.discountPercentage.toString()} keyboardType="numeric" onChangeText={text => this.validateInput(this.setDiscountPercentage, text)} style={{flex: 1, borderLeftWidth: 1, borderLeftColor: "#ddd", paddingLeft: 10}} placeholder='%' />
-                                    : ""
-                                }
-                                
-                            </View> 
-                        </View>
-
-                        <View style={{...styles.field_container}}>
-
                             <View style={styles.inputLabel}>
-                                <View><Text style={styles.inputLabelText}>{this.state.language.prices_list}</Text></View>
-                                <TouchableOpacity onPress={this.setModificaionAdd}>
+                                <Text style={styles.inputLabelText}>Email</Text>
+                            </View>
+                            <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf' }}>
+                                <TextInput value={this.state.email_address} onChangeText={text => this.setProductName(text)} style={{flex: 1}} placeholder="email@example.com" />
+                            </View>
+                        </View>
+                        
+                        <View style={{...styles.field_container}}>
+                            <View style={styles.inputLabel}>
+                                <View><Text style={styles.inputLabelText}>Branch</Text></View>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-branch")}>
                                     <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>{this.state.language.add_new}</Text>
                                 </TouchableOpacity>
                             </View>
-
-                            
-                            {
-                                this.state.prices_list.length ? 
-                                    this.state.prices_list.map( x => this.ListOfPricesComponents(x) ) :
-                                    <View style={{justifyContent: "center", flexDirection: "row", flex: 1, borderColor:(this.state.price_list_hlgt) ? 'red': '#dfdfdf', marginTop: 5, borderWidth: 1, padding: 10}}><Text style={{color: "#999"}}>{this.state.language.no_prices_found}</Text></View>
-                            }
-                             
-                            <this.PricesPackagesModal isVisible={this.state.isPricesPackageModalOpen} toggleModal={this.toggleModalOfPricesPackage} />
+                            <View style={{...styles.textInputNoMarginsPaddingChanged, borderColor: '#dfdfdf' }}>
+                                <this.AllBranchesSelector /> 
+                            </View>
                         </View>
 
-                        <View style={{ ...styles.wrapper, ...this.state.notificationBox, ...this.state.notificationCssClass, ...styles.space_top_25}}>
-                            <Text style={this.state.notificationTextCssClass}>{this.state.notificationMessage}</Text>
-                        </View> 
+                        <View style={{...styles.field_container}}>
+                            <View style={styles.inputLabel}>
+                                <Text style={styles.inputLabelText}>Address</Text>
+                            </View>
+                            <View style={{...styles.textarea, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf' }}>
+                                <TextInput style={{flex: 1}} placeholder="Address" />
+                            </View>
+                        </View>
 
-                        <View style={{...styles.space_bottom_10, ...styles.space_top_25}}>
-                            
-                            <Button onPress={this.saveData} style={{...styles.default_btn, backgroundColor: this.state.default_color }}>
-                                {
-                                    this.state.isPressed ?
-                                    <ActivityIndicator color={styles.direct.color.white} />
-                                    :
-                                    <Text style={{color:styles.direct.color.white, ...styles.size.medium}}> {this.state.language.save} </Text> 
-                                }
-                            </Button>
-                        </View>                      
-                    </View > 
+                    </View> 
 
                  </ScrollView> 
  
