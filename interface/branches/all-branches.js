@@ -213,6 +213,10 @@ class BranchesComponents extends PureComponent {
         alert("https://www.npmjs.com/package/react-native-swipe-up-down")
         alert("https://www.npmjs.com/package/react-native-date-picker")
         */
+
+        // Apply screen and header options 
+        this.screen_options(); 
+
         // Load All data async 
         await this.Get_All_Data(); 
 
@@ -222,8 +226,7 @@ class BranchesComponents extends PureComponent {
         // internet connection status
         this.internetConnectionStatus();
 
-        // Apply screen and header options 
-        this.screen_options();   
+         
 
     }
 

@@ -183,7 +183,7 @@ class DashboardComponents extends Component {
             headerTitleStyle: { color: "#fff" },
             headerTitle: this.state.language.dashboard_title, 
             headerLeft: () => this.headerLeftComponent(), 
-            headerRight: () => this.headerRightComponent()
+            // headerRight: () => this.headerRightComponent()
             
         }) 
 
@@ -306,6 +306,31 @@ class DashboardComponents extends Component {
                     
 
                     <View style={{...styles.flex, ...styles.space_5_left, ...styles.space_5_right}}>
+                        
+                    <View style={{...styles.flex, ...styles.direction_row}}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-sales-invoice")} style={{backgroundColor: "#EF6C00", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require("./../assets/icons/add-new-branch.png")}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Add Sales Invoice</Text>
+                            </TouchableOpacity> 
+
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("SalesInvoices")} style={{backgroundColor: "#EF6C00", ...styles.dashboard_cols}}>
+                                <View style={{...styles.space_bottom_10}}>
+                                    <Image 
+                                        source={require("./../assets/icons/add-new-prdouct.png")}
+                                        style={{...styles.intenet_connection_icon}}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <Text style={{...styles.bold, ...styles.colors.white}}>Sales Invoices </Text>
+                            </TouchableOpacity>
+                            
+                        </View>   
 
                         <View style={{...styles.flex, ...styles.direction_row}}>
                             <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-branch")} style={{backgroundColor: "#6c5ce7", ...styles.dashboard_cols}}>

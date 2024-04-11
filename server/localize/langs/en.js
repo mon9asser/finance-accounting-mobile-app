@@ -15,7 +15,7 @@ var en = {
         passcode_verificated_success: "You have successfully verified the passcode",
         user_not_found: "You don't have account, please click on sign up to create an account",
         password_changed: "You have successfully saved your new password, you can use it to log into your account",
-
+        default_branch: "Main Branch",
         hello: "Hello",
         request_passcode_msg: "Thank you for requesting the passcode to recover your account on Next Daily Sales™",
         copy_paste_passcode: "You simply need to copy and paste the passcode provided below into the next daily sales application",

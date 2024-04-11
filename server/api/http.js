@@ -55,10 +55,10 @@ const compressBase64Image = async (base64String) => {
   
  
 
+
 // add data by one row + update by one row 
 apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res ) => {
-     
-
+      
     // handling current language
     var current_language = req.body.language == undefined? "en": req.body.language; 
     var localize = language[current_language];
@@ -75,6 +75,8 @@ apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res )
     var model = req.body.model_name;
     var param_id = req.body.param_id == undefined? -1: req.body.param_id;
     var image_name;
+
+    
 
     if( database == undefined || model == undefined ) {
         response.is_error = true;
@@ -116,6 +118,7 @@ apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res )
         finderObject = {...param_id}; 
     } 
     
+    
 
     // handling file data 
     if( data_object.file != undefined && data_object.file.base_64 != undefined && data_object.file.uri != undefined && data_object.file.property_name   != undefined ) {
@@ -124,7 +127,7 @@ apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res )
         if( data_object.local_id == undefined || data_object.local_id == "" ) {
             localid = "undefined";
         }
-
+       
         var uri = data_object.file.uri;
         var extension = ".jpg";
         if( uri.indexOf(".jpeg") != -1 )
@@ -146,11 +149,12 @@ apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res )
         image_name = `${model}-${db_slug}-${localid}${extension}`;
         var field_name = data_object.file.property_name; 
 
-        const directory = "./uploads";
+        const directory = "./server/uploads";
+
         if (!fs.existsSync(directory)){
             fs.mkdirSync(directory);
         }
-
+        
         var updated_base64 = await compressBase64Image(data_object.file.base_64);
         var base64Data = updated_base64.replace(/^data:image\/\w+;base64,/, "");
         var buffer = Buffer.from(base64Data, 'base64');
@@ -174,7 +178,7 @@ apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res )
 
     // build data object 
     var finder = await db_connection.findOne(finderObject);
-    console.log(data_object);
+ 
     // insert data 
     if( finder == null ) {
 
@@ -532,6 +536,71 @@ apiRouters.post("/get", verify_user_tokens_and_keys, async (req, res) => {
     }
 
 });
+
+
+apiRouters.post("/get_last_record", verify_user_tokens_and_keys, async (req, res) => {
+   
+    // handling current language
+    var current_language = req.body.language == undefined? "en": req.body.language; 
+    var localize = language[current_language];
+ 
+    //preparing response object 
+    var response = {
+        is_error: true, 
+        data: [],
+        message: localize.something_wrong
+    }
+
+    // Basics Of Each API: checking for database name and model 
+    var database = req.body.database_name;
+    var model = req.body.model_name;
+    var param_id = req.body.data_object == undefined? -1: req.body.data_object;
+
+    if( database == undefined || model == undefined ) {
+        response.is_error = true;
+        response.message = localize.peroperties_required;
+        return res.send(response);
+    }
+     
+    var model_name = flat_schema_name(model);
+    var schema_object = get_schema_object(model_name);
+    
+    
+    var db_connection = await create_connection(database, {
+        model: model_name, 
+        schemaObject:schema_object
+    }); 
+     
+    
+    if( ! db_connection ) {
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.services_disabled; 
+        return res.send(response); 
+    }  
+
+    var ones = await db_connection.findOne(param_id)
+
+    
+    try {         
+        
+        var allData = await db_connection.findOne(param_id).sort({created_date: -1 });  
+        response["data"] = allData;
+        response["is_error"] = false;
+        response["message"] = localize.data_get_success; 
+         
+        res.send(response);
+
+    } catch (error) { 
+        
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.no_data_found; 
+        return res.send(response); 
+    }
+
+});
+
 
 // delete a record + bulk deletion 
 apiRouters.post("/delete", verify_user_tokens_and_keys, async (req, res) => {

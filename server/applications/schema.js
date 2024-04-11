@@ -61,10 +61,10 @@ var allSchema = {
         gender: { type: String, default: ""},
         email_address: { type: String, default: ""},
         user_type: { type: Number, default: 0 }, // 0 => customer, 1 => supplier
-        branch: { type: {}, default: {}}, // => local id, id, name, country name, number  
+        branch: {type: {}, default: {}}, 
         address: { type: String, default: ""},
-        thumbnail: { type: String, default: ""},
-        file: {type: {}, default: {}}
+        thumbnail: { type: String, default: ""}, 
+        file: {type: {}, default: {}}, 
     },
 
     branches: {
@@ -96,6 +96,53 @@ var allSchema = {
         total_balance: { type: String, default: ""},
         payment_type_local_id: { type: String, default: ""},
         branch_local_id: { type: String, default: ""},
+        ...default_properties,
+    },
+
+    sales_doc: {
+        invoice_number: { type: String, default: ""},
+        invoice_status: { type: {}, default: {}},
+        payment_method: { type: {}, default: {}},
+        order_type: { type: {}, default: {}},
+        customer: { type: {}, default: {}},
+        branch: { type: {}, default: {}},
+        date: { type: Date, default: ""},
+        total: { type: String, default: ""},
+        subtotal: { type: String, default: ""},
+        discount:  { type: {}, default: {}},
+        tax:  { type: {}, default: {}},
+        Vat:  { type: {}, default: {}},
+        shipping_or_delivery_cost: { type: String, default: ""},
+        ...default_properties,
+    },
+
+    doc_details: {
+        doc_id:{ type: String, default: ""},
+        doc_type: { type: Number, default: -1},
+        is_out: { type: Boolean, default: true },
+        product:  { type: {}, default: {}},
+        branch:  { type: {}, default: {}},
+        price:  { type: {}, default: {}},
+        updated_price:{ type: String, default: ""},
+        updated_discount:  { type: {}, default: {}},
+        quantity: { type: String, default: ""},
+        total_quantity: { type: String, default: ""},
+        total_cost: { type: String, default: ""}, 
+        subtotal: { type: String, default: ""},
+        total_price: { type: String, default: ""}, 
+        ...default_properties,
+    },
+
+    /**
+     * 0 => sales invoice 
+     * 1 => purchase invoice
+     * 2 => return of sales invoice
+     * 3 => return of purchase invoice
+     */
+    last_recorded: {
+        number: { type: String, default: 1},
+        zero_left: { type: String, default: "0000000"},
+        type: { type: Number, default: -1},
         ...default_properties,
     },
 

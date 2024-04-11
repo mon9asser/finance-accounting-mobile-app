@@ -29,7 +29,10 @@ import { EditProductComponents } from "./interface/products/edit-product.js";
 import { ProductsComponents } from "./interface/products/all-products.js";
 
 import { AddNewCustomerComponents } from "./interface/customers/add-new-customer.js";
+import { EditCustomerComponents} from "./interface/customers/edit-customer.js";
 import { CustomersComponents } from "./interface/customers/all-customers.js";
+
+import {AddNewSalesInvoiceComponents} from "./interface/sales/add-new-sales.js";
 
 import {HomeComponents} from './interface/home.js';
 import {LoginComponents} from './interface/user/login.js';
@@ -289,6 +292,12 @@ const App = () => {
                 {/* Customers Screens */}
                 <Stack.Screen name="Customers" options={{headerTitle: language.customer_s}} component={CustomersComponents} initialParams={{ langs: language }}/>
                 <Stack.Screen name="add-new-customer" options={{headerTitle: language.add_new_customer}} component={AddNewCustomerComponents} initialParams={{ langs: language }}/>
+                <Stack.Screen name="edit-customer" options={{headerTitle: language.edit_customer}} component={EditCustomerComponents} initialParams={{ langs: language }}/>
+
+                {/* Sales Invoices Screens */}
+                <Stack.Screen name="SalesInvoices" options={{headerTitle: language.sele_s}} component={CustomersComponents} initialParams={{ langs: language }}/>
+                <Stack.Screen name="add-new-sales-invoice" options={{headerTitle: language.add_new_sales}} component={AddNewSalesInvoiceComponents} initialParams={{ langs: language }}/>
+                <Stack.Screen name="edit-sales-invoice" options={{headerTitle: language.edit_sales}} component={EditCustomerComponents} initialParams={{ langs: language }}/>
 
                 <Stack.Screen name="Login" component={LoginComponents}/>
                 <Stack.Screen name="Register" component={RegisterComponents} />

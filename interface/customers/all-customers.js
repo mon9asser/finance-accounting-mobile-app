@@ -27,8 +27,7 @@ import {get_setting, add_last_session_form, get_last_session_form, delete_sessio
 import {get_lang} from '../../controllers/languages.js'; 
 
 // Controller  
-import { ProductInstance } from "../../controllers/storage/products.js";
-import { PriceInstance  } from "../../controllers/storage/prices.js";
+import { CustomerInstance } from "../../controllers/storage/customers.js"; 
 import { usr } from "../../controllers/storage/user.js";
 import { conf } from "../../server/settings/config.js";
 
@@ -40,10 +39,10 @@ class CustomersComponents extends PureComponent {
 
         
         this.state = {
-            language: {},               //--  
+            language: {},                
             isConnected: true, 
 
-            default_color: "#6b5353",   
+            default_color: "#c23616",   
  
             select_all: false,   
 
@@ -129,7 +128,7 @@ class CustomersComponents extends PureComponent {
     performDeletionAction = async (ids) => {
 
         // send request 
-        var reqs = await ProductInstance.delete_records(ids)
+        var reqs = await CustomerInstance.delete_records(ids)
         
         if( reqs.is_error ) {
             Alert.alert(reqs.message);
@@ -139,7 +138,7 @@ class CustomersComponents extends PureComponent {
         if( reqs.login_redirect ) {
             Alert.alert(reqs.message);
             this.props.navigation.navigate("Login", {
-                redirect_to: "Products"
+                redirect_to: "Customers"
             });
             return;
         }
@@ -208,16 +207,7 @@ class CustomersComponents extends PureComponent {
 
     }
 
-    load_all_prices = async() => {
-        
-        var prc = await PriceInstance.get_records();
-
-        if( prc.is_error || ! prc.data.length ) return ;
-        this.setState({
-            prices: prc.data
-        });
- 
-    }
+    
 
     componentDidMount = async () => { 
         /*
@@ -225,6 +215,10 @@ class CustomersComponents extends PureComponent {
         alert("https://www.npmjs.com/package/react-native-swipe-up-down")
         alert("https://www.npmjs.com/package/react-native-date-picker")
         */
+
+        // Apply screen and header options 
+        this.screen_options();  
+
         // Load All data async 
         await this.Get_All_Data(); 
 
@@ -232,17 +226,12 @@ class CustomersComponents extends PureComponent {
         await this.setup_params();
 
         // internet connection status
-        this.internetConnectionStatus();
-
-        // Apply screen and header options 
-        this.screen_options();  
-
-        // getting all prices 
-        await this.load_all_prices();
+        this.internetConnectionStatus(); 
+ 
         
          /*
-        await ProductInstance.Schema.instance.save({
-            key: ProductInstance.Schema.key,
+        await CustomerInstance.Schema.instance.save({
+            key: CustomerInstance.Schema.key,
             data: []
         })*/
 
@@ -268,7 +257,7 @@ class CustomersComponents extends PureComponent {
         this.setLoading(true);
 
         // send request to get the data
-        var reqs = await ProductInstance.get_records();
+        var reqs = await CustomerInstance.get_records();
          
 
         // check for error and see error message
@@ -376,11 +365,13 @@ class CustomersComponents extends PureComponent {
          
     }
 
+   
+
     edit_this_item = (item) => {
 
         this.props.navigation.goBack(null);
 
-        this.props.navigation.navigate("edit-product", {
+        this.props.navigation.navigate("edit-customer", {
             item: item.item 
         });
 
@@ -446,17 +437,16 @@ class CustomersComponents extends PureComponent {
 
     }
     
-    editThisItem = (item, prc_list) => { 
+    editThisItem = (item ) => { 
         this.props.navigation.goBack(null);
-        this.props.navigation.navigate("edit-product", {
-            prices: prc_list,
-            item: item 
+        this.props.navigation.navigate("edit-customer", {
+            item: item
         });
     }
 
     Item_Data = ({item, index}) => {
          
-        var img_placeholder = require("./../../assets/icons/product-placeholder.png"); 
+        var img_placeholder = require("./../../assets/icons/customer-placeholder.png"); 
         var img_local_storage = item.file == undefined || item.file.thumbnail_url == undefined ? "": item.file.thumbnail_url;
         
          
@@ -474,24 +464,7 @@ class CustomersComponents extends PureComponent {
              
         }
          
-        // product price
-        var prices = this.state.prices;
-        var prc_list = [];
-        var price_object = {sale: 0, purchase: 0 };
-        if( prices.length) {
-            
-            prc_list = prices.filter( x => x.product_local_id == item.local_id );
-            var primary_prc = prc_list.filter( x => x.is_default_price == true );
-
-            if( primary_prc.length ) {
-                price_object.sale = primary_prc[0].sales_price;
-                price_object.purchase = primary_prc[0].purchase_price;
-            } else if (prc_list.length) {
-                price_object.sale = prc_list[0].sales_price;
-                price_object.purchase = prc_list[0].purchase_price;
-            }
-            
-        }
+        // product price 
         
         var __name = "";
         
@@ -505,10 +478,10 @@ class CustomersComponents extends PureComponent {
         return (
             <View key={item.local_id} style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15 }}>
                 <TouchableOpacity onPress={() => this.select_this_row(item.local_id)}  style={{borderWidth: 1, gap: 15, marginBottom: 20, padding: 15, flexDirection: "row", borderColor:( this.is_highlighted(item.local_id)? "red" : "#eee"), backgroundColor: ( this.is_highlighted(item.local_id)? "#ffe9e9" : "#fff"), borderRadius: 10}}>
-                    <View>
+                    <View> 
                         <Image
                             source={image}
-                            style={{width: 80, height: 80, objectFit: 'cover', borderRadius: 5}}
+                            style={{width: 80, height: 80, objectFit: 'cover', borderRadius: 80, borderWidth: 5, borderColor: "#eee"}}
                             resizeMode="cover"
                             PlaceholderContent={<ActivityIndicator color="#fff" size="small"/>} 
                             onError={() => this.gettingImage(item, setImage, img_placeholder)}
@@ -517,11 +490,11 @@ class CustomersComponents extends PureComponent {
                     <View style={{flexDirection: 'column', justifyContent: 'center',  flex: 1}}>
                         <View style={{flex: 1}}>
                             <Text style={{fontSize: 16, color: "#444", fontWeight: "bold"}}>
-                                {item.product_name}
+                                {item.customer_name}
                             </Text>
                             <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
                                 <Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>
-                                    {this.state.language.price}: {price_object.sale}
+                                {item.phone_number}
                                 </Text>
 
                                 {this.formatTimestamp(item.updated_date)}
@@ -533,12 +506,12 @@ class CustomersComponents extends PureComponent {
                             {this.state.language.by}: {__name}
                             </Text>
                             <View style={{flexDirection: "row", gap: 10}}>
-                                <TouchableOpacity onPress={() => this.editThisItem(item, prc_list)}>
+                                <TouchableOpacity onPress={() => this.editThisItem(item )}>
                                     <Text style={{color: "#0B4BAA", fontWeight: "bold", marginTop: 5}}>
                                         {this.state.language.edit}
                                     </Text> 
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => this.editThisItem(item.id)}>
+                                <TouchableOpacity>
                                     <Text style={{color: "#0B4BAA", fontWeight: "bold", marginTop: 5}}>
                                     {this.state.language.view}
                                     </Text> 
@@ -557,7 +530,7 @@ class CustomersComponents extends PureComponent {
         
         if( item_id == undefined ) {
             return false;
-        }
+        } 
 
         var selected = this.state.selected_ids;
  
@@ -598,14 +571,15 @@ class CustomersComponents extends PureComponent {
                 searched_data: []
             }); 
             
-            return; 
+            return;
         }
 
         var searched_items = all.filter( item => {
             
-            var index1 = item.product_name.indexOf(text); 
+            var index1 = item.customer_name.indexOf(text); 
+            var index2 = item.phone_number.indexOf(text);   
 
-            if(index1 !== -1 ) {
+            if(index1 !== -1 || index2 !== -1   ) {
                 return item; 
             }
 
@@ -759,9 +733,9 @@ class CustomersComponents extends PureComponent {
                         marginTop: 20 
                     }}>
                         <View style={{height: 85, borderBottomColor: "#ddd", borderBottomWidth: 1, paddingBottom: 15}}>
-                            <Text style={{color: "#999"}}>{this.state.language.search_name_phone_city}</Text>
+                            <Text style={{color: "#999"}}>{this.state.language.search_customer_name_phone_city}</Text>
                             <View style={{  borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 8}}>
-                                <TextInput onChangeText={text => this.filter_by_texts(text)} placeholder={this.state.language.search_name_phone_city} style={{...styles.input_field}} />
+                                <TextInput onChangeText={text => this.filter_by_texts(text)} placeholder={this.state.language.search_customer_name_phone_city} style={{...styles.input_field}} />
                             </View>
                         </View>
 
@@ -778,10 +752,9 @@ class CustomersComponents extends PureComponent {
                                         mode={'date'}
                                         display="default"
                                         onChange={this.change_date_from_value}
-                                    />
-                                )}
-                                
-                                
+                                    /> 
+                                )} 
+
                             </View>
 
                             <View style={{marginTop: 5, height: 50}}>
@@ -816,7 +789,7 @@ class CustomersComponents extends PureComponent {
 
                 <TouchableOpacity onPress={ this.select_all_records } style={{flexDirection: "row", alignItems: "center",  marginBottom: 10, marginLeft:-5}}>
                     <Checkbox status={this.state.checkbox_checked ? 'checked' : 'unchecked'} />
-                    <Text style={{color: "#999"}}>{this.state.language.select_all_products}</Text>                                
+                    <Text style={{color: "#999"}}>{this.state.language.select_all_customers}</Text>                                
                 </TouchableOpacity>
                 
                  
@@ -830,7 +803,7 @@ class CustomersComponents extends PureComponent {
 
     add_new = () => {
         this.props.navigation.goBack(null);
-        this.props.navigation.navigate("add-new-product");
+        this.props.navigation.navigate("add-new-customer");
     }
 
     setRefreshing = (value) => {
@@ -891,8 +864,8 @@ class CustomersComponents extends PureComponent {
                 
                 { this.state.is_last_page ? <View style={{justifyContent: "center", alignItems: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.no_more_results}</Text></View> : <ActivityIndicator size={"small"} color={this.state.default_color} /> }
 
-                <View style={{flex: 1, marginTop: 15, borderTopColor: "#eee", borderTopWidth: 2, height: 40, alignItems:"center", flexDirection: "row", justifyContent: "space-between"}}>
-                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.all_data.flat().length} {this.state.all_data.flat().length > 1? this.state.language.products: this.state.language.product}</Text>
+                <View style={{flex: 1, marginTop: 15, borderTopColor: "#eee", borderTopWidth: 2, height: 40, alignItems:"center", flexDirection: "row", justifyContent: "space-between"}}> 
+                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.all_data.flat().length} {this.state.all_data.flat().length > 1? this.state.language.customers: this.state.language.customer}</Text>
                     <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}> {this.state.all_data.length} {this.state.all_data.length > 1? this.state.language.screens: this.state.language.screen}</Text>
                 </View>
 

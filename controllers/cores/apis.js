@@ -1329,6 +1329,140 @@ class A_P_I_S {
         }
     }
     
+    async GetAsyncLastRecord( mobject, data_obj ) {
+        
+         
+        // getting settings and language
+        var settings, user_data, array_data; 
+        
+        array_data = await this.get_data_locally(mobject); 
+
+
+        if( array_data.length ) {
+            array_data = array_data.filter( x => {
+                var keys = Object.keys(data_obj) 
+
+                if( keys.length == 1 ) {
+                    var key1 = keys[0];
+                    var value1 = data_obj[key1];
+
+                    return x[key1] == value1;
+
+                }   else if ( keys.length == 2 ) {
+
+                    var key1 = keys[0]
+                    var value1 = data_obj[key1];
+
+                    var key2 = keys[1]
+                    var value2 = data_obj[key2];
+
+                    return x[key1] == value1 && x[key2] == value2;
+                }  else if ( keys.length == 3 ) {
+                    var key1 = keys[0]
+                    var value1 = data_obj[key1];
+
+                    var key2 = keys[1]
+                    var value2 = data_obj[key2];
+
+                    var key3 = keys[2]
+                    var value3 = data_obj[key2];
+
+                    return x[key1] == value1 && x[key2] == value2 && x[key3] == value3;
+                }              
+
+            });
+        }
+        
+        
+        
+        try{
+            settings = await get_setting();
+            user_data = await usr.get_session();
+        } catch(error){}
+        
+        var language =  get_lang(settings.language);
+
+        // getting user data and check for session expiration 
+        if( user_data == null || ! Object.keys(user_data).length ) {
+            return {
+                login_redirect: true, 
+                message: language.user_session_expired, 
+                is_error: true , 
+                data: []
+            };
+        } 
+
+        if( config.disable_local_storage && config.disable_remote_server ) {
+            
+            return {
+                login_redirect: false, 
+                message: "", 
+                is_error: true , 
+                data: ! array_data.length ? []: [array_data[array_data.length - 1 ] ] 
+            };       
+        }
+
+        if( (  ! config.disable_local_storage && config.disable_remote_server ) ) {
+            return {
+                data: ! array_data.length ? []: [array_data[array_data.length - 1 ] ],
+                is_error: false, 
+                login_redirect: true, 
+                message: ""
+            };
+        }
+
+        var {key, instance} = mobject;
+        if(key == undefined || instance == undefined) {
+            return {
+                login_redirect: false, 
+                message: language.api_error, 
+                is_error: true , 
+                data: []
+            };
+        }
+
+        var __object = {
+            api: "api/get_last_record", 
+            dataObject: {
+                data_object: data_obj
+            }, 
+            method: "post",  
+            model_name: key
+        };
+        
+        var request = {
+            is_error: true,  
+            message: "", 
+            data: []
+        };
+        
+        if( ! config.disable_remote_server ) { 
+            request = await this.axiosRequest(__object);
+        };
+        
+        if( ! config.disable_remote_server && request.is_error ) {
+            
+            return {
+                login_redirect: false, 
+                ...request
+            }; 
+        }
+        
+        if( config.disable_local_storage &&  ! config.disable_remote_server ) {
+            
+            return {
+                login_redirect: false, 
+                ...request
+            };
+        }   
+        
+        return {
+            login_redirect: false, 
+            ...request
+        };
+        
+    }
+
     /**
      * Getting Data Locally
      */
@@ -1337,9 +1471,11 @@ class A_P_I_S {
         var array_data = []; 
 
         try {
+
             array_data = await mobject.instance.load({
                 key: mobject.key
-            }); 
+            });  
+
         } catch (error) {}
 
         return array_data;

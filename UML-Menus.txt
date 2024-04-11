@@ -269,11 +269,12 @@ sales_invoices - purchase_invoices - return_purchase_invoices - return_sales_inv
 id 
 local_id
 invoice_number
-invoice_status_id   [invoice_status.id]
-payment_method_id   [payment_methods.id]
-date 
-customer_id 
-branch_id
+invoice_status  [invoice_status.id] {}
+payment_method  [payment_methods.id] {}
+order_type
+customer {}
+branch {}
+date
 total
 subtotal
 discount 
@@ -285,13 +286,15 @@ tax
 Vat  
     is_percentage: false
     value
-shipping
+shipping_or_delivery_cost
 order_tracking_number
-date_made
+
+date_made 
 date_update
 updated_by 
 created_by
 
+{ save - save }
 
 
 ------------------------
@@ -302,15 +305,14 @@ local_id
 doc_id  [sales_invoices.id][purchase_invoices.id][return_sales_invoices.id][return_purchase_invoices.id]
 doc_type (0 => sales_invoices, 1 => purchase_invoices, 2 => return_sales_invoices, 3 => return_purchase_invoices)
 is_out ( true => products is going out, false => product is going in )
-product_id 
-branch_id
-price 
-unit 
-unit_short
-unit_name
+
+product => object of product {}
+branch => object of branch 
+price => object of price 
+
 quantity 
-factor
-cost
+xxxxxxxxxx => factor
+xxxxxxxxxx => cost
 total_cost 
 total_quantity
 discount 

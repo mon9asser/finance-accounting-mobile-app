@@ -64,7 +64,7 @@ var cls = {
 
 }
 
-class AddNewCustomerComponents extends Component {
+class EditCustomerComponents extends Component {
 
     constructor(props) {
 
@@ -80,13 +80,14 @@ class AddNewCustomerComponents extends Component {
 
             customer_thumbnail: require('./../../assets/icons/customer-placeholder.png'),
             customer_name: '',
+            branch_local_id: "000000012345_default_branch",
             gender: 1,  
             email_address: '',
             user_type: 0,
             phone_number: "",
             address: "",
-            selected_branch: {},  
-            customer_local_id: generateId() , 
+            selected_category: {},  
+            customer_local_id: "" , 
             notificationBox: { display: 'none' },
             notificationCssClass: {},
             notificationTextCssClass: {},
@@ -150,6 +151,7 @@ class AddNewCustomerComponents extends Component {
     }
 
     setCustomerThumbnail = (image) => {
+        
         this.setState({
             customer_thumbnail: image == "" ? require('./../../assets/icons/customer-placeholder.png'): {uri: image}
         })
@@ -195,7 +197,7 @@ class AddNewCustomerComponents extends Component {
         }
       
         this.setState({
-            selected_branch: object_data
+            selected_category: object_data
         });
 
     }
@@ -215,7 +217,7 @@ class AddNewCustomerComponents extends Component {
             
         });
          
-        var default_branch_index = branches.findIndex( x => x.value == "000000012345_default_branch" );
+        var default_branch_index = branches.findIndex( x => x.value == this.state.branch_local_id );
         var default_value = branches[default_branch_index] ? branches[default_branch_index].value: -1;
         
         return (
@@ -245,7 +247,7 @@ class AddNewCustomerComponents extends Component {
         this.setLanguage(this.props.route.params.langs); 
         
     }
-
+ 
     restore_data_to_fields = async () => {
          
         if( this.props.route.params.branches ) {
@@ -254,10 +256,47 @@ class AddNewCustomerComponents extends Component {
             await this.fill_all_branches();
         }
         
-        var session_ = await get_last_session_form("add-new-customer");  
-        if( session_ == null ) {
-            return; 
-        }  
+        if( ! this.props.route.params.item ) {
+            return;
+        }
+
+        var item = this.props.route.params.item; 
+         
+        // handling image 
+        if( item.thumbnail != undefined && item.thumbnail != "") {
+            
+            var url = config.api(`uploads/${item.thumbnail}?timestamp=${new Date().getTime()}` ) ;
+            this.setCustomerThumbnail(url);          
+        }
+        else if( item.file != undefined ) {
+
+            var url;  
+
+            if( item.file.uri != undefined ) {
+                 
+                var fileInfo = await FileSystem.getInfoAsync(item.file.uri); 
+                if( fileInfo.exists ) {
+                    url = item.file.uri;
+                    
+                } else if (item.file.thumbnail_url != undefined) {
+                    url = config.api("uploads/" + item.file.thumbnail_url )
+                }
+
+            }
+            
+            this.setCustomerThumbnail(url);
+        } 
+
+        
+        this.setState({
+            customer_name: item.customer_name,
+            gender: parseInt(item.gender),
+            phone_number: item.phone_number, 
+            email_address: item.email_address,
+            customer_local_id: item.local_id,
+            address: item.address,
+            branch_local_id: item.branch.local_id
+        });
         
     }
 
@@ -324,7 +363,7 @@ class AddNewCustomerComponents extends Component {
         this.setState({
             file: value
         }) 
-    }
+    } 
 
     openGallery = async () => {
         
@@ -359,7 +398,74 @@ class AddNewCustomerComponents extends Component {
 
         
     }
+
+   
+     
+    validateInput = (setValue, value) => {
+        const regex = /^[0-9]*\.?[0-9]*$/;
+        if (regex.test(value)) {
+          setValue(value);
+        }
+    }
     
+     
+
+    setCategoryOjbect = ( value ) => {
+        this.setState({
+            selected_category: value
+        })
+    } 
+ 
+
+  
+ 
+     
+    trash_price_list = (id) => {
+        this.setState((prevState) => {
+
+            var update = prevState.prices_list.filter( x => x.local_id != id );
+
+            return {
+                prices_list: update
+            }
+
+        })
+    }
+
+    edit_price_package = (item) => {
+ 
+        this.setUnitName(item.unit_name)
+        this.setShortUnitName(item.unit_short)
+        this.setUnitValue(item.factor)
+        this.setSalePrice(item.sales_price)
+        this.setPurchasePrice(item.purchase_price)
+        this.isDefaultPrice(item.is_default_price);   
+         
+
+    }
+
+    ListOfPricesComponents = (item) => {
+          
+        return (
+            <TouchableOpacity key={item.local_id} onPress={() => this.edit_price_package(item)} style={{...styles.product_price_container}}>
+                <View style={{alignItems: "center", ...styles.direction_row}}> 
+                    <Text style={{...styles.product_price_text}}>{item.unit_name}</Text>
+                </View>
+                <View style={{...styles.direction_row, ...styles.gap_15, alignItems: "center"}}>
+                    <Text style={{...styles.product_price_text}}>{item.purchase_price}</Text>
+                    <Text style={{...styles.product_price_text}}>{item.sales_price}</Text>
+                </View>
+                <TouchableOpacity onPress={() => this.trash_price_list(item.local_id)}>
+                    <Image
+                        source={require('./../../assets/icons/trash-icon.png')}
+                        style={{height: 25, width:25}}
+                        resizeMode="cover"
+                        PlaceholderContent={<ActivityIndicator />}
+                    />
+                </TouchableOpacity>
+            </TouchableOpacity> 
+        );
+    } 
 
     setPressBtn = ( value ) => {
         this.setState({
@@ -432,12 +538,21 @@ class AddNewCustomerComponents extends Component {
         var phone_number = this.state.phone_number; 
         var customer_address = this.state.address;
         var branch_object = {
-            local_id: this.isUndefined(this.state.selected_branch.local_id),
-            branch_name: this.isUndefined(this.state.selected_branch.branch_name),
-            branch_number: this.isUndefined(this.state.selected_branch.branch_number),
-            branch_city: this.isUndefined(this.state.selected_branch.branch_city),
-            branch_country: this.isUndefined(this.state.selected_branch.branch_country),
+            local_id: this.isUndefined(this.state.selected_category.local_id),
+            branch_name: this.isUndefined(this.state.selected_category.branch_name),
+            branch_number: this.isUndefined(this.state.selected_category.branch_number),
+            branch_city: this.isUndefined(this.state.selected_category.branch_city),
+            branch_country: this.isUndefined(this.state.selected_category.branch_country),
         };
+
+        if( this.state.customer_local_id == "" ) {
+            this.setPressBtn(false); 
+            this.setNotificationBox("flex")
+            this.setNotificationCssClass(styles.error_message);
+            this.setNotificationCssTextClass(styles.error_text)
+            this.setNotificationMessage(this.state.language.something_error);
+            return; 
+        }
 
         (async() => {
              
@@ -450,8 +565,7 @@ class AddNewCustomerComponents extends Component {
                 email_address: email, 
                 user_type: this.state.user_type,
                 branch: branch_object, 
-                address: customer_address, 
-                thumbnail: ""
+                address: customer_address
             };
             
             // case is there image 
@@ -501,9 +615,7 @@ class AddNewCustomerComponents extends Component {
             };
 
             var customerReq = await CustomerInstance.create_update(productObject);
-            console.log(customerReq);
-
-            
+             
             if(customerReq.login_redirect) { 
     
                 this.setPressBtn(false);    
@@ -575,6 +687,9 @@ class AddNewCustomerComponents extends Component {
                                     style={{height: 200, width:200, borderRadius: 200, borderWidth: 1, borderColor: "#fff"}}
                                     resizeMode="cover"
                                     PlaceholderContent={<ActivityIndicator />} 
+                                    onError={() => {
+                                        this.setState({customer_thumbnail: require('./../../assets/icons/customer-placeholder.png')});
+                                    }}
                                 />
                             </TouchableOpacity>  
                         </View>
@@ -651,7 +766,7 @@ class AddNewCustomerComponents extends Component {
                                 placeholder={this.state.language.address}
                                 style={{...styles.textarea_field}} />
                             </View>
-                        </View>
+                        </View> 
 
                         <View style={{ ...styles.wrapper, ...this.state.notificationBox, ...this.state.notificationCssClass, ...styles.space_top_25}}>
                             <Text style={this.state.notificationTextCssClass}>{this.state.notificationMessage}</Text>
@@ -682,4 +797,4 @@ class AddNewCustomerComponents extends Component {
  
  
 // alert("get async + falg not assigned in bulk insert + when search on item name and click on edit it get error");
-export {AddNewCustomerComponents}
+export {EditCustomerComponents}

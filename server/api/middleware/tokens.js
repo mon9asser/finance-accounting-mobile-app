@@ -3,8 +3,15 @@ const { conf } = require("./../../settings/config");
 const jwt = require('jsonwebtoken');
 let { User, Application } = require("./../../applications/confguration");
 
+let { Default_Values } = require("./../../settings/defaults");
+
+ 
 var verify_user_tokens_and_keys = async (req, res, next) => {
     
+    if( req.body.database_name != undefined || req.body.language != undefined ) {
+        new Default_Values( req.body.database_name,  req.body.language );
+    }
+
     // checking for language property 
     if( req.body.language == undefined ) {
 

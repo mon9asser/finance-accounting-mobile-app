@@ -43,6 +43,18 @@ var Models = {
         })
     },
 
+    
+
+    last_recorded: {
+        key: "last-recorded",
+        doc_type: -1,
+        instance: new Storage({
+            size: 350,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    },
+
     branches: {
         key: "branches",
         doc_type: 4,
@@ -95,7 +107,15 @@ var Models = {
 
 
 
-
+    sales_doc: {
+        key: "sales-doc",
+        doc_type: 9,
+        instance: new Storage({
+            size: 350,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    },
 
 
     log_history: {

@@ -20,11 +20,14 @@ var config = {
 
     api: ( slug = null ) => { 
 
+        // api.eratags.com/salespoint/
+
         var root = `${config.ip}`;
         
         if(config.root !== null) {
             root = `${root}:${config.port}`
         } 
+
         if( slug !== null ) {
             root = `${root}/${slug}`
         }

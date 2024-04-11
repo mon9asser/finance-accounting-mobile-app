@@ -225,6 +225,10 @@ class ProductsComponents extends PureComponent {
         alert("https://www.npmjs.com/package/react-native-swipe-up-down")
         alert("https://www.npmjs.com/package/react-native-date-picker")
         */
+
+        // Apply screen and header options 
+        this.screen_options();  
+
         // Load All data async 
         await this.Get_All_Data(); 
 
@@ -232,10 +236,7 @@ class ProductsComponents extends PureComponent {
         await this.setup_params();
 
         // internet connection status
-        this.internetConnectionStatus();
-
-        // Apply screen and header options 
-        this.screen_options();  
+        this.internetConnectionStatus(); 
 
         // getting all prices 
         await this.load_all_prices();

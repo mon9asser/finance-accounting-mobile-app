@@ -14,28 +14,23 @@ import _ from 'lodash';
  * 
  */
 
-class Customers extends A_P_I_S {
+class Last_Recorded extends A_P_I_S {
 
     constructor(props) {
 
         super(props); 
-        this.Schema =  Models.customers;
+        this.Schema =  Models.last_recorded;
 
     }
 
     /** Insert and update a record */
-    create_update = async ({customer_name, phone_number,gender,email_address,user_type ,branch,address,thumbnail, file, param_id} = null ) => {
+    create_update = async ({number, zero_left, type, param_id} = null ) => {
        
          console.log(branch);
         var _object =  { 
-            customer_name: customer_name == undefined? "": customer_name ,
-            phone_number: phone_number == undefined? "": phone_number ,
-            gender: gender == undefined? "": gender ,
-            email_address: email_address == undefined? "": email_address ,
-            user_type : user_type == undefined? 0: user_type ,
-            branch: branch == undefined? {}: branch ,
-            address: address == undefined? "": address ,
-            thumbnail: thumbnail == undefined? "": thumbnail ,
+            number: number == undefined? "": number ,
+            number: zero_left == undefined? -1: zero_left ,
+            type: type == undefined? "": type  
         };
 
         if( file != undefined ) {
@@ -212,10 +207,30 @@ class Customers extends A_P_I_S {
     }
 
      
+    get_last_record_number = async (doc_type) => {
+
+         // getting settings and language
+         var settings;
+
+         try{
+             settings = await get_setting(); 
+         } catch(error){}
+         
+         var language =  get_lang(settings.language);
+         
+         
+         // get data from remote
+         var async_data = await this.GetAsyncLastRecord(this.Schema, {
+            type: doc_type
+         }); 
+
+         return async_data;
+
+    }
 
 }
  
-var CustomerInstance = new Customers(); 
+var RecordedInstance = new Last_Recorded(); 
   
 
-export { Customers, CustomerInstance };
+export { Last_Recorded, RecordedInstance };

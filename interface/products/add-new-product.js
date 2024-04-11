@@ -1316,7 +1316,6 @@ class AddNewProductComponents extends Component {
                         </View> 
 
                         <View style={{...styles.space_bottom_10, ...styles.space_top_25}}>
-                            
                             <Button onPress={this.saveData} style={{...styles.default_btn, backgroundColor: this.state.default_color }}>
                                 {
                                     this.state.isPressed ?
@@ -1325,7 +1324,8 @@ class AddNewProductComponents extends Component {
                                     <Text style={{color:styles.direct.color.white, ...styles.size.medium}}> {this.state.language.save} </Text> 
                                 }
                             </Button>
-                        </View>                      
+                        </View>   
+                                           
                     </View > 
 
                  </ScrollView> 
