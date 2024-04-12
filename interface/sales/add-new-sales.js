@@ -38,6 +38,8 @@ import { ProductInstance } from "../../controllers/storage/products.js";
 
 import { CustomerInstance } from "../../controllers/storage/customers.js";
 import { RecordedInstance } from "../../controllers/storage/last-recorded.js";
+import { SalesInvoiceInstance } from "../../controllers/storage/sales.js";
+import { DocDetailsInstance } from "../../controllers/storage/document-details.js";
 import { A_P_I_S } from "../../controllers/cores/apis.js";
 import { Models } from "../../controllers/cores/models.js";
 
@@ -209,16 +211,47 @@ class AddNewSalesInvoiceComponents extends Component {
             customers: [],
             
             doc_type: 0,
-            doc_id: generateId(),
-            doc_number: "01",
+            doc_id: generateId(), // param_id
+            doc_number: "01", // invoice_number 
+            selected_invoice_status: {
+                label: "Pending",
+                value: 1
+            },  // invoice_status          
+            selected_payment_method: {
+                label: "Cash",
+                value: 0
+            }, // payment_method
+            selected_order_type: {
+                label: "Takeaway",
+                value: 1
+            },  // order_type
+            selected_customer: null,  // customer
+            selected_branch: {label: "Main Branch", value: "000000012345_default_branch"}, // branch
+            date: Date.now(), //date  
+            total: "0.00", // total
+            selected_payment_status: {
+                label: "Paid",
+                value: 0
+            },  // payment_status
+            subtotal: "0.00", // subtotal
+            discount: {
+                is_percentage: false,
+                percentage: 0,
+                value:"0.00"
+            }, // discount
+            tax: {
+                is_percentage: false,
+                percentage: 0,
+                value:"0.00"
+            }, // tax
+            vat: {
+                is_percentage: false,
+                percentage: 0,
+                value:"0.00"
+            }, // vat
+            shipping_or_delivery_cost: "0.00", // shipping_or_delivery_cost
             
-            selected_branch: {},
-            selected_invoice_status: {},
-            selected_payment_method: {},
-            selected_payment_status: {}, 
-            selected_customer: {}, 
-            selected_order_type: {}, 
-            invoices_details: [], // products + total prices and calcs
+            invoices_details: [], // Document Details 
             
             
             notificationBox: { display: 'none' },
@@ -341,6 +374,63 @@ class AddNewSalesInvoiceComponents extends Component {
             notificationTextCssClass: cssObject
         })
     }
+    
+    
+    setIPaymentStatusObject = (value) => {
+ 
+        var object_data = {};
+        var index = this.state.payment_status.findIndex( x => x.value == value );
+        if( index != -1 ) {
+            object_data =  this.state.payment_status[index]; 
+        }
+
+        this.setState({
+            selected_payment_status: object_data
+        });
+ 
+    }
+
+    setIOrderTypeObject = (value) => {
+ 
+        var object_data = {};
+        var index = this.state.order_type.findIndex( x => x.value == value );
+        if( index != -1 ) {
+            object_data =  this.state.order_type[index]; 
+        }
+
+        this.setState({
+            selected_order_type: object_data
+        });
+ 
+    }
+    
+    setIPaymentMethodObject = (value) => {
+ 
+        var object_data = {};
+        var index = this.state.payment_methods.findIndex( x => x.value == value );
+        if( index != -1 ) {
+            object_data =  this.state.payment_methods[index]; 
+        }
+
+        this.setState({
+            selected_payment_method: object_data
+        });
+ 
+    }
+
+    setInvoiceStatusObject = (value) => {
+ 
+        var object_data = {};
+        var index = this.state.invoice_status.findIndex( x => x.value == value );
+        if( index != -1 ) {
+            object_data =  this.state.invoice_status[index]; 
+        }
+
+        this.setState({
+            selected_invoice_status: object_data
+        });
+ 
+    }
 
     setCategoryObject = ( local_id ) => {
 
@@ -355,28 +445,71 @@ class AddNewSalesInvoiceComponents extends Component {
         });
 
     }
+    
 
     setChangedValue = ( value, setValue ) => {
         setValue(value);
     }
+    
+    
+    AllPaymentStatusSelector = () => { 
+        return (
+            <RNPickerSelect 
+                value={this.state.selected_payment_status.value}
+                onValueChange={(value) => this.setIPaymentStatusObject(value)}
+                items={this.state.payment_status}
+            />
+        );
+    };
 
+    AllOrdersTypesSelector = () => { 
+        return (
+            <RNPickerSelect 
+                value={this.state.selected_order_type.value}
+                onValueChange={(value) => this.setIOrderTypeObject(value)}
+                items={this.state.order_type}
+            />
+        );
+    };
+
+    AllPaymentMethodSelector = () => { 
+        return (
+            <RNPickerSelect 
+                value={this.state.selected_payment_method.value}
+                onValueChange={(value) => this.setIPaymentMethodObject(value)}
+                items={this.state.payment_methods}
+            />
+        );
+    };
+    
+    AllInvoiceStatusSelector = () => { 
+        return (
+            <RNPickerSelect 
+                value={this.state.selected_invoice_status.value}
+                onValueChange={(value) => this.setInvoiceStatusObject(value)}
+                items={this.state.invoice_status}
+            />
+        );
+    };
+    
     AllBranchesSelector = () => {
 
         var branches = this.state.branches.map( item => {
              
             return {
                 label: item.branch_name,
-                value: item.local_id
+                value: item.local_id,
+                branch_country: item.branch_country,
+                branch_city: item.branch_city,
+                branch_address: item.branch_address,
+                branch_number: item.branch_number 
             };
             
         });
-         
-        var default_branch_index = branches.findIndex( x => x.value == "000000012345_default_branch" );
-        var default_value = branches[default_branch_index] ? branches[default_branch_index].value: -1;
-        
+          
         return (
           <RNPickerSelect 
-            value={default_value}
+            value={this.state.selected_branch.value}
             onValueChange={(value) => this.setCategoryObject(value)}
             items={branches}
           />
@@ -558,9 +691,31 @@ class AddNewSalesInvoiceComponents extends Component {
 
     }
 
-    render () {
+    render() {
+        return (
+            <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>
+                 <ScrollView contentContainerStyle={{...styles.container1}}>
+                    {this.state.isConnected? "" : this.AnimatedBoxforInternetWarning()}
+                        <View  style={{...styles.space_bottom_25, flex: 1, flexDirection: "column", gap: 0, marginTop: 35 }}>
+                                <View style={{...styles.field_container}}> 
+                                    <View style={styles.inputLabel}>
+                                        <Text style={styles.inputLabelText}>{this.state.language.invoice_number} #{this.state.doc_number}</Text>
+                                    </View>  
+                                </View>
+
+                        </View> 
+                 </ScrollView>
+            </SafeAreaView>
+        );
+    }
+    render_old () {
         return (<View>
             <this.AllBranchesSelector/>
+            <this.AllInvoiceStatusSelector/> 
+            <this.AllPaymentMethodSelector/>
+            <this.AllOrdersTypesSelector/>
+            <this.AllPaymentStatusSelector/> 
+
             <Button onPress= {() => {
                 var mm = this.find_price_object_of_product("6647cin5z2a93v17127838906821040")
                 console.log("==========================================")

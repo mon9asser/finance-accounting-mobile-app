@@ -95,6 +95,7 @@ const en = {
         check_internet_connection: "Something went wrong, please check your internet connection and try again.",
         something_error: "Something went wrong, try later",
         error: "Fetal Error",
+        invoice_number: "Invoice Number",
         login: "Login", 
         login_subtitle: "Please sign in to continue",
         forget_password: "Forget your password?",
