@@ -694,15 +694,41 @@ class AddNewSalesInvoiceComponents extends Component {
     render() {
         return (
             <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>
-                 <ScrollView contentContainerStyle={{...styles.container1}}>
+                 <ScrollView contentContainerStyle={{...styles.container2}}>
                     {this.state.isConnected? "" : this.AnimatedBoxforInternetWarning()}
-                        <View  style={{...styles.space_bottom_25, flex: 1, flexDirection: "column", gap: 0, marginTop: 35 }}>
-                                <View style={{...styles.field_container}}> 
-                                    <View style={styles.inputLabel}>
-                                        <Text style={styles.inputLabelText}>{this.state.language.invoice_number} #{this.state.doc_number}</Text>
-                                    </View>  
+                        
+                        <View style={{...styles.space_bottom_25, flex: 1, flexDirection: "column", gap: 0, marginTop: 35 }}>
+                            <View style={{...styles.field_container}}> 
+                                
+                                <View style={styles.inputLabel}>    
+                                    <View style={{flexDirection:"row", gap: 15, justifyContent:'center', flex: 1}}>
+                                        <Text style={styles.inputLabelText}>
+                                            {this.state.language.invoice_number}
+                                        </Text>
+                                        <Text style={{color:this.state.default_color, fontWeight: "bold"}}>
+                                            #{this.state.doc_number} 
+                                        </Text>
+                                    </View> 
+                                </View>  
+                                
+                                 <View style={{...styles.field_container, flexDirection: "row", gap: 10, marginTop: 10}}> 
+                                    <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf', flexGrow: 1 }}>
+                                        <Image 
+                                            style={{
+                                                width:30,
+                                                height:30,
+                                                marginRight: 5
+                                            }}
+                                            source={require("./../../assets/icons/trash-icon.png")}
+                                        />
+                                        <TextInput value={this.state.date.toString()} onChangeText={text => this.setChangedValue(text, this.setCustomerName)} style={{flex: 1}} placeholder="dd/mm/yyyy" />
+                                    </View> 
+                                    <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf', flexGrow: 1 }}>
+                                        <TextInput value={this.state.customer_name} onChangeText={text => this.setChangedValue(text, this.setCustomerName)} style={{flex: 1}} placeholder={this.state.language.customer_name} />
+                                    </View>
                                 </View>
 
+                            </View>
                         </View> 
                  </ScrollView>
             </SafeAreaView>

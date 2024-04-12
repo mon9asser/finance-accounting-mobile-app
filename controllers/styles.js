@@ -211,6 +211,14 @@ var styles = StyleSheet.create({
         width: '100%'
     },
 
+    container2: {
+        justifyContent: 'center',
+        paddingLeft: 10,
+        paddingRight: 10, 
+        width: '100%'
+    },
+
+
 
     container_fluid: { 
         width: '100%', 
