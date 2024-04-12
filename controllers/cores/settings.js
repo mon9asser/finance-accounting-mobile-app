@@ -130,6 +130,23 @@ var delete_session_form = async() => {
     }
 }
  
+
+var americanDateCalendar = (timestamp) => {
+    
+    let date = new Date(timestamp);
+    let day = date.getDate();
+    let month = date.getMonth() + 1; // Get the month and adjust for zero-based index
+    let year = date.getFullYear();
+
+    // Pad the day and month with a leading zero if they are less than 10
+    day = day < 10 ? '0' + day : day;
+    month = month < 10 ? '0' + month : month;
+
+    // Return the formatted date string
+    return `${day}/${month}/${year}`;
+    
+}
+
 export {
     get_setting, 
     add_setting, 
@@ -137,5 +154,6 @@ export {
 
     get_last_session_form,
     add_last_session_form,
-    delete_session_form
+    delete_session_form,
+    americanDateCalendar
 };

@@ -18,8 +18,8 @@ import { Camera } from 'expo-camera';
 
 // App Files 
 import {config} from "../../settings/config.js" ;
-import {styles} from "../../controllers/styles.js"; 
-import {get_setting, add_last_session_form, get_last_session_form, delete_session_form} from "../../controllers/cores/settings.js";
+import {styles} from "../../controllers/styles.js";  
+import {get_setting, add_last_session_form, get_last_session_form, delete_session_form, americanDateCalendar} from "../../controllers/cores/settings.js";
 import {get_lang} from '../../controllers/languages.js'; 
 import { SelectList } from 'react-native-dropdown-select-list';
 import { decode as atob } from 'base-64';
@@ -692,6 +692,9 @@ class AddNewSalesInvoiceComponents extends Component {
     }
 
     render() {
+
+        var formatted_date = americanDateCalendar(this.state.date);
+
         return (
             <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>
                  <ScrollView contentContainerStyle={{...styles.container2}}>
@@ -711,28 +714,42 @@ class AddNewSalesInvoiceComponents extends Component {
                                     </View> 
                                 </View>  
                                 
-                                 <View style={{...styles.field_container, flexDirection: "row", gap: 10, marginTop: 10}}> 
+                                <View style={{...styles.field_container, flexDirection: "row", gap: 10, marginTop: 10}}> 
                                     <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf', flexGrow: 1 }}>
                                         <Image 
                                             style={{
-                                                width:30,
-                                                height:30,
+                                                width:22,
+                                                height:22,
                                                 marginRight: 5
                                             }}
-                                            source={require("./../../assets/icons/trash-icon.png")}
+                                            source={require("./../../assets/icons/calendar.png")}
                                         />
-                                        <TextInput value={this.state.date.toString()} onChangeText={text => this.setChangedValue(text, this.setCustomerName)} style={{flex: 1}} placeholder="dd/mm/yyyy" />
-                                    </View> 
-                                    <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf', flexGrow: 1 }}>
-                                        <TextInput value={this.state.customer_name} onChangeText={text => this.setChangedValue(text, this.setCustomerName)} style={{flex: 1}} placeholder={this.state.language.customer_name} />
+                                        <TextInput value={formatted_date} onChangeText={text => this.setChangedValue(text, this.setCustomerName)} style={{flex: 1, color:"#999"}} readOnly={true} placeholder="dd/mm/yyyy" />
+                                    </View>
+
+                                    <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf', flexGrow: 2 }}>
+                                        <Image 
+                                            style={{
+                                                width:22,
+                                                height:22,
+                                                marginRight: 5
+                                            }}
+                                            source={require("./../../assets/icons/customer-icon.png")}
+                                        />
+                                        <TextInput readOnly={true} value={this.state.customer_name} onChangeText={text => this.setChangedValue(text, this.setCustomerName)} style={{flex: 1}} placeholder={this.state.language.no_customer_selected} />
                                     </View>
                                 </View>
+
+                                <View style={{...styles.field_container, flexDirection: "row", gap: 10}}> 
+                                    <Text>Value</Text>
+                                </View> 
 
                             </View>
                         </View> 
                  </ScrollView>
             </SafeAreaView>
         );
+
     }
     render_old () {
         return (<View>

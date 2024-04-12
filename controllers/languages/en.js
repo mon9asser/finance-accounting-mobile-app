@@ -96,6 +96,7 @@ const en = {
         something_error: "Something went wrong, try later",
         error: "Fetal Error",
         invoice_number: "Invoice Number",
+        no_customer_selected: "No Customer Selected",
         login: "Login", 
         login_subtitle: "Please sign in to continue",
         forget_password: "Forget your password?",
