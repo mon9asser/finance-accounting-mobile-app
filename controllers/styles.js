@@ -197,6 +197,7 @@ var styles = StyleSheet.create({
     },
 
     container: {
+        flexGrow: 1,
         justifyContent: 'center',
         paddingLeft: 25,
         paddingRight: 25,
@@ -205,6 +206,7 @@ var styles = StyleSheet.create({
     },
 
     container1: {
+        flexGrow: 1,
         justifyContent: 'center',
         paddingLeft: 25,
         paddingRight: 25, 
@@ -212,6 +214,7 @@ var styles = StyleSheet.create({
     },
 
     container2: {
+        flexGrow: 1,
         justifyContent: 'center',
         paddingLeft: 10,
         paddingRight: 10, 

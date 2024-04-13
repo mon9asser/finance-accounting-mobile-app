@@ -696,7 +696,7 @@ class AddNewSalesInvoiceComponents extends Component {
         var formatted_date = americanDateCalendar(this.state.date);
 
         return (
-            <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>
+            <SafeAreaView style={{...styles.container_fluid,   backgroundColor: styles.direct.color.white, flexDirection:"row" }}>
                  <ScrollView contentContainerStyle={{...styles.container2}}>
                     {this.state.isConnected? "" : this.AnimatedBoxforInternetWarning()}
                         
@@ -714,7 +714,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                     </View> 
                                 </View>  
                                 
-                                <View style={{...styles.field_container, flexDirection: "row", gap: 10, marginTop: 10}}> 
+                                <View style={{...styles.field_container, flexDirection: "row", gap: 10, marginTop: 20}}> 
                                     <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf', flexGrow: 1 }}>
                                         <Image 
                                             style={{
@@ -741,10 +741,17 @@ class AddNewSalesInvoiceComponents extends Component {
                                 </View>
 
                                 <View style={{...styles.field_container, flexDirection: "row", gap: 10}}> 
-                                    <Text>Value</Text>
-                                </View> 
+                                    <TouchableOpacity style={{backgroundColor: this.state.default_color, marginLeft:"auto", flexDirection: "row", alignItems: "center", paddingTop: 5,paddingBottom: 5,paddingLeft: 5,paddingRight: 10,  borderRadius: 5, height: 35,}}>
+                                        <Image
+                                            style={{width: 25, height: 25, marginRight: 3}}
+                                            source={require('./../../assets/icons/edit.png')}
+                                        />
+                                        <Text style={{color: "#fff"}}>Add Item</Text>
+                                    </TouchableOpacity>
+                                </View>
+ 
 
-                            </View>
+                            </View> 
                         </View> 
                  </ScrollView>
             </SafeAreaView>
