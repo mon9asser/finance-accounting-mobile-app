@@ -212,7 +212,7 @@ class AddNewSalesInvoiceComponents extends Component {
             
             doc_type: 0,
             doc_id: generateId(), // param_id
-            doc_number: "01", // invoice_number 
+            doc_number: null, // invoice_number 
             selected_invoice_status: {
                 label: "Pending",
                 value: 1
@@ -458,6 +458,7 @@ class AddNewSalesInvoiceComponents extends Component {
                 value={this.state.selected_payment_status.value}
                 onValueChange={(value) => this.setIPaymentStatusObject(value)}
                 items={this.state.payment_status}
+                style={styles.selectorStyle}
             />
         );
     };
@@ -468,6 +469,7 @@ class AddNewSalesInvoiceComponents extends Component {
                 value={this.state.selected_order_type.value}
                 onValueChange={(value) => this.setIOrderTypeObject(value)}
                 items={this.state.order_type}
+                style={styles.selectorStyle}
             />
         );
     };
@@ -478,6 +480,7 @@ class AddNewSalesInvoiceComponents extends Component {
                 value={this.state.selected_payment_method.value}
                 onValueChange={(value) => this.setIPaymentMethodObject(value)}
                 items={this.state.payment_methods}
+                style={styles.selectorStyle}
             />
         );
     };
@@ -487,7 +490,8 @@ class AddNewSalesInvoiceComponents extends Component {
             <RNPickerSelect 
                 value={this.state.selected_invoice_status.value}
                 onValueChange={(value) => this.setInvoiceStatusObject(value)}
-                items={this.state.invoice_status}
+                items={this.state.invoice_status} 
+                style={styles.selectorStyle}
             />
         );
     };
@@ -512,6 +516,7 @@ class AddNewSalesInvoiceComponents extends Component {
             value={this.state.selected_branch.value}
             onValueChange={(value) => this.setCategoryObject(value)}
             items={branches}
+            style={styles.selectorStyle}
           />
         );
     };
@@ -708,13 +713,19 @@ class AddNewSalesInvoiceComponents extends Component {
                                         <Text style={styles.inputLabelText}>
                                             {this.state.language.invoice_number}
                                         </Text>
+                                        
                                         <Text style={{color:this.state.default_color, fontWeight: "bold"}}>
-                                            #{this.state.doc_number} 
+                                            {
+                                                this.state.doc_number == null ?
+                                                <ActivityIndicator color={this.state.default_color} />
+                                                : `#${this.state.doc_number}`
+                                            } 
                                         </Text>
+
                                     </View> 
                                 </View>  
                                 
-                                <View style={{...styles.field_container, flexDirection: "row", gap: 10, marginTop: 20}}> 
+                                <View style={{...styles.field_container, flexDirection: "row", gap: 10, marginTop: 20, marginBottom:0}}> 
                                     <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf', flexGrow: 1 }}>
                                         <Image 
                                             style={{
@@ -740,54 +751,218 @@ class AddNewSalesInvoiceComponents extends Component {
                                     </View>
                                 </View>
 
-                                <View style={{...styles.field_container, flexDirection: "row", gap: 10}}> 
-                                    <TouchableOpacity style={{backgroundColor: this.state.default_color, marginLeft:"auto", flexDirection: "row", alignItems: "center", paddingTop: 5,paddingBottom: 5,paddingLeft: 5,paddingRight: 10,  borderRadius: 5, height: 35,}}>
-                                        <Image
-                                            style={{width: 25, height: 25, marginRight: 3}}
-                                            source={require('./../../assets/icons/edit.png')}
-                                        />
-                                        <Text style={{color: "#fff"}}>Add Item</Text>
-                                    </TouchableOpacity>
+                                <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
+                                    <Text style={{fontWeight: "bold"}}>Order Status</Text>
+                                    <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
+                                        <this.AllInvoiceStatusSelector/>
+                                    </View> 
                                 </View>
- 
 
+                                <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
+                                    <Text style={{fontWeight: "bold"}}>Order Type</Text>
+                                    <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
+                                        <this.AllOrdersTypesSelector/>
+                                    </View> 
+                                </View>
+
+                                <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
+                                    <Text style={{fontWeight: "bold"}}>Branch</Text>
+                                    <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
+                                        <this.AllBranchesSelector/>
+                                    </View> 
+                                </View>
+
+                                <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
+                                    <Text style={{fontWeight: "bold"}}>Payment Status</Text>
+                                    <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
+                                        <this.AllPaymentStatusSelector/>
+                                    </View> 
+                                </View>
+
+                                <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
+                                    <Text style={{fontWeight: "bold"}}>Payment Method</Text>
+                                    <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
+                                        <this.AllPaymentMethodSelector/>
+                                    </View> 
+                                </View>
+
+
+                                <View>
+                                    <View style={{flexDirection: "row", gap: 10, marginTop: 20, alignItems: "center"}}> 
+                                        <Text style={{fontWeight: "bold"}}>
+                                            Items
+                                        </Text>
+                                        <TouchableOpacity style={{backgroundColor: this.state.default_color, marginLeft:"auto", flexDirection: "row", alignItems: "center", paddingTop: 5,paddingBottom: 5,paddingLeft: 10,paddingRight: 15,  borderRadius: 5, height: 35,}}>
+                                            <Image
+                                                style={{width: 20, height: 20, marginRight: 3}}
+                                                source={require('./../../assets/icons/add-new-prdouct.png')}
+                                            />
+                                            <Text style={{color: "#fff"}}>Add New Item</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    
+                                    <View style={{borderWidth: 1, borderColor: this.state.default_color, marginTop: 10}}>
+                                        <View>
+                                            <View style={{flex: 1, flexDirection: "row", backgroundColor: this.state.default_color, padding: 5, gap: 10, borderRadius: 0 , paddingBottom:5, paddingTop:5}}>
+                                                <View style={{flex: 2}}>
+                                                    <Text style={{color: "#fff"}}>
+                                                        Items
+                                                    </Text>
+                                                </View>
+                                                <View style={{flex: 1}}>
+                                                    <Text style={{color: "#fff"}}>
+                                                        QTY
+                                                    </Text>
+                                                </View>
+                                                <View style={{flex: 1}}>
+                                                    <Text style={{color: "#fff"}}>
+                                                        Price
+                                                    </Text>
+                                                </View> 
+                                                <View style={{flex: 1}}>
+                                                    <Text style={{color: "#fff"}}>
+                                                        Total
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                        
+                                        <View style={{ marginTop: 0, borderBottomColor: "#ddd", backgroundColor: "#fff", borderBottomWidth: 1, paddingLeft: 10, paddingRight: 10, paddingBottom:5, paddingTop:5}}>
+                                            <View style={{flex: 1, flexDirection: "row",  padding: 5, gap: 10, borderRadius: 2}}>
+                                                <View style={{flex: 2}}>
+                                                    <Text style={{color: "#000"}}>
+                                                        Items
+                                                    </Text>
+                                                </View>
+                                                <View style={{flex: 1}}>
+                                                    <Text style={{color: "#000"}}>
+                                                        QTY
+                                                    </Text>
+                                                </View>
+                                                <View style={{flex: 1}}>
+                                                    <Text style={{color: "#000"}}>
+                                                        Price
+                                                    </Text>
+                                                </View> 
+                                                <View style={{flex: 1, justifyContent: "center", flexDirection: "row", gap: 10, alignItems: "center"}}>
+                                                    <Text style={{color: "#000"}}>
+                                                        11,1500
+                                                    </Text>
+                                                    <TouchableOpacity>
+                                                        <Image 
+                                                            source={require('./../../assets/icons/trash.png')}
+                                                            style={{width: 16, height: 16}} 
+                                                            resizeMode="cover"
+                                                        />
+                                                    </TouchableOpacity>
+                                                </View> 
+                                            </View>
+                                        </View>
+
+                                        <View style={{ marginTop: 0, borderBottomColor: "#ddd", backgroundColor: "#f9f9f9", borderBottomWidth: 1, paddingLeft: 10, paddingRight: 10, paddingBottom:5, paddingTop:5}}>
+                                            <View style={{flex: 1, flexDirection: "row",  padding: 5, gap: 10, borderRadius: 2}}>
+                                                <View style={{flex: 2}}>
+                                                    <Text style={{color: "#666"}}>
+                                                        Items
+                                                    </Text>
+                                                </View>
+                                                <View style={{flex: 1}}>
+                                                    <Text style={{color: "#666"}}>
+                                                        QTY
+                                                    </Text>
+                                                </View>
+                                                <View style={{flex: 1}}>
+                                                    <Text style={{color: "#666"}}>
+                                                        Price
+                                                    </Text>
+                                                </View> 
+                                                <View style={{flex: 1, justifyContent: "center", flexDirection: "row", gap: 10, alignItems: "center"}}>
+                                                    <Text style={{color: "#666"}}>
+                                                        11,1600
+                                                    </Text>
+                                                    <TouchableOpacity>
+                                                        <Image 
+                                                            source={require('./../../assets/icons/trash.png')}
+                                                            style={{width: 16, height: 16}} 
+                                                            resizeMode="cover"
+                                                        />
+                                                    </TouchableOpacity>
+                                                </View> 
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
+                                
+                                <View style={{borderWidth: 1,borderStyle: "dashed", borderColor: "#dfdfdf", padding: 5, backgroundColor: "#fff", marginTop: 25}}>
+                                    
+                                    <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
+                                        <Text>Subtotal</Text>
+                                        <Text style={{fontWeight: "bold"}}>$500.00</Text>
+                                    </View>
+                                    <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
+                                        <Text>Discount</Text>
+                                        <Text style={{fontWeight: "bold"}}>$500.00</Text>
+                                    </View>
+                                    <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
+                                        <Text>Tax</Text>
+                                        <Text style={{fontWeight: "bold"}}>$500.00</Text>
+                                    </View>
+                                    <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
+                                        <Text>Vat</Text>
+                                        <Text style={{fontWeight: "bold"}}>$500.00</Text>
+                                    </View>
+                                    <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 10}}>
+                                        <Text>Shipping or Delivery Cost</Text>
+                                        <Text style={{fontWeight: "bold"}}>$500.00</Text>
+                                    </View>
+
+                                </View>
+
+
+
+                                <View style={{borderWidth: 1,borderStyle: "dashed", borderColor: "#dfdfdf", padding: 5, backgroundColor: "#f9f9f9", marginTop: 25}}>
+                                    
+                                    <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 10}}>
+                                        <Text style={{fontWeight: "bold"}}>Total</Text> 
+                                        <Text style={{fontWeight: "bold", fontSize: 18, color:this.state.default_color}}>$500.00</Text>
+                                    </View> 
+
+                                </View>
+                                 
+
+                                <View style={{ gap: 10, marginTop: 30, flex: 1, flexDirection: "column", overflow: "hidden"}}> 
+                                    <Text style={{fontWeight: "bold"}}>Order Tracking Number</Text>
+                                    <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
+                                        <TextInput value={this.state.customer_name} onChangeText={text => this.setChangedValue(text, this.setCustomerName)} style={{flex: 1}} placeholder={this.state.language.tracking_number} />
+                                    </View>
+                                </View>
+                                
+                                
                             </View> 
+
+                            <View style={{ gap: 10, marginTop: 30, flex: 1, flexDirection: "column", overflow: "hidden"}}> 
+                                <TouchableOpacity style={{marginBottom: 5}} onPress={() => alert("print , export, etc")}>
+                                    <Text>
+                                        Advanced Options
+                                    </Text>
+                                </TouchableOpacity>
+                                <Button onPress={this.saveData} style={{...styles.default_btn, backgroundColor: this.state.default_color }}>
+                                    {
+                                        this.state.isPressed ?
+                                        <ActivityIndicator color={styles.direct.color.white} />
+                                        :
+                                        <Text style={{color:styles.direct.color.white, ...styles.size.medium}}> {this.state.language.save} </Text> 
+                                    }
+                                </Button>  
+                            </View>
                         </View> 
+                        
                  </ScrollView>
+                 
             </SafeAreaView>
         );
 
-    }
-    render_old () {
-        return (<View>
-            <this.AllBranchesSelector/>
-            <this.AllInvoiceStatusSelector/> 
-            <this.AllPaymentMethodSelector/>
-            <this.AllOrdersTypesSelector/>
-            <this.AllPaymentStatusSelector/> 
-
-            <Button onPress= {() => {
-                var mm = this.find_price_object_of_product("6647cin5z2a93v17127838906821040")
-                console.log("==========================================")
-                console.log("Get Price of product by product local id")
-                console.log(mm)
-                console.log("==========================================")
-                
-            }}>Get Price of product by product local id</Button>
-            <Text>
-               
-            </Text>
-            <Text>
-                Sales Invoice number #{this.state.doc_number}
-            </Text>
-            <Text>
-                Number of Products {this.state.products.length}
-            </Text>
-            <Text>
-                Number of Prices {this.state.prices.length}
-            </Text>
-        </View>);
-    }
+    } 
 
 }
 

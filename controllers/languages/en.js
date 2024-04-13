@@ -10,6 +10,7 @@ const en = {
         add_new_customer: "Add a new customer",
         add_new: "Add New",
         add_new_field: "Add New Field",
+        tracking_number: "Tracking Number",
         add_new_branch: "Add a new branch",
         add_new_product: "Add a new product",
         edit_product: "Edit Product",

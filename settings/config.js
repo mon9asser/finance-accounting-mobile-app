@@ -11,9 +11,9 @@ var config = {
         version: Platform.Version 
     }, 
 
-    ip: 'http://192.168.100.7', // 'http://192.168.8.120', 'http://192.168.100.7' 
+    ip: 'http://192.168.8.120', // 'http://192.168.8.120', 'http://192.168.100.7' 
     port: '3000', 
-    keys: {
+keys: { 
         public: "@d#R$t%YY^B&N*)C(V*&b!n@%m9214#^$^&&%NCBVdSDFFLKLK%%LSDSDOO15454",
         secret: "$!@12548#24wcdfghhjOOLLLLEREmmmcxctyyyuufgfgfb8%%!14mmmmmSDSD$%#"
     },
