@@ -6,6 +6,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';  
 import Modal from "react-native-modal"; 
 import RNPickerSelect from 'react-native-picker-select';
+import DateTimePicker from '@react-native-community/datetimepicker'; 
 
 // Distruct 
 import { StatusBar } from 'expo-status-bar';
@@ -204,6 +205,11 @@ class AddNewSalesInvoiceComponents extends Component {
                 } 
             ],
 
+            // models
+            open_date_time_picker: false, 
+            customer_modal_open: false, 
+
+            // all data
             last_recorded: null,
             branches: [],
             prices: [], 
@@ -264,6 +270,58 @@ class AddNewSalesInvoiceComponents extends Component {
 
     } 
 
+    setOpenCustomerModal = () => {
+        
+        this.setState({
+            customer_modal_open: ! this.state.customer_modal_open
+        });
+ 
+    }
+
+    CustomerModal = ({ isVisible, toggleModal }) => {
+        // isVisible = true;
+        alert("Keep odds and evens") 
+        return (
+            <Modal isVisible={isVisible}>
+                 <View style={{...styles.modalContainer, flex: 1}}>
+                    <ScrollView style={{flex: 1}}>
+                        <View>
+                            <Text style={{fontWeight:"bold", fontSize: 18}}>Add Customer</Text>
+                        </View>
+                        {
+                             this.state.customers.length ?
+                            <View style={{marginTop: 10, borderColor:"#eee", borderWidth: 1, padding: 10, borderRadius: 8}}>
+                                <TextInput  style={{flex: 1, color:"#999"}} placeholder="Search for customer by name" />
+                            </View>: ""
+                        }
+                        
+                        <View style={{padding: 0, gap: 5, marginTop: 5}}>
+                            {
+                                ( this.state.customers.length ) ?
+                                this.state.customers.map( ( customerObject, index ) => (
+                                    <TouchableOpacity key={index} style={{paddingBottom: 8, paddingTop: 8, borderBottomColor: "#dfdfdf", borderBottomWidth: 1, borderStyle: "dashed"}}>
+                                        <Text style={{fontWeight: "Bold", color: "#222"}}>{customerObject.customer_name}</Text>
+                                        <Text style={{color:"#666"}}>
+                                            {customerObject.address}
+                                        </Text>
+                                        <Text style={{color:"#666"}}>
+                                            {customerObject.phone_number}
+                                        </Text>
+                                        
+                                    </TouchableOpacity> 
+                                )): <View style={{color: "#999", marginTop: 15, flexDirection: "row", alignItems: "center", justifyContent:"center", borderWidth: 1, borderColor: "#eee", padding: 10, flex: 1}}><Text style={{color: "#999"}}>No Customers found</Text><TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-customer")}><Text style={{color: "blue", fontWeight: "bold", marginLeft: 9}}>Add New Customer</Text></TouchableOpacity></View>
+                            }
+                            
+                        </View>
+                    </ScrollView>
+                    <Button onPress={this.setOpenCustomerModal} style={{backgroundColor: this.state.default_color, color: "#fff", borderRadius: 3}} mode="contained">
+                        <Text>Cancel</Text>
+                    </Button>
+                </View>
+                
+            </Modal>
+        );
+    }
 
     generateDocNumber = async () => {
         
@@ -696,6 +754,25 @@ class AddNewSalesInvoiceComponents extends Component {
 
     }
 
+    change_date_from_value = ( event, selectedDate) => {
+        
+        var date_picker_value = selectedDate || this.state.date;
+
+        this.setState({ 
+            date: date_picker_value, 
+            open_date_time_picker: false
+        });
+        
+    }
+
+    openDatePicker = (value) => {
+        
+        this.setState({
+            open_date_time_picker: value
+        });
+        
+    }
+
     render() {
 
         var formatted_date = americanDateCalendar(this.state.date);
@@ -726,7 +803,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                 </View>  
                                 
                                 <View style={{...styles.field_container, flexDirection: "row", gap: 10, marginTop: 20, marginBottom:0}}> 
-                                    <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf', flexGrow: 1 }}>
+                                    <TouchableOpacity onPress={() => this.openDatePicker(true)} style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf', flexGrow: 1 }}>
                                         <Image 
                                             style={{
                                                 width:22,
@@ -735,20 +812,32 @@ class AddNewSalesInvoiceComponents extends Component {
                                             }}
                                             source={require("./../../assets/icons/calendar.png")}
                                         />
-                                        <TextInput value={formatted_date} onChangeText={text => this.setChangedValue(text, this.setCustomerName)} style={{flex: 1, color:"#999"}} readOnly={true} placeholder="dd/mm/yyyy" />
-                                    </View>
+                                        <TextInput value={formatted_date}  style={{flex: 1, color:"#999"}} readOnly={true} placeholder="dd/mm/yyyy" />
+                                        {
+                                            this.state.open_date_time_picker && (
+                                                <DateTimePicker
+                                                    value={new Date(this.state.date)}
+                                                    mode={'date'}
+                                                    display="default"
+                                                    onChange={this.change_date_from_value}
+                                                />
+                                            ) 
+                                        }
+                                    </TouchableOpacity>
 
-                                    <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf', flexGrow: 2 }}>
+                                    <TouchableOpacity onPress={this.setOpenCustomerModal} style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf', flexGrow: 2 }}>
                                         <Image 
                                             style={{
                                                 width:22,
-                                                height:22,
+                                                height:22, 
                                                 marginRight: 5
                                             }}
                                             source={require("./../../assets/icons/customer-icon.png")}
                                         />
                                         <TextInput readOnly={true} value={this.state.customer_name} onChangeText={text => this.setChangedValue(text, this.setCustomerName)} style={{flex: 1}} placeholder={this.state.language.no_customer_selected} />
-                                    </View>
+                                    </TouchableOpacity>
+
+                                    <this.CustomerModal isVisible={this.state.customer_modal_open} toggleModal={this.setOpenCustomerModal} />
                                 </View>
 
                                 <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
@@ -942,9 +1031,9 @@ class AddNewSalesInvoiceComponents extends Component {
 
                             <View style={{ gap: 10, marginTop: 30, flex: 1, flexDirection: "column", overflow: "hidden"}}> 
                                 <TouchableOpacity style={{marginBottom: 5}} onPress={() => alert("print , export, etc")}>
-                                    <Text>
-                                        Advanced Options
-                                    </Text>
+                                    <Text style={{fontWeight:"bold", color: this.state.default_color}}>
+                                        More Options
+                                    </Text> 
                                 </TouchableOpacity>
                                 <Button onPress={this.saveData} style={{...styles.default_btn, backgroundColor: this.state.default_color }}>
                                     {
