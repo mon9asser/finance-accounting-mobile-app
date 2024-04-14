@@ -208,6 +208,9 @@ class AddNewSalesInvoiceComponents extends Component {
             // models
             open_date_time_picker: false, 
             customer_modal_open: false, 
+            item_modal_open: false, 
+            in_search_mode: false, 
+            multiple_items: false, 
 
             // all data
             last_recorded: null,
@@ -215,8 +218,9 @@ class AddNewSalesInvoiceComponents extends Component {
             prices: [], 
             products: [],  
             customers: [],
+
             customers_search: [],
-            
+            products_search: [],
 
             doc_type: 0,
             doc_id: generateId(), // param_id
@@ -233,6 +237,7 @@ class AddNewSalesInvoiceComponents extends Component {
                 label: "Takeaway",
                 value: 1
             },  // order_type
+            selected_products: null,
             selected_customer: null,  // customer
             selected_branch: {label: "Main Branch", value: "000000012345_default_branch"}, // branch
             date: Date.now(), //date  
@@ -272,12 +277,24 @@ class AddNewSalesInvoiceComponents extends Component {
 
     } 
 
+    setMultipleItems = () => {
+        this.setState({
+            multiple_items: ! this.state.multiple_items
+        })
+    }
+
     setOpenCustomerModal = () => {
         
         this.setState({
             customer_modal_open: ! this.state.customer_modal_open
         });
- 
+        
+    }
+
+    setOpenItemModal = () => {
+        this.setState({
+            item_modal_open: ! this.state.item_modal_open
+        });
     }
 
     oddoreven = ( index ) => {
@@ -317,17 +334,80 @@ class AddNewSalesInvoiceComponents extends Component {
             }
 
         });
-        console.log(copy);
+        
+        var in_search_mode = false; 
+
+        if( text != "" && ! copy.length ) {
+            in_search_mode = true
+        } 
+        
+        if ( text != "" && copy.length  ) {
+            in_search_mode = true
+        }
+
+        if( text == "" ) {
+            in_search_mode = false; 
+        }
+
         this.setState({
-            customers_search: text == "" ? []: copy
+            in_search_mode: in_search_mode, 
+            customers_search: text == "" ? []: copy 
         }); 
 
     }
 
+    filter_products_in_search = (text) => {
+
+    }
+    
+    selectProductObject = (productObject ) => {
+
+        if( productObject.local_id == undefined ) {
+            return;
+        }
+
+        var id = productObject.local_id; 
+
+        
+        this.setState((prevState) => {
+            
+            var array_data = prevState.selected_products == null ? []: prevState.selected_products;
+            var index = array_data.findIndex( x => x.local_id == id);
+            
+            if( index == -1 ) {
+                array_data.push(productObject)
+            } else {
+                array_data = array_data.filter( x => x.local_id != id);
+            }
+            
+            var stateObject = {
+                selected_products: array_data
+            }
+            
+            if( ! this.state.multiple_items) {
+                شمثقف)()
+            }
+
+            return stateObject;
+        });
+
+        if( ! this.state.multiple_items) {
+            this.setOpenItemModal();
+        }
+        
+    } 
+
+    selectCustomerObject = (customerObject ) => {
+        this.setState({
+            selected_customer: customerObject
+        });
+        this.setOpenCustomerModal();
+    }
+
     CustomerModal = ({ isVisible, toggleModal }) => {
-        // isVisible = true; 
+        
         return (
-            <Modal isVisible={isVisible}>
+            <Modal isVisible={isVisible} animationType="slide">
                  <View style={{...styles.modalContainer, flex: 1}}>
                     <ScrollView style={{flex: 1}}>
                         <View>
@@ -340,22 +420,43 @@ class AddNewSalesInvoiceComponents extends Component {
                             </View>: ""
                         }
                         
-                        <View style={{padding: 0, gap: 5, marginTop: 5}}>
+                        <View style={{padding: 0, gap: 5, marginTop: 15}}>
                             {
                                 
 
-                                ( this.state.customers.length ) ?
-                                (this.state.customers_search.length ? this.state.customers_search: this.state.customers).map( ( customerObject, index ) => (
-                                    <TouchableOpacity key={index} style={{ padding: 8, borderBottomColor: "#dfdfdf", borderBottomWidth: 1, borderStyle: "dashed", backgroundColor: this.oddoreven(index) }}>
-                                        <Text style={{fontWeight: "bold", color: "#222"}}>{customerObject.customer_name}</Text>
-                                        <Text style={{color:"#666"}}>
-                                            {customerObject.address}
-                                        </Text>
-                                        <Text style={{color:"#666"}}>
-                                            {customerObject.phone_number}
-                                        </Text> 
-                                    </TouchableOpacity> 
-                                )): <View style={{color: "#999", marginTop: 15, flexDirection: "row", alignItems: "center", justifyContent:"center", borderWidth: 1, borderColor: "#eee", padding: 10, flex: 1}}><Text style={{color: "#999"}}>No Customers found</Text><TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-customer")}><Text style={{color: "blue", fontWeight: "bold", marginLeft: 9}}>Add New Customer</Text></TouchableOpacity></View>
+                                ( this.state.customers.length ) ? 
+                                
+                                ( this.state.in_search_mode && ! this.state.customers_search.length ) ?
+                                    <View>
+                                        <View style={{padding: 10, borderWidth: 1, borderColor: "#eee"}}><Text style={{color: "#999"}}>{this.state.language.no_customer_found}</Text></View> 
+                                    </View>
+                                :
+                                (this.state.in_search_mode ? this.state.customers_search: this.state.customers).map( ( customerObject, index ) => {
+                                    var is_selected = false; 
+                                     
+                                    if( this.state.selected_customer != null ) {
+                                        if( this.state.selected_customer.local_id == customerObject.local_id ) {
+                                            is_selected = true; 
+                                        }
+                                    }
+
+                                    return (
+                                        <TouchableOpacity key={index} onPress={() => this.selectCustomerObject(customerObject)} style={{ padding: 10, marginTop: 0, borderStyle: "dashed", backgroundColor: this.oddoreven(index), borderWidth: ( is_selected )? 1: 0, borderColor: ( is_selected )? this.state.default_color: "white" }}>
+                                            <Text style={{fontWeight: "bold", color: "#222"}}>{customerObject.customer_name}</Text>
+                                            <Text style={{color:"#666"}}>
+                                                {customerObject.address}
+                                            </Text>
+                                            <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                                                <Text style={{color:"#666"}}>
+                                                    {customerObject.phone_number}
+                                                </Text> 
+                                                <Text style={{color:"#666"}}>
+                                                    {customerObject.branch.branch_name}
+                                                </Text> 
+                                            </View>
+                                        </TouchableOpacity> 
+                                    );
+                                }): <View style={{color: "#999", marginTop: 15, flexDirection: "row", alignItems: "center", justifyContent:"center", borderWidth: 1, borderColor: "#eee", padding: 10, flex: 1}}><Text style={{color: "#999"}}>No Customers found</Text><TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-customer")}><Text style={{color: "blue", fontWeight: "bold", marginLeft: 9}}>Add New Customer</Text></TouchableOpacity></View>
                             }
                             
                         </View>
@@ -365,6 +466,62 @@ class AddNewSalesInvoiceComponents extends Component {
                     </Button>
                 </View>
                 
+            </Modal>
+        );
+    }
+
+    ItemModal = ({ isVisible, toggleModal }) => {
+        isVisible = true; 
+        return (
+            <Modal isVisible={isVisible} animationType="slide">
+                <View style={{...styles.modalContainer, flex: 1}}>
+
+                    <View>
+                        <View style={{justifyContent:"space-between", flexDirection: "row", alignItems: "center"}}>
+                            <Text style={{fontWeight: "bold", fontSize: 18}}>
+                                Products
+                            </Text> 
+                            <TouchableOpacity onPress={this.setMultipleItems} style={{flexDirection:"row", alignItems: "center"}}>
+                                <Checkbox status={this.state.multiple_items ? "checked": ""} />
+                                <Text>Multiple Items</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View>
+                            <Text style={{color:"#999"}}>You can select more than one item once you mark the "Multiple Items".</Text>
+                        </View>
+                    </View>
+
+                    <View style={{marginTop: 10, borderColor:"#eee", borderWidth: 1, borderRadius: 8, padding: 5}}>
+                        <TextInput onChangeText={(text) => this.filter_products_in_search(text)}  style={{color:"#999"}} placeholder="Search for products by name" />
+                    </View> 
+
+                    <ScrollView style={{padding: 0, gap: 5, marginTop: 15}}>
+                        {
+                            
+                            this.state.products.map((productObject, index) => {
+                                var is_selected = false; 
+                                     
+                                if( this.state.selected_products != null ) {
+
+                                    var index = this.state.selected_products.findIndex( x => x.local_id == productObject.local_id );
+
+                                    if( index !== -1 ) {
+                                        is_selected = true; 
+                                    }
+                                }
+
+                                return (
+                                    <TouchableOpacity key={productObject.local_id} onPress={() => this.selectProductObject(productObject)} style={{ padding: 10, marginTop: 0, borderStyle: "dashed", backgroundColor: this.oddoreven(index), borderWidth: ( is_selected )? 1: 0, borderColor: ( is_selected )? this.state.default_color: "white" }}>
+                                        <Text style={{fontWeight: "bold", color: "#222"}}>
+                                            {productObject.product_name}
+                                        </Text> 
+                                    </TouchableOpacity>
+                                );
+                            })
+                        }
+                    </ScrollView>
+
+                </View>
             </Modal>
         );
     }
@@ -880,7 +1037,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                             }}
                                             source={require("./../../assets/icons/customer-icon.png")}
                                         />
-                                        <TextInput readOnly={true} value={this.state.customer_name} onChangeText={text => this.setChangedValue(text, this.setCustomerName)} style={{flex: 1}} placeholder={this.state.language.no_customer_selected} />
+                                        <TextInput readOnly={true} value={this.state.selected_customer != null ? this.state.selected_customer.customer_name: ""} style={{flex: 1}} placeholder={this.state.language.no_customer_selected} />
                                     </TouchableOpacity>
 
                                     <this.CustomerModal isVisible={this.state.customer_modal_open} toggleModal={this.setOpenCustomerModal} />
@@ -927,7 +1084,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                         <Text style={{fontWeight: "bold"}}>
                                             Items
                                         </Text>
-                                        <TouchableOpacity style={{backgroundColor: this.state.default_color, marginLeft:"auto", flexDirection: "row", alignItems: "center", paddingTop: 5,paddingBottom: 5,paddingLeft: 10,paddingRight: 15,  borderRadius: 5, height: 35,}}>
+                                        <TouchableOpacity onPress={this.setOpenItemModal} style={{backgroundColor: this.state.default_color, marginLeft:"auto", flexDirection: "row", alignItems: "center", paddingTop: 5,paddingBottom: 5,paddingLeft: 10,paddingRight: 15,  borderRadius: 5, height: 35,}}>
                                             <Image
                                                 style={{width: 20, height: 20, marginRight: 3}}
                                                 source={require('./../../assets/icons/add-new-prdouct.png')}
@@ -935,6 +1092,8 @@ class AddNewSalesInvoiceComponents extends Component {
                                             <Text style={{color: "#fff"}}>Add New Item</Text>
                                         </TouchableOpacity>
                                     </View>
+
+                                    <this.ItemModal isVisible={this.state.item_modal_open} toggleModal={this.setOpenItemModal} />
                                     
                                     <View style={{borderWidth: 1, borderColor: this.state.default_color, marginTop: 10}}>
                                         <View>
