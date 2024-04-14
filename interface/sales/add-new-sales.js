@@ -215,7 +215,9 @@ class AddNewSalesInvoiceComponents extends Component {
             prices: [], 
             products: [],  
             customers: [],
+            customers_search: [],
             
+
             doc_type: 0,
             doc_id: generateId(), // param_id
             doc_number: null, // invoice_number 
@@ -278,9 +280,52 @@ class AddNewSalesInvoiceComponents extends Component {
  
     }
 
+    oddoreven = ( index ) => {
+        
+        var bg = "#fff"
+
+        if( index % 2 == 0 ) {
+            bg = "#f9f9f9";
+        }
+
+        return bg; 
+
+    }
+
+     
+    filter_customers_in_search = (text) => {
+        
+        console.log(text);
+
+        var copy = this.state.customers.filter(customer => { 
+ 
+
+            
+            // search by cutomer name 
+            var name = customer.customer_name.indexOf(text) !== -1;
+
+            // search by branch name  
+ 
+
+            // search by phone number 
+
+            // search by address 
+
+
+            if( name ) {
+                return customer;
+            }
+
+        });
+        console.log(copy);
+        this.setState({
+            customers_search: text == "" ? []: copy
+        }); 
+
+    }
+
     CustomerModal = ({ isVisible, toggleModal }) => {
-        // isVisible = true;
-        alert("Keep odds and evens") 
+        // isVisible = true; 
         return (
             <Modal isVisible={isVisible}>
                  <View style={{...styles.modalContainer, flex: 1}}>
@@ -291,23 +336,24 @@ class AddNewSalesInvoiceComponents extends Component {
                         {
                              this.state.customers.length ?
                             <View style={{marginTop: 10, borderColor:"#eee", borderWidth: 1, padding: 10, borderRadius: 8}}>
-                                <TextInput  style={{flex: 1, color:"#999"}} placeholder="Search for customer by name" />
+                                <TextInput onChangeText={(text) => this.filter_customers_in_search(text)}  style={{flex: 1, color:"#999"}} placeholder="Search for customer by name" />
                             </View>: ""
                         }
                         
                         <View style={{padding: 0, gap: 5, marginTop: 5}}>
                             {
+                                
+
                                 ( this.state.customers.length ) ?
-                                this.state.customers.map( ( customerObject, index ) => (
-                                    <TouchableOpacity key={index} style={{paddingBottom: 8, paddingTop: 8, borderBottomColor: "#dfdfdf", borderBottomWidth: 1, borderStyle: "dashed"}}>
-                                        <Text style={{fontWeight: "Bold", color: "#222"}}>{customerObject.customer_name}</Text>
+                                (this.state.customers_search.length ? this.state.customers_search: this.state.customers).map( ( customerObject, index ) => (
+                                    <TouchableOpacity key={index} style={{ padding: 8, borderBottomColor: "#dfdfdf", borderBottomWidth: 1, borderStyle: "dashed", backgroundColor: this.oddoreven(index) }}>
+                                        <Text style={{fontWeight: "bold", color: "#222"}}>{customerObject.customer_name}</Text>
                                         <Text style={{color:"#666"}}>
                                             {customerObject.address}
                                         </Text>
                                         <Text style={{color:"#666"}}>
                                             {customerObject.phone_number}
-                                        </Text>
-                                        
+                                        </Text> 
                                     </TouchableOpacity> 
                                 )): <View style={{color: "#999", marginTop: 15, flexDirection: "row", alignItems: "center", justifyContent:"center", borderWidth: 1, borderColor: "#eee", padding: 10, flex: 1}}><Text style={{color: "#999"}}>No Customers found</Text><TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-customer")}><Text style={{color: "blue", fontWeight: "bold", marginLeft: 9}}>Add New Customer</Text></TouchableOpacity></View>
                             }
@@ -641,7 +687,7 @@ class AddNewSalesInvoiceComponents extends Component {
         customers = customers.data.filter( x => x.user_type == customer_type )
          
         this.setState({
-            customers: customers
+            customers: customers 
         }); 
 
     }
