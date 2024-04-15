@@ -83,7 +83,8 @@ class AddNewSalesInvoiceComponents extends Component {
             default_color: "#EF6C00",  
              
             isPressed: false, 
-            
+            single_choosed: false,  // handle double click on item 
+
             // givens 
             invoice_status: [
                 {
@@ -218,7 +219,7 @@ class AddNewSalesInvoiceComponents extends Component {
             prices: [], 
             products: [],  
             customers: [],
-
+            
             customers_search: [],
             products_search: [],
 
@@ -278,9 +279,30 @@ class AddNewSalesInvoiceComponents extends Component {
     } 
 
     setMultipleItems = () => {
-        this.setState({
+        
+        var objectx = {
             multiple_items: ! this.state.multiple_items
-        })
+        }
+         
+
+        this.setState((prevState) => {
+            
+            if( objectx.multiple_items == false ) {
+
+                if( prevState.selected_products != null && prevState.selected_products.length ) {
+                    var objx = [];
+                    objx.push(prevState.selected_products[prevState.selected_products.length - 1]);
+                    objectx.selected_products = objx;
+                }
+            }
+
+            return objectx;
+        });
+
+        if( objectx.multiple_items == false && this.state.selected_products != null && this.state.selected_products.length ) {
+            this.setOpenItemModal();
+        }
+
     }
 
     setOpenCustomerModal = () => {
@@ -362,6 +384,14 @@ class AddNewSalesInvoiceComponents extends Component {
     
     selectProductObject = (productObject ) => {
 
+        this.setState({
+            single_choosed: true 
+        });
+
+        if(this.state.single_choosed) {
+            return; 
+        }
+
         if( productObject.local_id == undefined ) {
             return;
         }
@@ -385,7 +415,7 @@ class AddNewSalesInvoiceComponents extends Component {
             }
             
             if( ! this.state.multiple_items) {
-                شمثقف)()
+                stateObject.invoices_details = array_data; 
             }
 
             return stateObject;
@@ -393,6 +423,12 @@ class AddNewSalesInvoiceComponents extends Component {
 
         if( ! this.state.multiple_items) {
             this.setOpenItemModal();
+            setTimeout(() => {
+                this.setState({
+                    single_choosed: false, 
+                    selected_products: []
+                });
+            }, 500)
         }
         
     } 
@@ -471,7 +507,9 @@ class AddNewSalesInvoiceComponents extends Component {
     }
 
     ItemModal = ({ isVisible, toggleModal }) => {
-        isVisible = true; 
+        
+        isVisible = true;
+ 
         return (
             <Modal isVisible={isVisible} animationType="slide">
                 <View style={{...styles.modalContainer, flex: 1}}>
@@ -499,8 +537,9 @@ class AddNewSalesInvoiceComponents extends Component {
                         {
                             
                             this.state.products.map((productObject, index) => {
+
+                                // check if current row is highlighted
                                 var is_selected = false; 
-                                     
                                 if( this.state.selected_products != null ) {
 
                                     var index = this.state.selected_products.findIndex( x => x.local_id == productObject.local_id );
@@ -510,11 +549,39 @@ class AddNewSalesInvoiceComponents extends Component {
                                     }
                                 }
 
+                                // handling prices of each product 
+                                var prices = !this.state.prices.length? []: this.state.prices.filter( x => x.product_local_id == productObject.local_id );
+                                var selected_price = null;
+                                if( prices.length ) {
+                                    
+                                    // default price is the first one 
+                                    selected_price = prices[0];
+
+                                    // default price by selected props 
+                                    var filtered = prices.filter( x => x.is_default_price == true ); 
+                                    if( filtered.length ) {
+                                        selected_price = filtered[0];
+                                    }
+                                }
+
+                                // add the price to object 
+                                productObject.product_price = selected_price;
+
                                 return (
                                     <TouchableOpacity key={productObject.local_id} onPress={() => this.selectProductObject(productObject)} style={{ padding: 10, marginTop: 0, borderStyle: "dashed", backgroundColor: this.oddoreven(index), borderWidth: ( is_selected )? 1: 0, borderColor: ( is_selected )? this.state.default_color: "white" }}>
                                         <Text style={{fontWeight: "bold", color: "#222"}}>
                                             {productObject.product_name}
                                         </Text> 
+                                        {
+                                            ( selected_price != null ) ?
+                                            <Text style={{ color: "#999", flexDirection: "row"}}>
+                                                {"Price per "}
+                                                {selected_price.unit_short}
+                                                {": EGP"}
+                                                {selected_price.sales_price}
+                                            </Text> : ""
+                                        }
+                                        
                                     </TouchableOpacity>
                                 );
                             })
