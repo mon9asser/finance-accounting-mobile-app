@@ -210,6 +210,7 @@ class AddNewSalesInvoiceComponents extends Component {
             open_date_time_picker: false, 
             customer_modal_open: false, 
             item_modal_open: false, 
+            quantity_modal_open: false, 
             in_search_mode: false, 
             multiple_items: false, 
 
@@ -266,6 +267,9 @@ class AddNewSalesInvoiceComponents extends Component {
             }, // vat
             shipping_or_delivery_cost: "0.00", // shipping_or_delivery_cost
             
+
+            index_in_update: -1,
+            object_in_update: null,
             invoices_details: [], // Document Details 
             
             
@@ -318,6 +322,23 @@ class AddNewSalesInvoiceComponents extends Component {
         this.setState({
             item_modal_open: ! this.state.item_modal_open
         });
+    }
+
+    setOpenQuantityModal = () => {
+         
+        this.setState( (prevState) => ({
+            quantity_modal_open: ! this.state.quantity_modal_open
+        }));
+    }
+
+    add_new_item = () => {
+
+        this.setState({
+            selected_products: []
+        }); 
+
+        this.setOpenItemModal();
+
     }
 
     oddoreven = ( index ) => {
@@ -383,16 +404,39 @@ class AddNewSalesInvoiceComponents extends Component {
 
     }
 
-    add_selected_items_to_details = (selectedArray) => {
+    calculate_object = (selectedArray, qty = 1, prce = null, discount_obj = {} ) => {
        
         // prepare needed object 
-        selectedArray.map(itemObject => {
+        var calcs = selectedArray.map(itemObject => {
 
-            var quantity = 1;
+            var quantity = qty;
             var total_qty = ( quantity * parseFloat( itemObject.default_price.factor ));
             var calculate_cost = quantity * parseFloat( itemObject.default_price.purchase_price )
-            var subtotal = ( quantity * parseFloat( itemObject.default_price.sales_price ) )
-            var calculate_total_price = 
+            var subtotal = ( quantity * parseFloat( prce == null ? itemObject.default_price.sales_price: prce ) )
+            
+            var discount_value = 0;
+            var discount_percentage = 0;
+            
+            // discount comes with product  
+            if( discount_obj.is_percentage == undefined ) {
+                if( itemObject.discount.is_percentage ) {
+                    discount_percentage = parseFloat( itemObject.discount.percentage );
+                    discount_value = Math.round( subtotal * discount_percentage / 100 );
+                } else {
+                    discount_value = parseFloat( itemObject.discount.value );
+                }
+            } else {
+                if( discount_obj.is_percentage ) {
+                    discount_percentage = parseFloat( discount_obj.percentage );
+                    discount_value = Math.round( subtotal * discount_percentage / 100 );
+                } else {
+                    discount_value = parseFloat( discount_obj.value );
+                }
+            }
+            
+
+            var calculate_total_price = subtotal - discount_value;
+
 
             var objx = {
                 doc_id: this.state.doc_id,
@@ -415,8 +459,8 @@ class AddNewSalesInvoiceComponents extends Component {
                 },
                 updated_discount: {
                     is_percentage: false,
-                    percentage: "",
-                    value: ""
+                    percentage: discount_percentage,
+                    value: discount_value
                 },
                 updated_price: {
                     local_id: itemObject.default_price.local_id,
@@ -433,55 +477,55 @@ class AddNewSalesInvoiceComponents extends Component {
                 subtotal: subtotal,
                 total_price: calculate_total_price
             };
-
-
-        })
+            
+            return objx;
+        });
         
-
-    }
-    
-    selectProductObject = (productObject ) => {
+        var old = this.state.invoices_details;
 
         this.setState({
-            single_choosed: true 
+            invoices_details: [...old, ...calcs]
+        }); 
+    }
+    
+    singleItemIsChecked = (value) => {
+        this.setState({
+            single_choosed: value 
         });
+    }
 
-        if(this.state.single_choosed) {
+    selectMulitipleObject = (productObject) => {
+        alert("select mulitple objects")
+    }
+
+    openQuantityModal = (productObject) => {
+         
+        var id = productObject.local_id;
+        if( id == undefined ) {
             return; 
         }
-
-        if( productObject.local_id == undefined ) {
-            return;
-        }
-
-        var id = productObject.local_id; 
-
         
-        this.setState((prevState) => {
-            
-            var array_data = prevState.selected_products == null ? []: prevState.selected_products;
-            var index = array_data.findIndex( x => x.local_id == id);
-            
-            array_data.push(productObject)
-            
-            var stateObject = {
-                selected_products: array_data
-            } 
-            this.add_selected_items_to_details(array_data);
-            return stateObject;
+        var index = this.state.invoices_details.findIndex( x => x.product.local_id == id );
+        alert(index);
+        if( index == -1 ) {
+            return ;
+        }
+        
+        this.setState({
+            index_in_update: index,
+            object_in_update: this.state.invoices_details[index]
         });
 
-        if( ! this.state.multiple_items) {
-            this.setOpenItemModal();
-            
-            setTimeout(() => {
-                this.setState({
-                    single_choosed: false, 
-                    selected_products: []
-                });
-            }, 500)
-        }
         
+        this.setOpenQuantityModal();
+
+    }
+
+    selectProductObject = (productObject ) => {
+        this.calculate_object([productObject]);
+        this.setOpenItemModal();
+
+        setTimeout(() => this.openQuantityModal(productObject), 500)
     } 
 
     selectCustomerObject = (customerObject ) => {
@@ -557,8 +601,15 @@ class AddNewSalesInvoiceComponents extends Component {
         );
     }
 
-    addSelectedItems = () => {
-        console.log(this.state.selected_products.length);
+    addSelectedItems = () => { 
+       // this.selectProductObject(this.state.selected_products);
+        //this.setOpenItemModal();
+    }
+
+    QuantityModal = ({ isVisible, toggleModal }) => {
+        <Modal isVisible={isVisible} animationType="slide">
+            <View style={{...styles.modalContainer, flex: 1}}><Text>Hello</Text></View>
+        </Modal>
     }
 
     ItemModal = ({ isVisible, toggleModal }) => {
@@ -627,7 +678,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                 productObject.prices = prices;
 
                                 return (
-                                    <TouchableOpacity key={productObject.local_id} onPress={() => this.selectProductObject(productObject)} style={{ padding: 10, marginTop: 0, borderStyle: "dashed", backgroundColor: this.oddoreven(index), borderWidth: ( is_selected )? 1: 0, borderColor: ( is_selected )? this.state.default_color: "white", justifyContent: "space-between", flexDirection:"row", alignItems: "center" }}>
+                                    <TouchableOpacity key={productObject.local_id} onPress={() => ( ! this.state.multiple_items) ? this.selectProductObject(productObject): this.selectMulitipleObject(productObject)} style={{ padding: 10, marginTop: 0, borderStyle: "dashed", backgroundColor: this.oddoreven(index), borderWidth: ( is_selected )? 1: 0, borderColor: ( is_selected )? this.state.default_color: "white", justifyContent: "space-between", flexDirection:"row", alignItems: "center" }}>
                                         <Text style={{fontWeight: "bold", color: "#222"}}>
                                             {productObject.product_name}
                                         </Text> 
@@ -646,7 +697,7 @@ class AddNewSalesInvoiceComponents extends Component {
                         }
                         </View>
                         
-                    </ScrollView>
+                    </ScrollView> 
                     <View style={{marginTop: 10, justifyContent: "center", gap: 10, flexDirection: "row"}}>
                         <Button onPress={this.setOpenItemModal} mode="contained" style={{borderRadius: 0, flexGrow: 1, backgroundColor: this.state.default_color}}>Cancel</Button>
                         <Button onPress={this.addSelectedItems} mode="contained" style={{borderRadius: 0, flexGrow: 1, backgroundColor: this.state.default_color}}>Add</Button>
@@ -827,10 +878,11 @@ class AddNewSalesInvoiceComponents extends Component {
     setCategoryObject = ( local_id ) => {
 
         var object_data = {};
-        var index = this.state.branches.findIndex( x => x.local_id == local_id );
+        var index = this.state.branches.findIndex( x => x.value == local_id );
         if( index != -1 ) {
             object_data =  this.state.branches[index]; 
         }
+ 
       
         this.setState({
             selected_branch: object_data
@@ -1215,7 +1267,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                         <Text style={{fontWeight: "bold"}}>
                                             Items
                                         </Text>
-                                        <TouchableOpacity onPress={this.setOpenItemModal} style={{backgroundColor: this.state.default_color, marginLeft:"auto", flexDirection: "row", alignItems: "center", paddingTop: 5,paddingBottom: 5,paddingLeft: 10,paddingRight: 15,  borderRadius: 5, height: 35,}}>
+                                        <TouchableOpacity onPress={this.add_new_item} style={{backgroundColor: this.state.default_color, marginLeft:"auto", flexDirection: "row", alignItems: "center", paddingTop: 5,paddingBottom: 5,paddingLeft: 10,paddingRight: 15,  borderRadius: 5, height: 35,}}>
                                             <Image
                                                 style={{width: 20, height: 20, marginRight: 3}}
                                                 source={require('./../../assets/icons/add-new-prdouct.png')}
@@ -1225,27 +1277,28 @@ class AddNewSalesInvoiceComponents extends Component {
                                     </View>
 
                                     <this.ItemModal isVisible={this.state.item_modal_open} toggleModal={this.setOpenItemModal} />
-                                    
+                                    <this.QuantityModal isVisible={this.state.quantity_modal_open} toggleModal={this.setOpenQuantityModal} />
+
                                     <View style={{borderWidth: 1, borderColor: this.state.default_color, marginTop: 10}}>
                                         <View>
                                             <View style={{flex: 1, flexDirection: "row", backgroundColor: this.state.default_color, padding: 5, gap: 10, borderRadius: 0 , paddingBottom:5, paddingTop:5}}>
-                                                <View style={{flex: 2}}>
-                                                    <Text style={{color: "#fff"}}>
+                                                <View style={{flex: 3}}>
+                                                    <Text style={{color: "#fff", textAlign: "center"}}>
                                                         Items
                                                     </Text>
                                                 </View>
                                                 <View style={{flex: 1}}>
-                                                    <Text style={{color: "#fff"}}>
+                                                    <Text style={{color: "#fff", textAlign: "center"}}>
                                                         QTY
                                                     </Text>
                                                 </View>
                                                 <View style={{flex: 1}}>
-                                                    <Text style={{color: "#fff"}}>
+                                                    <Text style={{color: "#fff", textAlign: "center"}}>
                                                         Price
                                                     </Text>
                                                 </View> 
                                                 <View style={{flex: 1}}>
-                                                    <Text style={{color: "#fff"}}>
+                                                    <Text style={{color: "#fff", textAlign: "center"}}>
                                                         Total
                                                     </Text>
                                                 </View>
@@ -1258,36 +1311,40 @@ class AddNewSalesInvoiceComponents extends Component {
                                                 <Text style={{color: "#999", textAlign: "center"}}>There are no items on this invoice. Click on the "Add New Item"</Text>
                                             </View>:
                                             this.state.invoices_details.map( (item, index) => {
-                                                 
+                                                console.log(item);
                                                 return (
                                                     <View key={index} style={{ marginTop: 0, borderBottomColor: "#ddd", backgroundColor: "#fff", borderBottomWidth: 1, paddingLeft: 10, paddingRight: 10, paddingBottom:5, paddingTop:5}}>
                                                         <View style={{flex: 1, flexDirection: "row",  padding: 5, gap: 10, borderRadius: 2}}>
-                                                            <View style={{flex: 2}}>
-                                                                <Text style={{color: "#000"}}>
-                                                                    {item.product_name}
-                                                                </Text>
-                                                            </View>
-                                                            <View style={{flex: 1}}>
-                                                                <Text style={{color: "#000"}}>
-                                                                    QTY
-                                                                </Text>
-                                                            </View>
-                                                            <View style={{flex: 1}}>
-                                                                <Text style={{color: "#000"}}>
-                                                                    Price
-                                                                </Text>
-                                                            </View> 
-                                                            <View style={{flex: 1, justifyContent: "center", flexDirection: "row", gap: 10, alignItems: "center"}}>
-                                                                <Text style={{color: "#000"}}>
-                                                                    11,1500
-                                                                </Text>
-                                                                <TouchableOpacity>
-                                                                    <Image 
+                                                            <View style={{flex: 3, flexDirection: "row", gap: 10, alignItems: "center"}}>
+                                                                <TouchableOpacity style={{marginLeft: -10, marginRight: -10}}>
+                                                                    <Image  
                                                                         source={require('./../../assets/icons/trash.png')}
-                                                                        style={{width: 16, height: 16}} 
+                                                                        style={{width: 18, height: 18}} 
                                                                         resizeMode="cover"
                                                                     />
                                                                 </TouchableOpacity>
+                                                                <Text style={{color: "#000", paddingLeft: 5, paddingRight: 5}}>
+                                                                    {item.product.name}
+                                                                </Text>
+                                                            </View>
+                                                            <View style={{flex: 1}}>
+                                                               <TouchableOpacity style={{borderRadius: 3, backgroundColor: this.state.default_color}}>
+                                                                <Text style={{color: "#000", fontWeight: "bold", textAlign: "center", color: "#fff"}}>
+                                                                        {item.quantity}
+                                                                    </Text>
+                                                               </TouchableOpacity>
+                                                            </View>
+                                                            <View style={{flex: 1}}>
+                                                                <TouchableOpacity style={{borderRadius: 3, backgroundColor: this.state.default_color}}>
+                                                                <Text style={{color: "#000", fontWeight: "bold", textAlign: "center", color: "#fff"}}>
+                                                                    {item.updated_price.sale}
+                                                                </Text>
+                                                                </TouchableOpacity>
+                                                            </View> 
+                                                            <View style={{flex: 1, justifyContent: "center", flexDirection: "row", gap: 10, alignItems: "center"}}>
+                                                                <Text style={{color: "#000"}}>
+                                                                    {item.total_price}
+                                                                </Text>
                                                             </View> 
                                                         </View>
                                                     </View>

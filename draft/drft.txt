@@ -1,0 +1,40 @@
+this.setState({
+	single_choosed: true 
+});
+
+if(this.state.single_choosed && ! this.state.multiple_items) {
+	return; 
+}
+
+if( productObject.local_id == undefined ) {
+	return;
+}
+
+var id = productObject.local_id; 
+
+
+this.setState((prevState) => {
+	
+	var array_data = prevState.selected_products == null ? []: prevState.selected_products;
+	array_data.push(productObject)
+	
+	var stateObject = {
+		selected_products: array_data
+	} 
+
+	if( ! this.state.multiple_items )
+		this.calculate_object(array_data);
+
+	return stateObject;
+});
+
+if( ! this.state.multiple_items) {
+	this.setOpenItemModal();
+	
+	setTimeout(() => {
+		this.setState({
+			single_choosed: false, 
+			selected_products: []
+		});
+	}, 500)
+}
