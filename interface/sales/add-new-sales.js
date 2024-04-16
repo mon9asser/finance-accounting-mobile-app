@@ -506,7 +506,7 @@ class AddNewSalesInvoiceComponents extends Component {
         }
         
         var index = this.state.invoices_details.findIndex( x => x.product.local_id == id );
-        alert(index);
+        
         if( index == -1 ) {
             return ;
         }
