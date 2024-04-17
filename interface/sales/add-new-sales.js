@@ -272,6 +272,7 @@ class AddNewSalesInvoiceComponents extends Component {
             object_in_update: null,
             invoices_details: [], // Document Details 
             
+            quantity_number: 1,
             
             notificationBox: { display: 'none' },
             notificationCssClass: {},
@@ -282,6 +283,26 @@ class AddNewSalesInvoiceComponents extends Component {
         };
 
     } 
+
+    increaseQuantity = (  ) => {
+        var qty_value = this.state.quantity_number + 1;
+        this.setDefaultQuantity(qty_value);
+    }
+    
+    decreaseQuantity = () => {
+        var qty_value =this.state.quantity_number - 1;
+        if(  qty_value < 0) qty_value = 1;
+        alert(qty_value);
+        this.setDefaultQuantity(qty_value);
+    }
+
+    setDefaultQuantity = (value) => {
+         
+        var new_value = value; //value.replace(/[^0-9]/g, '')
+        this.setState({
+            quantity_number: new_value
+        });
+    }
 
     setMultipleItems = () => {
         
@@ -325,10 +346,9 @@ class AddNewSalesInvoiceComponents extends Component {
     }
 
     setOpenQuantityModal = () => {
-         
-        this.setState( (prevState) => ({
+        this.setState({
             quantity_modal_open: ! this.state.quantity_modal_open
-        }));
+        });
     }
 
     add_new_item = () => {
@@ -356,8 +376,7 @@ class AddNewSalesInvoiceComponents extends Component {
      
     filter_customers_in_search = (text) => {
         
-        console.log(text);
-
+ 
         var copy = this.state.customers.filter(customer => { 
  
 
@@ -515,7 +534,6 @@ class AddNewSalesInvoiceComponents extends Component {
             index_in_update: index,
             object_in_update: this.state.invoices_details[index]
         });
-
         
         this.setOpenQuantityModal();
 
@@ -607,9 +625,38 @@ class AddNewSalesInvoiceComponents extends Component {
     }
 
     QuantityModal = ({ isVisible, toggleModal }) => {
-        <Modal isVisible={isVisible} animationType="slide">
-            <View style={{...styles.modalContainer, flex: 1}}><Text>Hello</Text></View>
-        </Modal>
+
+        var productName = (  this.state.object_in_update != null && this.state.object_in_update.product.name )?  this.state.object_in_update.product.name: "";
+
+
+        return (
+            <Modal isVisible={isVisible} animationType="slide">
+                <View style={{...styles.modalContainerHalf, flex: 1}}>
+                    
+                    <View>
+                        <Text style={{textAlign: "center"}}> 
+                            <Text style={{fontWeight:"bold"}}>{productName}</Text>
+                            {" "} Quantity
+                        </Text>
+                    </View>
+                    
+                    <View style={{...styles.textInput, marginTop: 20}}> 
+
+                        <Button onPress={this.decreaseQuantity} mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 4, padding: 2}}>
+                            <Text>-</Text>
+                        </Button>
+
+                        <TextInput style={{ flexGrow: 1, textAlign: "center"}} onChangeText={(text) => this.setDefaultQuantity(text)} keyboardType="number" placeholder="1" value={this.state.quantity_number} />
+                        
+                        <Button onPress={this.increaseQuantity} mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 4, padding: 2}}>
+                            <Text>+</Text>
+                        </Button>
+                        
+                    </View>
+
+                </View>
+            </Modal>
+        );
     }
 
     ItemModal = ({ isVisible, toggleModal }) => {
@@ -1275,9 +1322,10 @@ class AddNewSalesInvoiceComponents extends Component {
                                             <Text style={{color: "#fff"}}>Add New Item</Text>
                                         </TouchableOpacity>
                                     </View>
-
-                                    <this.ItemModal isVisible={this.state.item_modal_open} toggleModal={this.setOpenItemModal} />
+                                    
                                     <this.QuantityModal isVisible={this.state.quantity_modal_open} toggleModal={this.setOpenQuantityModal} />
+                                    <this.ItemModal isVisible={this.state.item_modal_open} toggleModal={this.setOpenItemModal} />
+                                    
 
                                     <View style={{borderWidth: 1, borderColor: this.state.default_color, marginTop: 10}}>
                                         <View>
@@ -1311,7 +1359,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                                 <Text style={{color: "#999", textAlign: "center"}}>There are no items on this invoice. Click on the "Add New Item"</Text>
                                             </View>:
                                             this.state.invoices_details.map( (item, index) => {
-                                                console.log(item);
+                                                 
                                                 return (
                                                     <View key={index} style={{ marginTop: 0, borderBottomColor: "#ddd", backgroundColor: "#fff", borderBottomWidth: 1, paddingLeft: 10, paddingRight: 10, paddingBottom:5, paddingTop:5}}>
                                                         <View style={{flex: 1, flexDirection: "row",  padding: 5, gap: 10, borderRadius: 2}}>

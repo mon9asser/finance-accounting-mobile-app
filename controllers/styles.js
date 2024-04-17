@@ -104,6 +104,13 @@ var styles = StyleSheet.create({
        // borderRadius: 20 
     },
 
+    modalContainerHalf: {
+        backgroundColor: "#fff",
+        padding:20,
+        maxHeight: 200
+       // borderRadius: 20 
+    },
+
     textInput: {
         borderWidth: 1, 
         justifyContent: "space-between", 
