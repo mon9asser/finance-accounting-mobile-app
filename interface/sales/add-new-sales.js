@@ -43,6 +43,7 @@ import { SalesInvoiceInstance } from "../../controllers/storage/sales.js";
 import { DocDetailsInstance } from "../../controllers/storage/document-details.js";
 import { A_P_I_S } from "../../controllers/cores/apis.js";
 import { Models } from "../../controllers/cores/models.js";
+import { update } from "lodash";
 
  
 
@@ -284,24 +285,22 @@ class AddNewSalesInvoiceComponents extends Component {
 
     } 
 
-    increaseQuantity = (  ) => {
-        var qty_value = this.state.quantity_number + 1;
-        this.setDefaultQuantity(qty_value);
-    }
-    
-    decreaseQuantity = () => {
-        var qty_value =this.state.quantity_number - 1;
-        if(  qty_value < 0) qty_value = 1;
-        alert(qty_value);
-        this.setDefaultQuantity(qty_value);
-    }
+     
 
-    setDefaultQuantity = (value) => {
-         
-        var new_value = value; //value.replace(/[^0-9]/g, '')
-        this.setState({
-            quantity_number: new_value
+    setDefaultQuantity = (increase = true) => {
+   
+        this.setState(prevState => {
+            // Parse the current state to a float, then adjust by 1 based on 'increase'
+            let newQuantity = parseFloat(prevState.quantity_number);
+            newQuantity = increase ? newQuantity + 1 : newQuantity - 1;
+
+            // Prevent the quantity from dropping below 1
+            newQuantity = Math.max(newQuantity, 1);
+
+            // Return the new state
+            return { quantity_number: newQuantity.toString() }; // Convert to string for TextInput compatibility
         });
+        
     }
 
     setMultipleItems = () => {
@@ -336,6 +335,8 @@ class AddNewSalesInvoiceComponents extends Component {
         this.setState({
             customer_modal_open: ! this.state.customer_modal_open
         });
+
+        this.calculateInvoiceData();
         
     }
 
@@ -517,19 +518,36 @@ class AddNewSalesInvoiceComponents extends Component {
         alert("select mulitple objects")
     }
 
+    calculateInvoiceData = () => {
+        
+        if( ! this.state.invoices_details.length ) {
+            return; 
+        }
+
+        const totalSum = this.state.invoices_details.reduce((accumulator, item) => {
+            return accumulator + parseFloat(item.total_price);
+        }, 0);
+        
+        this.setState({
+            subtotal: totalSum
+        });
+
+    }
+
     openQuantityModal = (productObject) => {
          
         var id = productObject.local_id;
         if( id == undefined ) {
             return; 
         }
+
         
-        var index = this.state.invoices_details.findIndex( x => x.product.local_id == id );
-        
-        if( index == -1 ) {
+        if( ! this.state.invoices_details.length ) {
             return ;
-        }
+        } 
         
+        var index = this.state.invoices_details.length - 1;
+         
         this.setState({
             index_in_update: index,
             object_in_update: this.state.invoices_details[index]
@@ -624,10 +642,55 @@ class AddNewSalesInvoiceComponents extends Component {
         //this.setOpenItemModal();
     }
 
+    setQuantity = (vlx) => {
+        this.setState({
+            quantity_number: vlx
+        })
+    }
+
+    validateInput = (text) => {
+        // Regex to check if the input is a valid number (integer or float)
+        if (/^\d*\.?\d*$/.test(text)) {
+            this.setState({ quantity_number: text });
+        }
+    }
+
+    storeQuantityToArray = () => {
+
+        // qty 
+        var quantity = this.state.quantity_number;
+
+        // index of item in the array 
+        var index = this.state.index_in_update;
+        if( index == -1 ) {
+            return; 
+        }
+
+        this.setState(( prevState ) => {
+
+            if( ! prevState.invoices_details.length ) {
+                return; 
+            }
+
+            prevState.invoices_details[index].quantity = quantity 
+             
+            return {
+                invoices_details: prevState.invoices_details,
+                index_in_update: -1,
+                quantity_modal_open: false,
+                object_in_update: null,
+                quantity_number: 1
+            };
+
+        })
+
+    }
+
     QuantityModal = ({ isVisible, toggleModal }) => {
 
         var productName = (  this.state.object_in_update != null && this.state.object_in_update.product.name )?  this.state.object_in_update.product.name: "";
-
+        var quantity = this.state.object_in_update == null ? 1: this.state.object_in_update.quantity;
+        // this.setQuantity(quantity)
 
         return (
             <Modal isVisible={isVisible} animationType="slide">
@@ -640,18 +703,25 @@ class AddNewSalesInvoiceComponents extends Component {
                         </Text>
                     </View>
                     
-                    <View style={{...styles.textInput, marginTop: 20}}> 
-
-                        <Button onPress={this.decreaseQuantity} mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 4, padding: 2}}>
+                    <View style={{...styles.textInputQty, marginTop: 20}}> 
+                        <Button onPress={() => this.setDefaultQuantity(false)} mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 4, padding: 2}}>
                             <Text>-</Text>
                         </Button>
-
-                        <TextInput style={{ flexGrow: 1, textAlign: "center"}} onChangeText={(text) => this.setDefaultQuantity(text)} keyboardType="number" placeholder="1" value={this.state.quantity_number} />
                         
-                        <Button onPress={this.increaseQuantity} mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 4, padding: 2}}>
+                        <TextInput style={{ flexGrow: 1, textAlign: "center"}} 
+                           keyboardType="numeric" // Use 'numeric' for better compatibility
+                           placeholder="1" 
+                           value={this.state.quantity_number.toString()} // Ensure value is a string
+                           onChangeText={(text) => this.validateInput(text)} // Update state on change
+                        />
+
+                        <Button onPress={() => this.setDefaultQuantity(true)} mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 4, padding: 2}}>
                             <Text>+</Text>
                         </Button>
-                        
+                    </View>
+
+                    <View style={{flex: 1, marginTop: 0}}>
+                        <Button onPress={this.storeQuantityToArray} mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 4, padding: 2}}>Close</Button>
                     </View>
 
                 </View>
@@ -1408,7 +1478,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                     
                                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
                                         <Text>Subtotal</Text>
-                                        <Text style={{fontWeight: "bold"}}>$500.00</Text>
+                                        <Text style={{fontWeight: "bold"}}>${this.state.subtotal}</Text>
                                     </View>
                                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
                                         <Text>Discount</Text>

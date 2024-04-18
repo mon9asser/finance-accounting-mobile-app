@@ -122,6 +122,17 @@ var styles = StyleSheet.create({
         borderRadius: 10,  
         marginTop: 10
     },
+    textInputQty: {
+        borderWidth: 1, 
+        justifyContent: "space-between", 
+        alignItems: 'center',
+        marginBottom: 15, 
+        padding: 10, 
+        flexDirection: "row", 
+        borderColor: "#dfdfdf", 
+        borderRadius: 10,  
+        marginTop: 10
+    },
 
     textInputNoMargins: {
         borderWidth: 1, 
