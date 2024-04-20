@@ -336,7 +336,6 @@ class AddNewSalesInvoiceComponents extends Component {
             customer_modal_open: ! this.state.customer_modal_open
         });
 
-        this.calculateInvoiceData();
         
     }
 
@@ -506,6 +505,8 @@ class AddNewSalesInvoiceComponents extends Component {
         this.setState({
             invoices_details: [...old, ...calcs]
         }); 
+
+        
     }
     
     singleItemIsChecked = (value) => {
@@ -560,7 +561,7 @@ class AddNewSalesInvoiceComponents extends Component {
     selectProductObject = (productObject ) => {
         this.calculate_object([productObject]);
         this.setOpenItemModal();
-
+        
         setTimeout(() => this.openQuantityModal(productObject), 500)
     } 
 
@@ -654,6 +655,38 @@ class AddNewSalesInvoiceComponents extends Component {
             this.setState({ quantity_number: text });
         }
     }
+ 
+
+ 
+    calculate_object_per_data_change = (index, quantity ) => {
+        
+        var all = this.state.invoices_details;
+        var item = all[index];
+
+        var discount = item.updated_discount;
+         
+
+        var discount_value = discount.is_percentage? ( parseFloat(discount.percentage) * parseFloat(item.subtotal)) / 100: discount.value;
+        var total_cost = parseFloat(item.updated_price.cost) *  parseFloat( quantity )
+        var total_quantity = ( parseFloat( quantity ) * parseFloat( item.updated_price.factor ));
+        var subtotal = ( parseFloat( quantity )  * parseFloat( item.updated_price.sale ) );
+        var calculate_total_price = subtotal - ( discount_value * parseFloat( quantity ) );
+        // console.log(this.state.invoices_details[index], quantity);
+
+        // assign items to details 
+        item.total_cost = total_cost;
+        item.total_quantity = total_quantity;
+        item.subtotal = subtotal;
+        item.total_price = calculate_total_price;
+
+        all[index] = item; 
+
+        this.setState({
+            invoices_details: all
+        });
+
+        this.calculateInvoiceData();
+    }; 
 
     storeQuantityToArray = () => {
 
@@ -671,9 +704,14 @@ class AddNewSalesInvoiceComponents extends Component {
             if( ! prevState.invoices_details.length ) {
                 return; 
             }
+            
+            var itemObject = prevState.invoices_details[index];
+            prevState.invoices_details[index].quantity = quantity ;
 
-            prevState.invoices_details[index].quantity = quantity 
-             
+
+            // calculate row
+            this.calculate_object_per_data_change(index, quantity );  
+
             return {
                 invoices_details: prevState.invoices_details,
                 index_in_update: -1,
@@ -682,8 +720,10 @@ class AddNewSalesInvoiceComponents extends Component {
                 quantity_number: 1
             };
 
-        })
+        });
 
+        
+        this.calculateInvoiceData();
     }
 
     QuantityModal = ({ isVisible, toggleModal }) => {
