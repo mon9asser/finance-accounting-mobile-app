@@ -355,9 +355,8 @@ class AddNewSalesInvoiceComponents extends Component {
 
         this.setState({
             selected_products: []
-        }); 
-
-        this.setOpenItemModal();
+        }, () => { this.setOpenItemModal(); }); 
+        
 
     }
 
@@ -660,70 +659,72 @@ class AddNewSalesInvoiceComponents extends Component {
  
     calculate_object_per_data_change = (index, quantity ) => {
         
-        var all = this.state.invoices_details;
-        var item = all[index];
-
-        var discount = item.updated_discount;
-         
-
-        var discount_value = discount.is_percentage? ( parseFloat(discount.percentage) * parseFloat(item.subtotal)) / 100: discount.value;
-        var total_cost = parseFloat(item.updated_price.cost) *  parseFloat( quantity )
-        var total_quantity = ( parseFloat( quantity ) * parseFloat( item.updated_price.factor ));
-        var subtotal = ( parseFloat( quantity )  * parseFloat( item.updated_price.sale ) );
-        var calculate_total_price = subtotal - ( discount_value * parseFloat( quantity ) );
-        // console.log(this.state.invoices_details[index], quantity);
-
-        // assign items to details 
-        item.total_cost = total_cost;
-        item.total_quantity = total_quantity;
-        item.subtotal = subtotal;
-        item.total_price = calculate_total_price;
-
-        all[index] = item; 
-
-        this.setState({
-            invoices_details: all
+        this.setState(prevState => {
+            // Cloning data for immutability
+            const all = [...prevState.invoices_details];
+            const item = {...all[index]};
+    
+            const { updated_discount: discount } = item;
+            const discount_value = discount.is_percentage
+                ? (parseFloat(discount.percentage) * parseFloat(item.subtotal)) / 100
+                : discount.value;
+    
+            const total_cost = parseFloat(item.updated_price.cost) * parseFloat(quantity);
+            const total_quantity = parseFloat(quantity) * parseFloat(item.updated_price.factor);
+            const subtotal = parseFloat(quantity) * parseFloat(item.updated_price.sale);
+            const calculate_total_price = subtotal - (discount_value * parseFloat(quantity));
+    
+            // Updating the item with calculated values
+            item.total_cost = total_cost;
+            item.total_quantity = total_quantity;
+            item.subtotal = subtotal;
+            item.total_price = calculate_total_price;
+    
+            all[index] = item;
+    
+            // Return the new state
+            return {invoices_details: all};
+        }, () => {
+            // Callback function to handle further actions after state update
+            setTimeout(() => { this.calculateInvoiceData();}, 50)
         });
-
-        this.calculateInvoiceData();
+        
     }; 
 
     storeQuantityToArray = () => {
 
-        // qty 
-        var quantity = this.state.quantity_number;
+        const quantity = this.state.quantity_number;
+        const index = this.state.index_in_update;
 
-        // index of item in the array 
-        var index = this.state.index_in_update;
-        if( index == -1 ) {
-            return; 
+        if (index === -1) {
+            return;
         }
 
-        this.setState(( prevState ) => {
-
-            if( ! prevState.invoices_details.length ) {
-                return; 
+        this.setState((prevState) => {
+            if (!prevState.invoices_details.length) {
+                return null;  // It's good practice to return null if no updates should occur
             }
-            
-            var itemObject = prevState.invoices_details[index];
-            prevState.invoices_details[index].quantity = quantity ;
 
+            // Cloning the invoices details to maintain immutability
+            const invoices_details = [...prevState.invoices_details];
+            invoices_details[index] = {
+                ...invoices_details[index],
+                quantity: quantity
+            };
 
-            // calculate row
-            this.calculate_object_per_data_change(index, quantity );  
-
+            // Return the updated state
             return {
-                invoices_details: prevState.invoices_details,
+                invoices_details,
                 index_in_update: -1,
                 quantity_modal_open: false,
                 object_in_update: null,
                 quantity_number: 1
             };
-
+        }, () => {
+            // After state is updated, then call these functions
+            this.calculate_object_per_data_change(index, quantity);
+            this.calculateInvoiceData();
         });
-
-        
-        this.calculateInvoiceData();
     }
 
     QuantityModal = ({ isVisible, toggleModal }) => {
@@ -1481,9 +1482,19 @@ class AddNewSalesInvoiceComponents extends Component {
                                                                         resizeMode="cover"
                                                                     />
                                                                 </TouchableOpacity>
-                                                                <Text style={{color: "#000", paddingLeft: 5, paddingRight: 5}}>
-                                                                    {item.product.name}
-                                                                </Text>
+                                                                <View style={{paddingLeft: 5, paddingRight: 5, flexDirection: "row", gap: 10}}>
+                                                                    
+                                                                    <Text style={{color: "#000"}}>
+                                                                        {item.product.name}
+                                                                    </Text>
+                                                                    {item.updated_discount.value != "" ? 
+                                                                    <Image
+                                                                        source={require("./../../assets/icons/discount-9685.png")}
+                                                                        style={{width:20, height:20}}
+                                                                    />
+                                                                    : ""}
+
+                                                                </View>
                                                             </View>
                                                             <View style={{flex: 1}}>
                                                                <TouchableOpacity style={{borderRadius: 3, backgroundColor: this.state.default_color}}>
