@@ -44,6 +44,7 @@ import { DocDetailsInstance } from "../../controllers/storage/document-details.j
 import { A_P_I_S } from "../../controllers/cores/apis.js";
 import { Models } from "../../controllers/cores/models.js";
 import { update } from "lodash";
+import { parse } from "react-native-svg";
 
  
 
@@ -440,20 +441,26 @@ class AddNewSalesInvoiceComponents extends Component {
                 if( itemObject.discount.is_percentage ) {
                     discount_percentage = parseFloat( itemObject.discount.percentage );
                     discount_value = Math.round( subtotal * discount_percentage / 100 );
-                } else {
-                    discount_value = parseFloat( itemObject.discount.value );
+                } else { 
+
+                    discount_value = parseFloat( itemObject.discount.value ); 
                 }
             } else {
                 if( discount_obj.is_percentage ) {
                     discount_percentage = parseFloat( discount_obj.percentage );
                     discount_value = Math.round( subtotal * discount_percentage / 100 );
+                    
                 } else {
                     discount_value = parseFloat( discount_obj.value );
+                    
                 }
             }
             
-
-            var calculate_total_price = subtotal - discount_value;
+            if ( isNaN( discount_value ) ) {
+                discount_value = 0;
+            }
+            
+            var calculate_total_price = parseFloat(subtotal) - parseFloat(discount_value);
 
 
             var objx = {
@@ -525,7 +532,7 @@ class AddNewSalesInvoiceComponents extends Component {
         }
 
         const totalSum = this.state.invoices_details.reduce((accumulator, item) => {
-            return accumulator + parseFloat(item.total_price);
+            return parseFloat(accumulator) + parseFloat(item.total_price);
         }, 0);
         
         this.setState({
@@ -534,9 +541,14 @@ class AddNewSalesInvoiceComponents extends Component {
 
     }
 
-    openQuantityModal = (productObject) => {
+    openQuantityModal = (productObject, this_index = -1) => {
          
         var id = productObject.local_id;
+
+        if( this_index != -1 ) {
+            id = productObject.product.local_id;
+        }
+
         if( id == undefined ) {
             return; 
         }
@@ -547,10 +559,17 @@ class AddNewSalesInvoiceComponents extends Component {
         } 
         
         var index = this.state.invoices_details.length - 1;
-         
+        
+        if( this_index != -1 ) {
+            index = this_index;
+        }
+
+        var prcQuantity = this.state.invoices_details[index].quantity == "" ? 1: parseFloat( this.state.invoices_details[index].quantity );
+        
         this.setState({
             index_in_update: index,
-            object_in_update: this.state.invoices_details[index]
+            object_in_update: this.state.invoices_details[index],
+            quantity_number: prcQuantity
         });
         
         this.setOpenQuantityModal();
@@ -660,20 +679,25 @@ class AddNewSalesInvoiceComponents extends Component {
     calculate_object_per_data_change = (index, quantity ) => {
         
         this.setState(prevState => {
+
             // Cloning data for immutability
             const all = [...prevState.invoices_details];
             const item = {...all[index]};
     
-            const { updated_discount: discount } = item;
-            const discount_value = discount.is_percentage
-                ? (parseFloat(discount.percentage) * parseFloat(item.subtotal)) / 100
-                : discount.value;
-    
+           
+            var discount = item.updated_discount; 
+            var discount_value = discount.value;
+          
+            if( discount.is_percentage ) {
+                discount_value = (parseFloat(discount.percentage) * parseFloat(item.subtotal)) / 100;
+            }
+            
+            
             const total_cost = parseFloat(item.updated_price.cost) * parseFloat(quantity);
             const total_quantity = parseFloat(quantity) * parseFloat(item.updated_price.factor);
             const subtotal = parseFloat(quantity) * parseFloat(item.updated_price.sale);
-            const calculate_total_price = subtotal - (discount_value * parseFloat(quantity));
-    
+            const calculate_total_price = parseFloat(subtotal) - ( parseFloat(discount_value) * parseFloat(quantity));
+            
             // Updating the item with calculated values
             item.total_cost = total_cost;
             item.total_quantity = total_quantity;
@@ -783,14 +807,14 @@ class AddNewSalesInvoiceComponents extends Component {
                             <Text style={{fontWeight: "bold", fontSize: 18}}>
                                 Products
                             </Text> 
-                            <TouchableOpacity onPress={this.setMultipleItems} style={{flexDirection:"row", alignItems: "center"}}>
+                            {/*<TouchableOpacity onPress={this.setMultipleItems} style={{flexDirection:"row", alignItems: "center"}}>
                                 <Checkbox status={this.state.multiple_items ? "checked": ""} />
                                 <Text>Multiple Items</Text>
-                            </TouchableOpacity>
+                            </TouchableOpacity>*/}
                         </View>
-                        <View>
+                        {/*<View>
                             <Text style={{color:"#999"}}>You can select more than one item once you mark the "Multiple Items".</Text>
-                        </View>
+                        </View> */}
                     </View>
 
                     <View style={{marginTop: 10, borderColor:"#eee", borderWidth: 1, borderRadius: 8, padding: 5}}>
@@ -1317,6 +1341,10 @@ class AddNewSalesInvoiceComponents extends Component {
         
     }
 
+    openQuantityUpdator = (item, index) => { 
+       this.openQuantityModal(item, index); 
+    }
+
     render() {
 
         var formatted_date = americanDateCalendar(this.state.date);
@@ -1497,8 +1525,8 @@ class AddNewSalesInvoiceComponents extends Component {
                                                                 </View>
                                                             </View>
                                                             <View style={{flex: 1}}>
-                                                               <TouchableOpacity style={{borderRadius: 3, backgroundColor: this.state.default_color}}>
-                                                                <Text style={{color: "#000", fontWeight: "bold", textAlign: "center", color: "#fff"}}>
+                                                               <TouchableOpacity onPress={() => this.openQuantityUpdator(item, index)} style={{borderRadius: 3, backgroundColor: this.state.default_color}}>
+                                                                    <Text style={{color: "#000", fontWeight: "bold", textAlign: "center", color: "#fff"}}>
                                                                         {item.quantity}
                                                                     </Text>
                                                                </TouchableOpacity>
