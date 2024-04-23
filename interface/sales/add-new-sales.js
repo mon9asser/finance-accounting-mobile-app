@@ -86,7 +86,8 @@ class AddNewSalesInvoiceComponents extends Component {
              
             isPressed: false, 
             single_choosed: false,  // handle double click on item 
-
+            
+            selected_product_prices: [], 
             // givens 
             invoice_status: [
                 {
@@ -211,6 +212,7 @@ class AddNewSalesInvoiceComponents extends Component {
             // models
             open_date_time_picker: false, 
             customer_modal_open: false, 
+            open_prices_modal: false,
             item_modal_open: false, 
             quantity_modal_open: false, 
             in_search_mode: false, 
@@ -337,6 +339,23 @@ class AddNewSalesInvoiceComponents extends Component {
             customer_modal_open: ! this.state.customer_modal_open
         });
 
+        
+    }
+
+    setOpenPricesModal = () => {
+        //this.state.prices
+        this.setState({
+            open_prices_modal: ! this.state.open_prices_modal
+        });
+    }
+
+    setOpenPricesModalHandler = (item, index) => {
+
+        var product_prices = this.state.prices.filter( x => x.product_local_id == item.product.local_id );
+
+        this.setState({
+            selected_product_prices: product_prices
+        }, () => { this.setOpenPricesModal(); });
         
     }
 
@@ -793,6 +812,28 @@ class AddNewSalesInvoiceComponents extends Component {
             </Modal>
         );
     }
+
+    PriceModal = ({ isVisible, toggleModal }) => {
+
+        
+        return (
+            <Modal isVisible={isVisible} animationType="slide">
+                <View style={{...styles.modalContainer, flex: 1}}>
+                    <Text>Length is : </Text>
+                     
+                    {
+                        this.state.selected_product_prices.map( (x, i) => (
+                            <TouchableOpacity key={i} style={{flexDirection: "row", justifyContent: "space-between"}}>
+                                <Text>{x.name == " "}</Text>
+                                <Text>{x.unit_name}</Text>
+                                <Text>{x.sales_price}</Text>
+                            </TouchableOpacity>
+                        )) 
+                    }
+                </View>
+            </Modal>
+        );
+    };
 
     ItemModal = ({ isVisible, toggleModal }) => {
         
@@ -1464,6 +1505,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                     
                                     <this.QuantityModal isVisible={this.state.quantity_modal_open} toggleModal={this.setOpenQuantityModal} />
                                     <this.ItemModal isVisible={this.state.item_modal_open} toggleModal={this.setOpenItemModal} />
+                                    <this.PriceModal isVisible={this.state.open_prices_modal} toggleModal={this.setOpenPricesModal} />
                                     
 
                                     <View style={{borderWidth: 1, borderColor: this.state.default_color, marginTop: 10}}>
@@ -1532,7 +1574,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                                                </TouchableOpacity>
                                                             </View>
                                                             <View style={{flex: 1}}>
-                                                                <TouchableOpacity style={{borderRadius: 3, backgroundColor: this.state.default_color}}>
+                                                                <TouchableOpacity onPress={() => this.setOpenPricesModalHandler(item, index)} style={{borderRadius: 3, backgroundColor: this.state.default_color}}>
                                                                 <Text style={{color: "#000", fontWeight: "bold", textAlign: "center", color: "#fff"}}>
                                                                     {item.updated_price.sale}
                                                                 </Text>
