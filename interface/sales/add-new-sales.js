@@ -83,7 +83,7 @@ class AddNewSalesInvoiceComponents extends Component {
 
             language: {}, 
             default_color: "#EF6C00",  
-             
+            item_name: "Item",
             isPressed: false, 
             single_choosed: false,  // handle double click on item 
             
@@ -352,9 +352,11 @@ class AddNewSalesInvoiceComponents extends Component {
     setOpenPricesModalHandler = (item, index) => {
 
         var product_prices = this.state.prices.filter( x => x.product_local_id == item.product.local_id );
+        
 
         this.setState({
-            selected_product_prices: product_prices
+            selected_product_prices: product_prices,
+            item_name: item.product.name
         }, () => { this.setOpenPricesModal(); });
         
     }
@@ -819,17 +821,51 @@ class AddNewSalesInvoiceComponents extends Component {
         return (
             <Modal isVisible={isVisible} animationType="slide">
                 <View style={{...styles.modalContainer, flex: 1}}>
-                    <Text>Length is : </Text>
-                     
+                    <Text style={{fontWeight:"bold", marginBottom: 20, justifyContent: "center", textAlign:"center", fontSize: 20}}>Custom {this.state.item_name} Options</Text>
+                    <Text style={{fontWeight:"bold", marginBottom: 10}}>Default Prices</Text>
+                    <Text style={{marginBottom: 20, color: "#999"}}>Select your price by clicking on one of the options from the list below, according to the unit name.</Text>
+                    <ScrollView>
                     {
-                        this.state.selected_product_prices.map( (x, i) => (
-                            <TouchableOpacity key={i} style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                <Text>{x.name == " "}</Text>
-                                <Text>{x.unit_name}</Text>
-                                <Text>{x.sales_price}</Text>
-                            </TouchableOpacity>
-                        )) 
+                        this.state.selected_product_prices.map( (x, i) => { 
+                            return (
+                                <TouchableOpacity key={i} style={{flexDirection: "row", justifyContent: "space-between", backgroundColor: this.oddoreven(i), padding: 10}}>
+                                    { x.name == "" ? "" : <Text>Data</Text>}
+                                    { x.unit_name == "" ? "" : <Text>{x.unit_name}</Text>}
+
+                                    {
+                                        x.name == "" && x.unit_name == "" ?
+                                         <Text>Unit</Text>: ""
+                                    }
+
+                                    { x.sales_price == "" ? "" : <Text>{x.sales_price}</Text>}
+                                </TouchableOpacity>
+                            )
+                        }) 
                     }
+
+                    <View style={{marginTop: 20, color: "#999"}}>
+                        <Text style={{fontWeight:"bold"}}>Custom Price</Text>
+                        <Text style={{marginTop: 5, color: "#999"}}>The new price will only apply for this invoice according to the latest selected unit.</Text>
+                        <View style={{borderWidth: 1, borderColor: '#eee', height: 35, marginTop: 8, padding: 8}}>
+                            <TextInput style={{ flexGrow: 1, textAlign: "left"}} 
+                                keyboardType="numeric" // Use 'numeric' for better compatibility
+                                placeholder="write your new price here."  // Ensure value is a string
+                                onChangeText={(text) => this.validateInput(text)} // Update state on change
+                            />
+                        </View>
+                    </View>
+
+                    <View style={{marginTop: 20, color: "#999"}}> 
+                        <Text style={{fontWeight:"bold"}}>Custom Discount</Text>
+                        
+                    </View>
+                    
+                    
+
+                    </ScrollView>
+                    <Button mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 0}}>
+                        <Text style={{color: "#fff"}}>Apply Changes</Text>
+                    </Button>
                 </View>
             </Modal>
         );
