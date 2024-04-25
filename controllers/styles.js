@@ -64,6 +64,10 @@ var styles = StyleSheet.create({
         color: "#222",
         marginBottom: 10
     },
+    inputLabelTextSales: {
+        fontWeight: "bold",
+        color: "#222", 
+    },
     product_price_container: {
         backgroundColor: "transparent",
         borderStyle: "dashed", 
