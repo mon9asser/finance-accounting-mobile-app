@@ -43,7 +43,7 @@ import { SalesInvoiceInstance } from "../../controllers/storage/sales.js";
 import { DocDetailsInstance } from "../../controllers/storage/document-details.js";
 import { A_P_I_S } from "../../controllers/cores/apis.js";
 import { Models } from "../../controllers/cores/models.js";
-import { head, update } from "lodash";
+import { head, update, values } from "lodash";
 import { parse } from "react-native-svg";
 
  
@@ -226,6 +226,7 @@ class AddNewSalesInvoiceComponents extends Component {
             quantity_modal_open: false, 
             in_search_mode: false, 
             multiple_items: false, 
+            invoice_shipping_delivery: false,
 
             // all data
             last_recorded: null,
@@ -257,29 +258,29 @@ class AddNewSalesInvoiceComponents extends Component {
             selected_customer: null,  // customer
             selected_branch: {label: "Main Branch", value: "000000012345_default_branch"}, // branch
             date: Date.now(), //date  
-            total: "0.00", // total
+            total: "", // total
             selected_payment_status: {
                 label: "Paid",
                 value: 0
             },  // payment_status
-            subtotal: "0.00", // subtotal
+            subtotal: "", // subtotal
             discount: {
                 is_percentage: false,
                 percentage: 0,
-                value:"0.00"
+                value:""
             }, // discount
             tax: {
                 is_percentage: false,
                 percentage: 0,
-                value:"0.00"
+                value:""
             }, // tax
             vat: {
                 is_percentage: false,
                 total_including_vat: false,
                 percentage: 0,
-                value:"0.00"
+                value:""
             }, // vat
-            shipping_or_delivery_cost: "0.00", // shipping_or_delivery_cost
+            shipping_or_delivery_cost: "", // shipping_or_delivery_cost
             
 
             index_in_update: -1,
@@ -377,6 +378,13 @@ class AddNewSalesInvoiceComponents extends Component {
         //this.state.prices
         this.setState({
             invoice_vat_modal: ! this.state.invoice_vat_modal
+        });
+    }
+
+    setOpenShippingInvoiceModal = () => {
+        //this.state.prices
+        this.setState({
+            invoice_shipping_delivery: ! this.state.invoice_shipping_delivery
         });
     }
 
@@ -584,9 +592,11 @@ class AddNewSalesInvoiceComponents extends Component {
 
     calculateInvoiceData = () => {
         
+        
         if( ! this.state.invoices_details.length ) {
             this.setState({
-                subtotal: "0.00"
+                subtotal: "",
+                total: ""
             });
             return; 
         }
@@ -596,12 +606,92 @@ class AddNewSalesInvoiceComponents extends Component {
             return parseFloat(accumulator) + parseFloat(item.total_price);
         }, 0);
 
-        // discount 
-        var discounts = this.state.discount;
-        
-        this.setState({
-            subtotal: totalSum
-        });
+        // discount + vat + tax case percentage  
+        var discount = this.state.discount;
+        var vat = this.state.vat;
+        var tax = this.state.tax;
+        var subtotal = parseFloat(totalSum); 
+
+        var object_to_update = {
+            subtotal: subtotal,
+            total: subtotal
+        }
+
+        if(discount.is_percentage) {
+            var percentage = parseFloat(discount.percentage);
+            if(percentage > 0 ) {
+                var percentage_value = ( percentage * subtotal / 100 ) 
+                    percentage_value = Math.round( ( percentage_value ) * 100 ) / 100; 
+                    object_to_update.discount = {
+                        ...discount,
+                        value: percentage_value.toString()
+                    }
+            }
+        }
+
+        if(tax.is_percentage) {
+            var percentage = parseFloat(tax.percentage);
+            if(percentage > 0 ) {
+                var percentage_value = ( percentage * subtotal / 100 ) 
+                    percentage_value = Math.round( ( percentage_value ) * 100 ) / 100; 
+                    object_to_update.tax = {
+                        ...tax,
+                        value: percentage_value.toString()
+                    }
+            }
+        }
+
+        if(vat.is_percentage) {
+            var percentage = parseFloat(vat.percentage);
+            if(percentage > 0 ) {
+                var percentage_value = ( percentage * subtotal / 100 ) 
+                    percentage_value = Math.round( ( percentage_value ) * 100 ) / 100; 
+                    
+                    if( vat.total_including_vat ) {
+                        
+                        var decimal_point = percentage.toString().indexOf(".")
+                        if( decimal_point !== -1 ) {
+                            percentage = parseFloat( `1.${percentage.toString().replace(".", "")}` );
+                        }
+
+                        percentage = parseFloat( `1.${percentage.toString().replace(".", "")}` );
+
+                        var new_value = subtotal - (subtotal / percentage);
+                        percentage_value = Math.round( ( new_value ) * 100 ) / 100;
+                        
+                    }
+
+                    object_to_update.vat = {
+                        ...vat,
+                        value: percentage_value.toString()
+                    }
+            }
+        }
+
+        // Discount  
+        if( object_to_update.discount.value == "" )
+            object_to_update.total = parseFloat(object_to_update.total) - parseFloat(object_to_update.discount.value);
+
+        // Tax 
+        if( object_to_update.tax.value == "" )
+            object_to_update.total = parseFloat(object_to_update.total) + parseFloat(object_to_update.tax.value);
+
+
+        // Vat 
+        if( object_to_update.vat.value == "" ) {
+            
+            if( ! object_to_update.vat.total_including_vat )
+                object_to_update.total = parseFloat(object_to_update.total) + parseFloat(object_to_update.vat.value);
+            
+        }
+
+        // Shipping Cost
+        if( this.state.shipping_or_delivery_cost != "" )
+            object_to_update.total = parseFloat(object_to_update.total) + parseFloat(this.state.shipping_or_delivery_cost);
+            
+
+
+        this.setState(object_to_update);
 
     }
 
@@ -705,6 +795,12 @@ class AddNewSalesInvoiceComponents extends Component {
         });
     }
 
+    setShippingDeliveryValueInvoice =  (val) => {
+        this.setState({ 
+            shipping_or_delivery_cost: val            
+        });
+    }
+
     setDiscountValueInvoice = (val) => {
         this.setState(( prevState ) => {
 
@@ -725,6 +821,14 @@ class AddNewSalesInvoiceComponents extends Component {
 
     closeInvoiceVatModal = () => {
         this.setOpenVatInvoiceModal();
+    }
+
+    closeInvoiceShippingOrDeliveryModal = () => {
+
+        this.setState({
+            shipping_or_delivery_cost: "",
+        }, () => { this.setOpenShippingInvoiceModal(); });
+        
     }
 
     applyChangesTaxOnInvoice = () => {
@@ -749,6 +853,10 @@ class AddNewSalesInvoiceComponents extends Component {
             this.setOpenTaxInvoiceModal();
         });
 
+    }
+
+    applyChangesShippingOrDeliveryOnInvoice = () => {
+        this.setOpenShippingInvoiceModal();
     }
 
     applyChangesVatOnInvoice = () => {
@@ -809,6 +917,35 @@ class AddNewSalesInvoiceComponents extends Component {
         });
 
     }
+
+    ShippingDeliveryModal = ({isVisible, toggleModal}) => {
+
+        return (
+            <Modal isVisible={isVisible} animationType="slide">
+                <View style={{...styles.modalContainer}}>
+                    <Text style={{fontWeight: "bold"}}>Shipping or Delivery Cost</Text>
+
+                    <View style={{marginTop: 10, color: "#999"}}>       
+                        
+                        <View style={styles.textInputNoMargins}>
+                            <TextInput value={this.state.shipping_or_delivery_cost.toString()} keyboardType="numeric" onChangeText={text => this.validateInputNumeric(this.setShippingDeliveryValueInvoice, text)} style={{flex: 2}} placeholder={this.state.shipping_or_delivery_cost} />       
+                        </View> 
+
+                    </View>
+
+                    <View style={{flexDirection: "row", gap: 10, marginTop: 20}}>
+                        <Button onPress={this.closeInvoiceShippingOrDeliveryModal} mode="contained" style={{borderColor: this.state.default_color, borderWidth: 1, borderRadius: 0, backgroundColor: "transparent"}}>
+                            <Text style={{color: this.state.default_color}}>Cancel</Text>
+                        </Button>
+                        <Button onPress={this.applyChangesShippingOrDeliveryOnInvoice} mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 0, flexGrow: 1}}>
+                            <Text style={{color: "#fff"}}>Apply Changes</Text>
+                        </Button>
+                    </View>
+                </View>
+            </Modal>
+        );
+    }
+
     InvoiceVatModal  = ({isVisible, toggleModal}) => {
 
         return (
@@ -2108,6 +2245,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                     <this.InvoiceDicountModal isVisible={this.state.invoice_discount_modal} toggleModal={this.setOpenDiscountInvoiceModal} />
                                     <this.InvoiceTaxModal isVisible={this.state.invoice_tax_modal} toggleModal={this.setOpenTaxInvoiceModal} />
                                     <this.InvoiceVatModal isVisible={this.state.invoice_vat_modal} toggleModal={this.setOpenVatInvoiceModal} />
+                                    <this.ShippingDeliveryModal isVisible={this.state.invoice_shipping_delivery} toggleModal={this.setOpenShippingInvoiceModal} />
 
                                     <View style={{borderWidth: 1, borderColor: this.state.default_color, marginTop: 10}}>
                                         <View>
@@ -2200,32 +2338,34 @@ class AddNewSalesInvoiceComponents extends Component {
                                     
                                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
                                         <Text>Subtotal</Text>
-                                        <Text style={{fontWeight: "bold"}}>${this.state.subtotal}</Text>
+                                        <Text style={{fontWeight: "bold"}}>${this.state.subtotal == "" ? "0.00" : this.state.subtotal}</Text>
                                     </View>
                                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
                                         <Text>Discount</Text>
                                         <TouchableOpacity onPress={this.setOpenDiscountInvoiceModal}>
-                                            <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.discount.value}</Text>
+                                            <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.discount.value == ""? "0.00": this.state.discount.value }</Text>
                                         </TouchableOpacity> 
                                     </View>
                                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
                                         <Text>Tax</Text>
                                         <TouchableOpacity onPress={this.setOpenTaxInvoiceModal}>
-                                            <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.tax.value}</Text>
+                                            <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.tax.value ==""? "0.00": this.state.tax.value}</Text>
                                         </TouchableOpacity> 
                                     </View>
 
                                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
                                         <Text>Vat</Text>
                                         <TouchableOpacity onPress={this.setOpenVatInvoiceModal}>
-                                            <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.vat.value}</Text>
+                                            <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.vat.value == "" ?"0.00": this.state.vat.value}</Text>
                                         </TouchableOpacity> 
-                                    </View> 
+                                    </View>  
 
                                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 10}}>
                                         <Text>Shipping or Delivery Cost</Text>
-                                        <Text style={{fontWeight: "bold"}}>$500.00</Text>
-                                    </View>
+                                        <TouchableOpacity onPress={this.setOpenShippingInvoiceModal}>
+                                            <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.shipping_or_delivery_cost == ""? "0.00": this.state.shipping_or_delivery_cost}</Text>
+                                        </TouchableOpacity> 
+                                    </View>  
 
                                 </View>
 
@@ -2235,7 +2375,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                     
                                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 10}}>
                                         <Text style={{fontWeight: "bold"}}>Total</Text> 
-                                        <Text style={{fontWeight: "bold", fontSize: 18, color:this.state.default_color}}>$500.00</Text>
+                                        <Text style={{fontWeight: "bold", fontSize: 18, color:this.state.default_color}}>${this.state.total == "" ?"0.00": this.state.total}</Text>
                                     </View> 
 
                                 </View>
