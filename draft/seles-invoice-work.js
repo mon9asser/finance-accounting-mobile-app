@@ -38,7 +38,7 @@ import { PriceInstance } from "../../controllers/storage/prices.js";
 import { ProductInstance } from "../../controllers/storage/products.js";
 
 import { CustomerInstance } from "../../controllers/storage/customers.js";
-import { Last_Recorded, RecordedInstance } from "../../controllers/storage/last-recorded.js";
+import { RecordedInstance } from "../../controllers/storage/last-recorded.js";
 import { SalesInvoiceInstance } from "../../controllers/storage/sales.js";
 import { DocDetailsInstance } from "../../controllers/storage/document-details.js";
 import { A_P_I_S } from "../../controllers/cores/apis.js";
@@ -282,7 +282,7 @@ class AddNewSalesInvoiceComponents extends Component {
                 value:""
             }, // vat
             shipping_or_delivery_cost: "", // shipping_or_delivery_cost
-            tracking_number: "",
+            
 
             index_in_update: -1,
             object_in_update: null,
@@ -655,28 +655,12 @@ class AddNewSalesInvoiceComponents extends Component {
             }
         }
 
-
-        // discount 
-        if( object_to_update.discount != undefined && object_to_update.discount.value != "" )
-            object_to_update.total = parseFloat(object_to_update.total) - parseFloat(object_to_update.discount.value);
-
-        // Tax 
-        if( object_to_update.tax != undefined && object_to_update.tax.value != "" )
-            object_to_update.total = parseFloat(object_to_update.total) + parseFloat(object_to_update.tax.value);
-
-         
         
-        // Shipping Cost 
-        if( this.state.shipping_or_delivery_cost != "" )
-            object_to_update.total = parseFloat(object_to_update.total) + parseFloat(this.state.shipping_or_delivery_cost);
-            
-        // vat 
+
         if(vat.is_percentage) {
             var percentage = parseFloat(vat.percentage);
-            var s_total = parseFloat(object_to_update.total); 
-
             if(percentage > 0 ) {
-                var percentage_value = ( percentage * s_total / 100 ) 
+                var percentage_value = ( percentage * subtotal / 100 ) 
                     percentage_value = convertToDecimal ( percentage_value ); 
                     
                     if( vat.total_including_vat ) {
@@ -688,7 +672,7 @@ class AddNewSalesInvoiceComponents extends Component {
 
                         percentage = parseFloat( `1.${percentage.toString().replace(".", "")}` );
 
-                        var new_value = s_total - (s_total / percentage);
+                        var new_value = subtotal - (subtotal / percentage);
                         percentage_value = convertToDecimal( new_value );
                         
                     }
@@ -705,14 +689,29 @@ class AddNewSalesInvoiceComponents extends Component {
             }
         }
 
+
+        // discount 
+        if( object_to_update.discount != undefined && object_to_update.discount.value != "" )
+            object_to_update.total = parseFloat(object_to_update.total) - parseFloat(object_to_update.discount.value);
+
+        // Tax 
+        if( object_to_update.tax != undefined && object_to_update.tax.value != "" )
+            object_to_update.total = parseFloat(object_to_update.total) + parseFloat(object_to_update.tax.value);
+
+        
         // Vat 
         if( object_to_update.vat != undefined && object_to_update.vat.value != "" ) {
             
             if( ! object_to_update.vat.total_including_vat )
                 object_to_update.total = parseFloat(object_to_update.total) + parseFloat(object_to_update.vat.value);
             
-        }
-
+        } 
+        
+        // Shipping Cost 
+        if( this.state.shipping_or_delivery_cost != "" )
+            object_to_update.total = parseFloat(object_to_update.total) + parseFloat(this.state.shipping_or_delivery_cost);
+            
+        
         this.setState(object_to_update);
 
     }
@@ -2127,17 +2126,10 @@ class AddNewSalesInvoiceComponents extends Component {
         if( this.state.last_recorded == null ) {
             Alert.alert(this.state.language.error, this.state.language.something_error);
             return;
-        } 
-        var { number } = this.state.last_recorded;
-        var { zero_left } = this.state.last_recorded;
-        var { type } = this.state.last_recorded;
+        }
 
-        var response = await RecordedInstance.create_update({
-            number, zero_left, type
-        });
-         
-        console.log(response);
-        
+
+
     }
 
     change_date_from_value = ( event, selectedDate) => {
@@ -2163,11 +2155,6 @@ class AddNewSalesInvoiceComponents extends Component {
        this.openQuantityModal(item, index); 
     }
 
-    setOrderTrackingNumber = (text) => {
-        this.setState({
-            tracking_number: text
-        })
-    }
     deleteItemFromInvoice = (index) => {
         
         if( index == -1 )  {
@@ -2447,7 +2434,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                 <View style={{ gap: 10, marginTop: 30, flex: 1, flexDirection: "column", overflow: "hidden"}}> 
                                     <Text style={{fontWeight: "bold"}}>Order Tracking Number</Text>
                                     <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
-                                        <TextInput value={this.state.tracking_number} onChangeText={text => this.setChangedValue(text, this.setOrderTrackingNumber)} style={{flex: 1}} placeholder={this.state.language.tracking_number} />
+                                        <TextInput value={this.state.customer_name} onChangeText={text => this.setChangedValue(text, this.setCustomerName)} style={{flex: 1}} placeholder={this.state.language.tracking_number} />
                                     </View>
                                 </View>
                                 

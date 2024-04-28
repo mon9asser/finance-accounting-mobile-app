@@ -10,6 +10,8 @@ const charachters = () => {
     return (Math.random()).toString(36).substring(2); 
 }
 
+const convertToDecimal = (value ) => Math.round( value * 100 ) / 100 ;
+
 const generateId = () => {
     
     let numberOne = random(10, 100000);
@@ -31,4 +33,4 @@ var get_response = () => {
     };
 }
 
-export { generateId, get_response };
+export { generateId, get_response, convertToDecimal };

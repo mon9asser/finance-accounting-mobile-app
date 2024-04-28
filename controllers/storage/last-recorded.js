@@ -25,17 +25,12 @@ class Last_Recorded extends A_P_I_S {
 
     /** Insert and update a record */
     create_update = async ({number, zero_left, type, param_id} = null ) => {
-       
-         console.log(branch);
+        
         var _object =  { 
             number: number == undefined? "": number ,
             number: zero_left == undefined? -1: zero_left ,
             type: type == undefined? "": type  
         };
-
-        if( file != undefined ) {
-            _object.file = file;
-        }
         
         var param_value = null;
 
