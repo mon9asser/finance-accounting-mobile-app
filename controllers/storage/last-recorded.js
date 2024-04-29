@@ -28,7 +28,7 @@ class Last_Recorded extends A_P_I_S {
         
         var _object =  { 
             number: number == undefined? "": number ,
-            number: zero_left == undefined? -1: zero_left ,
+            zero_left: zero_left == undefined? -1: zero_left ,
             type: type == undefined? "": type  
         };
         

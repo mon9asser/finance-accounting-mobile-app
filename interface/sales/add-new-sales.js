@@ -239,8 +239,9 @@ class AddNewSalesInvoiceComponents extends Component {
             customers_search: [],
             products_search: [],
             
+            isPressed: false,
             is_out: true, 
-            doc_type: 0,
+            doc_type: 0, 
             doc_id: generateId(), // param_id
             doc_number: null, // invoice_number 
             selected_invoice_status: {
@@ -1710,11 +1711,11 @@ class AddNewSalesInvoiceComponents extends Component {
             this.props.navigation.navigate("Login"); 
             return;
         }
-
+        
         var _number = 1;
-        var _zero_left = "000000";
+        var _zero_left = "000";
         var invoice_number = _zero_left+_number;
-        if( generate.is_error ) {
+        if( generate.is_error ) { 
             
             this.setState({
                 last_recorded: {
@@ -1727,29 +1728,20 @@ class AddNewSalesInvoiceComponents extends Component {
             return; 
         }
          
-
-        if( generate.data != null && generate.data.length ) {
-
-            var data = generate.data[0];
-
-            _zero_left = data.zero_left; 
-            _number = parseInt( data.number ) + 1; 
-
-            _at_indext = _number.toString().length - 1; 
-             
-            if( _at_indext >= _zero_left.length - 1 ) {
-                _zero_left = "00" + "0".repeat(parseInt(_number.toString().length))
-            } else {
-                _zero_left =_zero_left;
-            }   
-
-            var new_index = ( ( _zero_left.length - 1 ) - _at_indext ) ;
-
-            _zero_left = _zero_left.slice(0, new_index).toString();
-            invoice_number = _zero_left + _number.toString(); 
-
-        }
         
+        if( generate.data != null && Object.keys(generate.data).length ) {
+            
+            var data = generate.data;
+
+            _zero_left = "000";
+            _number = parseInt( data.number ) + 1; 
+ 
+
+            
+            invoice_number = "000" + _number.toString(); 
+
+        } 
+
         this.setState({
             last_recorded: {
                 number: _number.toString(),
@@ -2123,6 +2115,8 @@ class AddNewSalesInvoiceComponents extends Component {
 
     saveData = async () => {
 
+        this.setPressBtn(true);
+
         // generate invoice number by this.state.last_recorded object if it is not null
         if( this.state.last_recorded == null ) {
             Alert.alert(this.state.language.error, this.state.language.something_error);
@@ -2136,8 +2130,34 @@ class AddNewSalesInvoiceComponents extends Component {
             number, zero_left, type
         });
          
-        console.log(response);
-        
+        if( response.is_error ) {
+            this.setPressBtn(false);
+            this.setNotificationBox("flex")
+            this.setNotificationCssClass(styles.error_message);
+            this.setNotificationCssTextClass(styles.error_text)
+            this.setNotificationMessage("Cannot save invoice, something went wrong"); 
+            return;
+        }
+
+        // store bulk invoice details
+        if(!this.state.invoices_details.length) {
+            this.setPressBtn(false);
+            this.setNotificationBox("flex")
+            this.setNotificationCssClass(styles.error_message);
+            this.setNotificationCssTextClass(styles.error_text)
+            this.setNotificationMessage("There are no items added to this invoice"); 
+            return;
+        }
+
+                
+        // store invoice data  updateAsync
+        var res = await DocDetailsInstance.updateBasedOnKeys(this.state.invoices_details, {
+            doc_id: this.state.doc_id
+        });
+
+        this.setPressBtn(false);
+        console.log(res);
+
     }
 
     change_date_from_value = ( event, selectedDate) => {
@@ -2450,9 +2470,11 @@ class AddNewSalesInvoiceComponents extends Component {
                                         <TextInput value={this.state.tracking_number} onChangeText={text => this.setChangedValue(text, this.setOrderTrackingNumber)} style={{flex: 1}} placeholder={this.state.language.tracking_number} />
                                     </View>
                                 </View>
-                                
-                                
                             </View> 
+
+                            <View style={{ ...styles.wrapper, ...this.state.notificationBox, ...this.state.notificationCssClass, ...styles.space_top_25}}>
+                                <Text style={this.state.notificationTextCssClass}>{this.state.notificationMessage}</Text>
+                            </View>
 
                             <View style={{ gap: 10, marginTop: 30, flex: 1, flexDirection: "column", overflow: "hidden"}}> 
                                 <TouchableOpacity style={{marginBottom: 5}} onPress={() => alert("print , export, etc")}>

@@ -111,6 +111,8 @@ class Document_Details extends A_P_I_S {
     }
     
 
+    /* Bulk Insert an array based on */
+
     /**
      * Delete all records in database based on array of ids remotely and locally
      */
@@ -241,6 +243,13 @@ class Document_Details extends A_P_I_S {
 
     }
 
+
+    updateBasedOnKeys = async (array_data, wherye_keys) => {
+
+        var response = await this.updateAsync( this.Schema, array_data, wherye_keys );
+        return response;
+
+    }
 }
  
 var DocDetailsInstance = new Document_Details(); 
