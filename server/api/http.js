@@ -429,6 +429,8 @@ apiRouters.post("/bulk_deletion", verify_user_tokens_and_keys, async (req, res) 
 
 });
 
+
+
 // getting all data with no parameter + with parameters + paging
 apiRouters.post("/get", verify_user_tokens_and_keys, async (req, res) => {
    
@@ -780,6 +782,7 @@ apiRouters.post("/update_by_keys", verify_user_tokens_and_keys, async (req, res)
     try {
 
         var response = await db_connection.updateMany(search, new_update);
+        
         if( response.acknowledged != undefined && response.acknowledged ) {
             return res.send({
                 data: response ,
@@ -787,6 +790,130 @@ apiRouters.post("/update_by_keys", verify_user_tokens_and_keys, async (req, res)
                 is_error: false 
             });
         } else {
+
+           
+            // need to add these array to 
+
+            return res.send({
+                data: "" ,
+                message: localize.insert_error, 
+                is_error: false 
+            });
+        }
+         
+    } catch(error) {
+        return res.send({
+            data: "" ,
+            message: localize.insert_error, 
+            is_error: false 
+        });
+     }
+});
+
+
+apiRouters.post("/update_insert_delete_by_keys", verify_user_tokens_and_keys, async (req, res) => {
+     
+    // handling current language
+    var current_language = req.body.language == undefined? "en": req.body.language; 
+    var localize = language[current_language];
+ 
+    //preparing response object 
+    var response = {
+        is_error: true, 
+        data: [],
+        message: localize.something_wrong
+    }
+
+    // Basics Of Each API: checking for database name and model 
+    var database = req.body.database_name;
+    var model = req.body.model_name;
+    if( req.body.param_id == undefined) {
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.param_id_is_required; 
+        return res.send(response); 
+    }
+
+    var param_id = req.body.param_id;
+    if( database == undefined || model == undefined ) {
+        response.is_error = true;
+        response.message = localize.peroperties_required;
+        return res.send(response);
+    }
+     
+    var model_name = flat_schema_name(model);
+    var schema_object = get_schema_object(model_name);
+    
+    
+    var db_connection = await create_connection(database, {
+        model: model_name, 
+        schemaObject:schema_object
+    }); 
+    
+    if( ! db_connection ) {
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.services_disabled; 
+        return res.send(response); 
+    } 
+
+    // checking for data object 
+    if( req.body.data_object == undefined ) {
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.data_object_required; 
+        return res.send(response); 
+    }
+
+    var data_object = req.body.data_object;
+    if( typeof param_id == 'string'  ) {
+        param_id = { local_id: param_id };
+    }
+    
+    var finder = await db_connection.find(param_id);
+
+    if( ! finder.length ) {
+        
+        // bulk insert
+        cccccccccccccccccccc
+        
+    } else {
+
+        // delete 
+
+        // update
+
+        // insert new 
+
+    }
+
+     
+
+    let search = {};
+    let keys = Object.keys(param_id);
+    keys.forEach(key => {
+        search[key] = { $gte: param_id[key] };
+    });
+
+    let new_update = {
+        $set: data_object
+    };
+    
+    try {
+
+        var response = await db_connection.updateMany(search, new_update);
+        
+        if( response.acknowledged != undefined && response.acknowledged ) {
+            return res.send({
+                data: response ,
+                message: localize.updated_successfully, 
+                is_error: false 
+            });
+        } else {
+
+           
+            // need to add these array to 
+            
             return res.send({
                 data: "" ,
                 message: localize.insert_error, 

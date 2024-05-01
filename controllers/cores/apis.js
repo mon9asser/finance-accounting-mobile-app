@@ -530,7 +530,7 @@ class A_P_I_S {
             if( ! config.disable_local_storage || (! config.disable_remote_server && request.is_error == false )) {
                 return {
                     message: language.saved_success,
-                    data: is_saved,
+                    data: last_update,
                     is_error: false, 
                     login_redirect: false
                 }
@@ -546,6 +546,124 @@ class A_P_I_S {
         } catch (error) {
             return {
                 message: language.something_error,
+                error: error,
+                data: [],
+                is_error: true, 
+                login_redirect: false
+            }
+        }
+    }
+
+
+    /**
+     * Update + Delete + Insert Bulk Array Data 
+     */
+    async blk_update_delete_insert( mobject, data_object = {}, where_keys = {}  ) {
+        
+        // getting settings and language
+        var settings, user_data; 
+        
+        try{
+            settings = await get_setting();
+            user_data = await usr.get_session();
+        } catch(error){}
+
+        var language =  get_lang(settings.language);
+        
+        // getting user data and check for session expiration 
+        if( user_data == null || ! Object.keys(user_data).length ) {
+            return {
+                login_redirect: true, 
+                message: language.user_session_expired, 
+                is_error: true , 
+                data: []
+            };
+        }
+        
+        // checking for instance and key in mobject 
+        var {key, instance} = mobject;
+        if(key == undefined || instance == undefined) {
+            return {
+                login_redirect: false, 
+                message: language.api_error, 
+                is_error: true , 
+                data: []
+            };
+        }
+        
+        if( Object.keys(data_object).length == 0 ||  Object.keys(where_keys).length == 0  ) {
+            return {
+                login_redirect: false, 
+                message: language.required_data, 
+                is_error: true , 
+                data: []
+            };
+        }
+
+        var axiosOptions = {
+            api: "api/update_insert_delete_by_keys",
+            dataObject: {
+                data_object: data_object,
+                param_id: where_keys
+            }, 
+            method: "post",  
+            model_name: key
+        } 
+
+        var request = {
+            is_error: true, 
+            message: "", 
+            data: []
+        };
+
+        if( ! config.disable_remote_server ) { 
+            request = await this.axiosRequest(axiosOptions);
+        };
+
+        var is_updated_remotely = false; 
+        if( request.is_error == false ) {
+            is_updated_remotely = true;
+        }
+
+        var old_data = await this.get_data_locally(mobject);
+          
+        var last_update = old_data.map( item => {
+            item.remote_updated = is_updated_remotely;
+            var new_item = {...item, ...data_object};
+            return new_item;
+        });
+
+        
+
+        try {
+
+            if(! config.disable_local_storage) { 
+                await instance.save({
+                    key: key,
+                    data: last_update 
+                }); 
+            }
+            
+            if( ! config.disable_local_storage || (! config.disable_remote_server && request.is_error == false )) {
+                return {
+                    message: language.saved_success,
+                    data: last_update,
+                    is_error: false, 
+                    login_redirect: false
+                }
+            }
+
+            return {
+                message: language.services_disabled_by_app_admin,
+                data: [],
+                is_error: true, 
+                login_redirect: false
+            }
+            
+        } catch (error) {
+            return {
+                message: language.something_error,
+                error: error,
                 data: [],
                 is_error: true, 
                 login_redirect: false

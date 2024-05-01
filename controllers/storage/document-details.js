@@ -246,7 +246,7 @@ class Document_Details extends A_P_I_S {
 
     updateBasedOnKeys = async (array_data, wherye_keys) => {
 
-        var response = await this.updateAsync( this.Schema, array_data, wherye_keys );
+        var response = await this.blk_update_delete_insert( this.Schema, array_data, wherye_keys );
         return response;
 
     }
