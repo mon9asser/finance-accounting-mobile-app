@@ -14,6 +14,34 @@ const sharp = require('sharp');
 var apiRouters = express.Router(); 
   
 
+async function performBulkUpsert(data_object, db_connection) {
+    var upsertOpts = data_object.map(item => {
+        if (item._id !== undefined) {
+            delete item._id; // Correctly removing the _id property if it exists
+        }
+
+        console.log(item.local_id); // Corrected console.log statement
+
+        return {
+            updateOne: {
+                filter: { local_id: item.local_id }, // Criteria to match the document
+                update: { $set: item }, // Update the document with all properties of item
+                upsert: true // Ensure to insert if the document doesn't exist
+            }
+        };
+    });
+
+    try {
+        var response = await db_connection.bulkWrite(upsertOpts);
+        console.log('Bulk write operation successful:', response);
+        return response;
+    } catch (err) {
+        console.error('Bulk write operation failed:', err);
+        throw err; // Rethrowing the error for further handling by caller
+    }
+}
+
+
 function removeDynamicPrefix(text) {
     // The indexOf() method finds the position of the first occurrence of an underscore.
     const position = text.indexOf('_');
@@ -869,48 +897,25 @@ apiRouters.post("/update_insert_delete_by_keys", verify_user_tokens_and_keys, as
     if( typeof param_id == 'string'  ) {
         param_id = { local_id: param_id };
     }
-    
-    var finder = await db_connection.find(param_id);
-
-    if( ! finder.length ) {
-        
-        // bulk insert
-        cccccccccccccccccccc
-        
-    } else {
-
-        // delete 
-
-        // update
-
-        // insert new 
-
-    }
-
-     
-
-    let search = {};
-    let keys = Object.keys(param_id);
-    keys.forEach(key => {
-        search[key] = { $gte: param_id[key] };
-    });
-
-    let new_update = {
-        $set: data_object
-    };
-    
+ 
     try {
 
-        var response = await db_connection.updateMany(search, new_update);
+        performBulkUpsert(data_object, db_connection)
+        .then(response => {
+           console.log(response);
+        .catch(error => {
+            console.log(error);
+        });
         
+        var response = {};
+        // console.log(response);
         if( response.acknowledged != undefined && response.acknowledged ) {
             return res.send({
                 data: response ,
                 message: localize.updated_successfully, 
                 is_error: false 
             });
-        } else {
-
+        } else { 
            
             // need to add these array to 
             

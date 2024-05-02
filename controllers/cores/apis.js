@@ -600,6 +600,41 @@ class A_P_I_S {
             };
         }
 
+        // assign meta data 
+        if( data_object.length ) {
+            data_object = data_object.map( item => {
+                
+                item.updated_by = {
+                    email: user_data.email,
+                    id: user_data.id,
+                    name: user_data.name 
+                }
+                item.updated_date = Date.now();
+
+                if(item.created_by == undefined ) {
+                    item.created_by = {
+                        email: user_data.email,
+                        id: user_data.id,
+                        name: user_data.name 
+                    }
+                }
+
+                if(item.local_id == undefined ) {
+                    item.local_id = generateId();
+                }
+
+                if(item.created_date == undefined ) {
+                    item.created_date= Date.now();
+                }
+
+                if(item.application_id == undefined ) {
+                    item.application_id = user_data.application_id
+                }
+
+                return item;
+            })
+        }
+
         var axiosOptions = {
             api: "api/update_insert_delete_by_keys",
             dataObject: {
