@@ -558,8 +558,9 @@ class A_P_I_S {
     /**
      * Update + Delete + Insert Bulk Array Data 
      */
-    async blk_update_delete_insert( mobject, data_object = {}, where_keys = {}  ) {
-        
+    async blk_update_delete_insert( mobject, data_object = [], where_keys = {}  ) {
+         
+
         // getting settings and language
         var settings, user_data; 
         
@@ -591,7 +592,7 @@ class A_P_I_S {
             };
         }
         
-        if( Object.keys(data_object).length == 0 ||  Object.keys(where_keys).length == 0  ) {
+        if( data_object.length == 0 ||  Object.keys(where_keys).length == 0  ) {
             return {
                 login_redirect: false, 
                 message: language.required_data, 
@@ -602,6 +603,7 @@ class A_P_I_S {
 
         // assign meta data 
         if( data_object.length ) {
+
             data_object = data_object.map( item => {
                 
                 item.updated_by = {
@@ -633,8 +635,10 @@ class A_P_I_S {
 
                 return item;
             })
+
         }
 
+        var __keys = Object.keys(where_keys);
         var axiosOptions = {
             api: "api/update_insert_delete_by_keys",
             dataObject: {
@@ -659,16 +663,80 @@ class A_P_I_S {
         if( request.is_error == false ) {
             is_updated_remotely = true;
         }
+ 
 
         var old_data = await this.get_data_locally(mobject);
-          
+        
+        var new_data = data_object.filter( item => {
+            
+            var local_id = item.local_id; 
+            var data_db_exists = old_data.findIndex(x => {
+
+                var elm_arr = []; 
+
+                __keys.forEach(el => {
+                    if( where_keys[el] == x[el] ) {
+                        elm_arr.push(true)
+                    } else {
+                        elm_arr.push(false)
+                    }
+                });
+
+                var is_invoice = elm_arr.indexOf(false);
+
+                if( x.local_id == item.local_id && is_invoice == -1 ) {
+                    return true;
+                }
+
+            }); 
+            if( data_db_exists == -1 ) {
+                return item
+            }
+            
+        }); 
+        
+
+        if( new_data.length ) {
+            old_data = [...old_data, ...new_data];
+        }
+        
         var last_update = old_data.map( item => {
             item.remote_updated = is_updated_remotely;
             var new_item = {...item, ...data_object};
             return new_item;
+        }); 
+
+
+        console.log("============================================================");
+        console.log("this is old data");
+        console.log(last_update.length);
+        
+        
+        var deleted_details = last_update.filter( item => {
+            
+            var elm_arr = []; 
+
+            __keys.forEach(el => {
+                if( where_keys[el] == x[el] ) {
+                    elm_arr.push(true)
+                } else {
+                    elm_arr.push(false)
+                }
+            });
+
+            var is_invoice = elm_arr.indexOf(false);
+
+            if( is_invoice != -1 ) {
+                return item;
+            }
+
         });
 
-        
+        console.log(deleted_details.length); 
+        console.log("this is new data");
+         
+
+        return false; 
 
         try {
 
@@ -708,7 +776,7 @@ class A_P_I_S {
     
     /**
      * Delete Async: for two sides ( remotely and locally ) 
-     */
+     */ 
     async deleteAsync( mobject, parameter_id ) {
 
         // getting settings and language
@@ -1236,7 +1304,7 @@ class A_P_I_S {
             return {
                 data: array_data,
                 is_error: false, 
-                login_redirect: true, 
+                login_redirect: false, 
                 message: ""
             };
         }
@@ -1533,6 +1601,7 @@ class A_P_I_S {
             user_data = await usr.get_session();
         } catch(error){}
         
+         
         var language =  get_lang(settings.language);
 
         // getting user data and check for session expiration 
@@ -1559,7 +1628,7 @@ class A_P_I_S {
             return {
                 data: ! array_data.length ? []: [array_data[array_data.length - 1 ] ],
                 is_error: false, 
-                login_redirect: true, 
+                login_redirect: false, 
                 message: ""
             };
         }

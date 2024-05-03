@@ -19,7 +19,7 @@ class Document_Details extends A_P_I_S {
     constructor(props) {
 
         super(props); 
-        this.Schema =  Models.last_recorded;
+        this.Schema =  Models.doc_details;
 
     }
 
@@ -254,5 +254,22 @@ class Document_Details extends A_P_I_S {
  
 var DocDetailsInstance = new Document_Details(); 
   
+
+(async() => {
+      
+    /*
+    await DocDetailsInstance.Schema.instance.save({
+        key: DocDetailsInstance.Schema.key,
+        data: []
+    });
+    */
+    
+    var dbdata = await DocDetailsInstance.Schema.instance.load({
+        key: DocDetailsInstance.Schema.key
+    });
+ 
+    //console.log(dbdata); 
+
+})(); 
 
 export { Document_Details, DocDetailsInstance };

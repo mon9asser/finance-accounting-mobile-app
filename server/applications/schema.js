@@ -125,7 +125,7 @@ var allSchema = {
         branch:  { type: {}, default: {}},
         price:  { type: {}, default: {}},
         updated_discount:  { type: {}, default: {}},
-        updated_price:{ type: String, default: ""},
+        updated_price:{ type: {}, default: ""},
         quantity: { type: String, default: ""},
         total_quantity: { type: String, default: ""},
         total_cost: { type: String, default: ""}, 

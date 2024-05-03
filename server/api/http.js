@@ -14,30 +14,61 @@ const sharp = require('sharp');
 var apiRouters = express.Router(); 
   
 
-async function performBulkUpsert(data_object, db_connection) {
+async function performBulkUpsert(data_object, db_connection, param_id) {
+
+    var finder = await db_connection.find(param_id);
+
+    
     var upsertOpts = data_object.map(item => {
+        
         if (item._id !== undefined) {
             delete item._id; // Correctly removing the _id property if it exists
-        }
+        } 
 
-        console.log(item.local_id); // Corrected console.log statement
-
-        return {
+        var object_to_do = {
             updateOne: {
                 filter: { local_id: item.local_id }, // Criteria to match the document
                 update: { $set: item }, // Update the document with all properties of item
                 upsert: true // Ensure to insert if the document doesn't exist
             }
-        };
+        }
+
+
+
+        return object_to_do;
     });
 
+    var deleteOpts =  finder.filter(item => {
+        
+        var exists = data_object.findIndex(x => x.local_id == item.local_id);
+        if( exists == -1 ) {
+            return item;
+        }
+
+    }).map(item => ({
+        deleteOne: {
+            filter: { local_id: item.local_id } // Assumes `deleteItemId` is the identifier of the document to delete
+        }
+    }));
+
+
+    var final_opts = [...upsertOpts, ...deleteOpts]
+    
+
     try {
-        var response = await db_connection.bulkWrite(upsertOpts);
-        console.log('Bulk write operation successful:', response);
-        return response;
-    } catch (err) {
-        console.error('Bulk write operation failed:', err);
-        throw err; // Rethrowing the error for further handling by caller
+        var response = await db_connection.bulkWrite(final_opts);
+        
+        return {
+            is_error: false,
+            data: response,
+            message: ""
+        };
+    } catch (err) { 
+        return {
+            is_error: true,
+            data: err,
+            message: err
+        };
     }
 }
 
@@ -598,7 +629,7 @@ apiRouters.post("/get_last_record", verify_user_tokens_and_keys, async (req, res
     
     var db_connection = await create_connection(database, {
         model: model_name, 
-        schemaObject:schema_object
+        schemaObject:schema_object 
     }); 
      
     
@@ -897,34 +928,11 @@ apiRouters.post("/update_insert_delete_by_keys", verify_user_tokens_and_keys, as
     if( typeof param_id == 'string'  ) {
         param_id = { local_id: param_id };
     }
- 
+    
     try {
 
-        performBulkUpsert(data_object, db_connection)
-        .then(response => {
-           console.log(response);
-        .catch(error => {
-            console.log(error);
-        });
-        
-        var response = {};
-        // console.log(response);
-        if( response.acknowledged != undefined && response.acknowledged ) {
-            return res.send({
-                data: response ,
-                message: localize.updated_successfully, 
-                is_error: false 
-            });
-        } else { 
-           
-            // need to add these array to 
-            
-            return res.send({
-                data: "" ,
-                message: localize.insert_error, 
-                is_error: false 
-            });
-        }
+        var response = await performBulkUpsert(data_object, db_connection, param_id);
+        return response;
          
     } catch(error) {
         return res.send({

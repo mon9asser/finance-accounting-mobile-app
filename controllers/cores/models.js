@@ -106,10 +106,20 @@ var Models = {
     },
 
 
-
+    
     sales_doc: {
         key: "sales-doc",
         doc_type: 9,
+        instance: new Storage({
+            size: 350,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    },
+
+    doc_details: {
+        key: "doc-details",
+        doc_type: 10,
         instance: new Storage({
             size: 350,
             storageBackend: AsyncStorage,

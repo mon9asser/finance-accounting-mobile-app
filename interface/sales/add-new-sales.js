@@ -40,10 +40,10 @@ import { ProductInstance } from "../../controllers/storage/products.js";
 import { CustomerInstance } from "../../controllers/storage/customers.js";
 import { Last_Recorded, RecordedInstance } from "../../controllers/storage/last-recorded.js";
 import { SalesInvoiceInstance } from "../../controllers/storage/sales.js";
-import { DocDetailsInstance } from "../../controllers/storage/document-details.js";
+import { DocDetailsInstance, Document_Details } from "../../controllers/storage/document-details.js";
 import { A_P_I_S } from "../../controllers/cores/apis.js";
 import { Models } from "../../controllers/cores/models.js";
-import { head, update, values } from "lodash";
+import { head, isArray, update, values } from "lodash";
 import { parse } from "react-native-svg";
 
 
@@ -297,6 +297,344 @@ class AddNewSalesInvoiceComponents extends Component {
             notificationMessage: "",  
 
             
+            // for test only 
+            doc_id: "69896zv352484fio17147248055962716",
+            invoices_details: [{
+                "application_id": "65f96525c88ba7e90685fe5d",
+                "branch": {
+                    "__v": 0,
+                    "_id": "661700e1fd998b58f6c5065b",
+                    "application_id": "65f96525c88ba7e90685fe5d",
+                    "branch_address": "",
+                    "branch_city": "",
+                    "branch_country": "",
+                    "branch_name": "Hato",
+                    "branch_number": "",
+                    "created_by": [Object],
+                    "created_date": "2024-04-10T21:13:04.252Z",
+                    "local_id": "900600h7cn3uwngpr17127835842522026",
+                    "note": "",
+                    "updated_by": [Object],
+                    "updated_date": "2024-04-10T21:13:04.252Z"
+                },
+                "created_by": {
+                    "email": "moun2030@gmail.com",
+                    "id": "65f96525c88ba7e90685fe5f",
+                    "name": "Montasser Mossallem"
+                },
+                "created_date": 1714724967648,
+                "doc_id": "69896zv352484fio17147248055962716",
+                "doc_type": 0,
+                "is_out": true,
+                "local_id": "9300pltj4lnxom17147249676481266",
+                "price": {
+                    "cost": "99",
+                    "factor": 1,
+                    "local_id": "22561jxmvfrbpnzo17131765363702541",
+                    "name": "",
+                    "sale": "150",
+                    "unit_name": "Small", 
+                    "unit_short": "Sml"
+                },
+                "product": {
+                    "default_discount": [Object],
+                    "local_id": "96367lrpbvuevyoc17131765363702393",
+                    "name": "Tepinyakei sushi"
+                },
+                "quantity": "2",
+                "subtotal": 300,
+                "total_cost": 198,
+                "total_price": 270,
+                "total_quantity": 2,
+                "updated_by": {
+                    "email": "moun2030@gmail.com",
+                    "id": "65f96525c88ba7e90685fe5f",
+                    "name": "Montasser Mossallem"
+                },
+                "updated_date": 1714724967648,
+                "updated_discount": {
+                    "is_percentage": false,
+                    "percentage": 10,
+                    "value": 15
+                },
+                "updated_price": {
+                    "cost": "99",
+                    "factor": 1,
+                    "local_id": "22561jxmvfrbpnzo17131765363702541",
+                    "name": "",
+                    "sale": "150",
+                    "unit_name": "Small",
+                    "unit_short": "Sml"
+                }
+            }, {
+                "application_id": "65f96525c88ba7e90685fe5d",
+                "branch": {
+                    "__v": 0,
+                    "_id": "661700e1fd998b58f6c5065b",
+                    "application_id": "65f96525c88ba7e90685fe5d",
+                    "branch_address": "",
+                    "branch_city": "",
+                    "branch_country": "",
+                    "branch_name": "Hato",
+                    "branch_number": "",
+                    "created_by": [Object],
+                    "created_date": "2024-04-10T21:13:04.252Z",
+                    "local_id": "900600h7cn3uwngpr17127835842522026",
+                    "note": "",
+                    "updated_by": [Object],
+                    "updated_date": "2024-04-10T21:13:04.252Z"
+                },
+                "created_by": {
+                    "email": "moun2030@gmail.com",
+                    "id": "65f96525c88ba7e90685fe5f",
+                    "name": "Montasser Mossallem"
+                },
+                "created_date": 1714724967648,
+                "doc_id": "69896zv352484fio17147248055962716",
+                "doc_type": 0,
+                "is_out": true,
+                "local_id": "546357blytibgev17147249676482770",
+                "price": {
+                    "cost": "10",
+                    "factor": 1,
+                    "local_id": "45879xl9b0jakjx1713176852386600",
+                    "name": "",
+                    "sale": "20",
+                    "unit_name": "Gram",
+                    "unit_short": "Gm"
+                },
+                "product": {
+                    "default_discount": [Object],
+                    "local_id": "56497t56684ix1d17131767947161851",
+                    "name": "Chicken salad"
+                },
+                "quantity": "4",
+                "subtotal": 1800,
+                "total_cost": 960,
+                "total_price": 1800,
+                "total_quantity": 4000,
+                "updated_by": {
+                    "email": "moun2030@gmail.com",
+                    "id": "65f96525c88ba7e90685fe5f",
+                    "name": "Montasser Mossallem"
+                },
+                "updated_date": 1714724967648,
+                "updated_discount": {
+                    "is_percentage": false,
+                    "percentage": 0,
+                    "value": 0
+                },
+                "updated_price": {
+                    "cost": "240",
+                    "factor": 1000,
+                    "local_id": "48185xvfva0u90717131767947162004",
+                    "name": "",
+                    "sale": "450",
+                    "unit_name": "Kill gram",
+                    "unit_short": "Kg"
+                }
+            }, {
+                "application_id": "65f96525c88ba7e90685fe5d",
+                "branch": {
+                    "__v": 0,
+                    "_id": "661700e1fd998b58f6c5065b",
+                    "application_id": "65f96525c88ba7e90685fe5d",
+                    "branch_address": "",
+                    "branch_city": "",
+                    "branch_country": "",
+                    "branch_name": "Hato",
+                    "branch_number": "",
+                    "created_by": [Object],
+                    "created_date": "2024-04-10T21:13:04.252Z",
+                    "local_id": "900600h7cn3uwngpr17127835842522026",
+                    "note": "",
+                    "updated_by": [Object],
+                    "updated_date": "2024-04-10T21:13:04.252Z"
+                },
+                "created_by": {
+                    "email": "moun2030@gmail.com",
+                    "id": "65f96525c88ba7e90685fe5f",
+                    "name": "Montasser Mossallem"
+                },
+                "created_date": 1714724967648,
+                "doc_id": "69896zv352484fio17147248055962716",
+                "doc_type": 0,
+                "is_out": true,
+                "local_id": "22059fpx8dkf0b8n17147249676481570",
+                "price": {
+                    "cost": "99",
+                    "factor": 1,
+                    "local_id": "22561jxmvfrbpnzo17131765363702541",
+                    "name": "",
+                    "sale": "150",
+                    "unit_name": "Small",
+                    "unit_short": "Sml"
+                },
+                "product": {
+                    "default_discount": [Object],
+                    "local_id": "96367lrpbvuevyoc17131765363702393",
+                    "name": "Tepinyakei sushi"
+                },
+                "quantity": 1,
+                "subtotal": 150,
+                "total_cost": 99,
+                "total_price": 135,
+                "total_quantity": 1,
+                "updated_by": {
+                    "email": "moun2030@gmail.com",
+                    "id": "65f96525c88ba7e90685fe5f",
+                    "name": "Montasser Mossallem"
+                },
+                "updated_date": 1714724967648,
+                "updated_discount": {
+                    "is_percentage": false,
+                    "percentage": 10,
+                    "value": 15
+                },
+                "updated_price": {
+                    "cost": "99",
+                    "factor": 1,
+                    "local_id": "22561jxmvfrbpnzo17131765363702541",
+                    "name": "",
+                    "sale": "150",
+                    "unit_name": "Small",
+                    "unit_short": "Sml"
+                }
+            }, {
+                "application_id": "65f96525c88ba7e90685fe5d",
+                "branch": {
+                    "__v": 0,
+                    "_id": "661700e1fd998b58f6c5065b",
+                    "application_id": "65f96525c88ba7e90685fe5d",
+                    "branch_address": "",
+                    "branch_city": "",
+                    "branch_country": "",
+                    "branch_name": "Hato",
+                    "branch_number": "",
+                    "created_by": [Object],
+                    "created_date": "2024-04-10T21:13:04.252Z",
+                    "local_id": "900600h7cn3uwngpr17127835842522026",
+                    "note": "",
+                    "updated_by": [Object],
+                    "updated_date": "2024-04-10T21:13:04.252Z"
+                },
+                "created_by": {
+                    "email": "moun2030@gmail.com",
+                    "id": "65f96525c88ba7e90685fe5f",
+                    "name": "Montasser Mossallem"
+                },
+                "created_date": 1714724967648,
+                "doc_id": "69896zv352484fio17147248055962716",
+                "doc_type": 0,
+                "is_out": true,
+                "local_id": "72256w0hv9alzxq17147249676482168",
+                "price": {
+                    "cost": "10",
+                    "factor": 1,
+                    "local_id": "45879xl9b0jakjx1713176852386600",
+                    "name": "",
+                    "sale": "20",
+                    "unit_name": "Gram",
+                    "unit_short": "Gm"
+                },
+                "product": {
+                    "default_discount": [Object],
+                    "local_id": "56497t56684ix1d17131767947161851",
+                    "name": "Chicken salad"
+                },
+                "quantity": "7",
+                "subtotal": 140,
+                "total_cost": 70,
+                "total_price": 140,
+                "total_quantity": 7,
+                "updated_by": {
+                    "email": "moun2030@gmail.com",
+                    "id": "65f96525c88ba7e90685fe5f",
+                    "name": "Montasser Mossallem"
+                },
+                "updated_date": 1714724967648,
+                "updated_discount": {
+                    "is_percentage": false,
+                    "percentage": 0,
+                    "value": 0
+                },
+                "updated_price": {
+                    "cost": "10",
+                    "factor": 1,
+                    "local_id": "45879xl9b0jakjx1713176852386600",
+                    "name": "",
+                    "sale": "20",
+                    "unit_name": "Gram",
+                    "unit_short": "Gm"
+                }
+            }, {
+                "application_id": "65f96525c88ba7e90685fe5d",
+                "branch": {
+                    "__v": 0,
+                    "_id": "661700e1fd998b58f6c5065b",
+                    "application_id": "65f96525c88ba7e90685fe5d",
+                    "branch_address": "",
+                    "branch_city": "",
+                    "branch_country": "",
+                    "branch_name": "Hato",
+                    "branch_number": "",
+                    "created_by": [Object],
+                    "created_date": "2024-04-10T21:13:04.252Z",
+                    "local_id": "900600h7cn3uwngpr17127835842522026",
+                    "note": "",
+                    "updated_by": [Object],
+                    "updated_date": "2024-04-10T21:13:04.252Z"
+                },
+                "created_by": {
+                    "email": "moun2030@gmail.com",
+                    "id": "65f96525c88ba7e90685fe5f",
+                    "name": "Montasser Mossallem"
+                },
+                "created_date": 1714724967648,
+                "doc_id": "69896zv352484fio17147248055962716",
+                "doc_type": 0,
+                "is_out": true,
+                "local_id": "90900jnw5vh8xob1714724967648660",
+                "price": {
+                    "cost": "99",
+                    "factor": 1,
+                    "local_id": "22561jxmvfrbpnzo17131765363702541",
+                    "name": "",
+                    "sale": "150",
+                    "unit_name": "Small",
+                    "unit_short": "Sml"
+                },
+                "product": {
+                    "default_discount": [Object],
+                    "local_id": "96367lrpbvuevyoc17131765363702393",
+                    "name": "Tepinyakei sushi"
+                },
+                "quantity": "1",
+                "subtotal": 128,
+                "total_cost": 99,
+                "total_price": 113,
+                "total_quantity": 1,
+                "updated_by": {
+                    "email": "moun2030@gmail.com",
+                    "id": "65f96525c88ba7e90685fe5f",
+                    "name": "Montasser Mossallem"
+                },
+                "updated_date": 1714724967648,
+                "updated_discount": {
+                    "is_percentage": false,
+                    "percentage": 10,
+                    "value": 15
+                },
+                "updated_price": {
+                    "cost": "99",
+                    "factor": 1,
+                    "local_id": "22561jxmvfrbpnzo17131765363702541",
+                    "name": "",
+                    "sale": "128",
+                    "unit_name": "Small",
+                    "unit_short": "Sml"
+                }
+            }]
         };
 
     } 
@@ -360,7 +698,7 @@ class AddNewSalesInvoiceComponents extends Component {
         this.setState({
             open_prices_modal: ! this.state.open_prices_modal
         });
-    }
+    } 
 
     setOpenDiscountInvoiceModal = () => {
         //this.state.prices
@@ -1727,21 +2065,24 @@ class AddNewSalesInvoiceComponents extends Component {
 
             return; 
         }
+
+        
          
         
         if( generate.data != null && Object.keys(generate.data).length ) {
             
             var data = generate.data;
+            if( isArray( data )) {
+                data = data[0];
+            }
 
             _zero_left = "000";
-            _number = parseInt( data.number ) + 1; 
- 
-
-            
+            _number = parseInt( data.number ) + 1;             
             invoice_number = "000" + _number.toString(); 
 
         } 
 
+        
         this.setState({
             last_recorded: {
                 number: _number.toString(),
@@ -2062,7 +2403,7 @@ class AddNewSalesInvoiceComponents extends Component {
 
     componentDidMount = async () => {
          
-         
+        
         // setup language
         this.setup_params();  
         
@@ -2071,13 +2412,13 @@ class AddNewSalesInvoiceComponents extends Component {
 
         // Apply screen and header options 
         this.screen_options(); 
-
+        
         // create invoice number 
         await this.generateDocNumber();
         
         // getting all prices 
         await this.get_all_prices();
-
+        
         // gettings all customers 
         await this.get_all_customers(0); 
 
@@ -2086,8 +2427,7 @@ class AddNewSalesInvoiceComponents extends Component {
 
         // add data to fields if session already expired before 
         await this.restore_data_to_fields();  
-
-
+        
     }
 
     AnimatedBoxforInternetWarning = () => (
@@ -2155,8 +2495,7 @@ class AddNewSalesInvoiceComponents extends Component {
             doc_id: this.state.doc_id
         });
 
-        this.setPressBtn(false);
-        console.log(res);
+        this.setPressBtn(false); 
 
     }
 
