@@ -693,48 +693,36 @@ class A_P_I_S {
                 return item
             }
             
-        }); 
-        
+        });  
 
+        // => add the new data
         if( new_data.length ) {
             old_data = [...old_data, ...new_data];
         }
+
+        // => delete 
+        var deletion_clone = old_data.filter( item => {
+            
+            var index = data_object.findIndex(x => x.local_id == item.local_id && item[Object.keys(where_keys)[0]] == where_keys[Object.keys(where_keys)[0]]  );
+            if( index == -1 ) {
+                return item;
+            }
+
+        }); 
+        old_data = old_data.filter( x => deletion_clone.findIndex( y => y.local_id == x.local_id ) == -1 )
         
+
+        // => update 
+        
+        
+
         var last_update = old_data.map( item => {
             item.remote_updated = is_updated_remotely;
             var new_item = {...item, ...data_object};
             return new_item;
         }); 
+          
 
-
-        console.log("============================================================");
-        console.log("this is old data");
-        console.log(last_update.length);
-        
-        
-        var deleted_details = last_update.filter( item => {
-            
-            var elm_arr = []; 
-
-            __keys.forEach(el => {
-                if( where_keys[el] == x[el] ) {
-                    elm_arr.push(true)
-                } else {
-                    elm_arr.push(false)
-                }
-            });
-
-            var is_invoice = elm_arr.indexOf(false);
-
-            if( is_invoice != -1 ) {
-                return item;
-            }
-
-        });
-
-        console.log(deleted_details.length); 
-        console.log("this is new data");
-         
 
         return false; 
 
