@@ -560,7 +560,7 @@ class A_P_I_S {
      */
     async blk_update_delete_insert( mobject, data_object = [], where_keys = {}  ) {
          
-
+        
         // getting settings and language
         var settings, user_data; 
         
@@ -656,7 +656,10 @@ class A_P_I_S {
         };
 
         if( ! config.disable_remote_server ) { 
+            
             request = await this.axiosRequest(axiosOptions);
+            console.log(request);            
+
         };
 
         var is_updated_remotely = false; 

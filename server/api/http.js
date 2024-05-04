@@ -930,9 +930,9 @@ apiRouters.post("/update_insert_delete_by_keys", verify_user_tokens_and_keys, as
     }
     
     try {
-
-        var response = await performBulkUpsert(data_object, db_connection, param_id);
-        return response;
+        
+        var _response = await performBulkUpsert(data_object, db_connection, param_id);
+        return _response;
          
     } catch(error) {
         return res.send({
