@@ -19,7 +19,7 @@ class Sales extends A_P_I_S {
     constructor(props) {
 
         super(props); 
-        this.Schema =  Models.customers;
+        this.Schema =  Models.sales_doc;
 
     }
 
@@ -73,6 +73,7 @@ class Sales extends A_P_I_S {
             _object,
             param_value
         );
+         
         
         // await this.bulkCoreAsync( this.Schema );
 

@@ -713,7 +713,17 @@ class A_P_I_S {
         
 
         // => update 
-        
+        data_object.map(item => {
+            
+            var _key_ = Object.keys(where_keys)[0];
+
+            var index_in_db = old_data.findIndex(x => x.local_id == item.local_id && x[_key_] ==  where_keys[_key_] )
+            
+            if( index_in_db != -1 ) {
+                old_data[index_in_db] = item;
+            }
+            
+        });
         
 
         var last_update = old_data.map( item => {
@@ -721,10 +731,7 @@ class A_P_I_S {
             var new_item = {...item, ...data_object};
             return new_item;
         }); 
-          
-
-
-        return false; 
+           
 
         try {
 
