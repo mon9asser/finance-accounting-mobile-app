@@ -2151,7 +2151,7 @@ class AddNewSalesInvoiceComponents extends Component {
 
       
         
-        // store invoice data  updateAsync
+        // store invoice data  updateAsync => issue here
         var res = await DocDetailsInstance.updateBasedOnKeys(this.state.invoices_details, {
             doc_id: this.state.doc_id
         });        
