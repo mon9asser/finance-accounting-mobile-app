@@ -113,6 +113,7 @@ var allSchema = {
         discount:  { type: {}, default: {}},
         tax:  { type: {}, default: {}},
         vat:  { type: {}, default: {}},
+        tracking_number: { type: String, default: ""},
         shipping_or_delivery_cost: { type: String, default: ""},
         ...default_properties,
     },

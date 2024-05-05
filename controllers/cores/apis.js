@@ -774,7 +774,7 @@ class A_P_I_S {
         }
     }
 
-    async blk_invoice_details_document ({ doc_item, doc_details } = null , data_object = [], data_array = [], where_keys = {} ) {
+    async blk_invoice_details_document ({ doc_item, doc_details } = null , data_object = {}, data_array = [], where_keys = {} ) {
         
         var settings, user_data; 
         
@@ -800,11 +800,74 @@ class A_P_I_S {
             data: []
         };
 
+        var updated_array = data_array.map(item => {
+            
+            item.updated_by = {
+                email: user_data.email,
+                id: user_data.id,
+                name: user_data.name 
+            }
+            item.updated_date = Date.now();
+
+            if(item.created_by == undefined ) {
+                item.created_by = {
+                    email: user_data.email,
+                    id: user_data.id,
+                    name: user_data.name 
+                }
+            }
+
+            if(item.local_id == undefined ) {
+                item.local_id = generateId();
+            }
+
+            if(item.created_date == undefined ) {
+                item.created_date= Date.now();
+            }
+
+            if(item.application_id == undefined ) {
+                item.application_id = user_data.application_id
+            }
+
+            return item;
+        })
+
+        var doc_meta_object = { };
+        
+        doc_meta_object.updated_by = {
+            email: user_data.email,
+            id: user_data.id,
+            name: user_data.name 
+        }
+        doc_meta_object.updated_date = Date.now();
+
+        if(data_object.created_by == undefined ) {
+            doc_meta_object.created_by = {
+                email: user_data.email,
+                id: user_data.id,
+                name: user_data.name 
+            }
+        }
+
+        if(data_object.local_id == undefined ) {
+            doc_meta_object.local_id = generateId();
+        }
+
+        if(data_object.created_date == undefined ) {
+            doc_meta_object.created_date= Date.now();
+        }
+
+        if(data_object.application_id == undefined ) {
+            doc_meta_object.application_id = user_data.application_id
+        }
+
+        var updated_object = {...data_object, ...doc_meta_object}
+        
         var axiosOptions = {
             api: "api/store_full_invoice_document",
             dataObject: {
-                data_object: data_object,
-                data_array: data_array,
+                data_object: updated_object,
+                data_array: updated_array,
                 mobject_data: {
                     doc_item: doc_item, 
                     doc_details: doc_details
@@ -815,16 +878,112 @@ class A_P_I_S {
             model_name: null
         };
 
-        // Request 
+        // Request -
         if( ! config.disable_remote_server ) { 
             request = await this.axiosRequest(axiosOptions); 
             return request;
         }
 
-
-
         // Local Storage 
+        if( config.disable_local_storage ) { 
+            return {
+                message: language.services_disabled_by_app_admin,
+                data: [],
+                is_error: true, 
+                login_redirect: false
+            }
+        }
+
+        if( ! data_array.length ) {
+            return;
+        } 
+
+
+        // Working with document details
+        var old_data_details = await this.get_data_locally(doc_details);
         
+
+        /* Delete */ 
+        old_data_details = old_data_details.filter(x => {
+            var _k = Object.keys(where_keys);
+            if(_k.length) {
+                _k = _k[0];
+            }
+
+            if( where_keys[_k] == x[_k] ) {
+                var index = data_array.findIndex(xm => xm.local_id == x.local_id)
+                
+                if( index != -1 ) {
+                    return x; 
+                }
+
+            } else return x; 
+        });
+                
+        /* Add and Update*/
+        data_array.map(x => {
+            
+            var index = old_data_details.findIndex(it => it.local_id == x.local_id);
+            if( index == -1 ) {
+                old_data_details.push(x)
+            } else {
+                old_data_details[index] = x;
+            }
+
+        });
+
+        
+        
+        // working with invoice document 
+        var old_data_document = await this.get_data_locally(doc_item);
+
+        var dindex = old_data_document.findIndex( x => {
+            
+            var _k = Object.keys(where_keys);
+            if(_k.length) {
+                _k = _k[0];
+            }
+
+            return x[_k] == where_keys[_k];
+
+        });
+
+        if( dindex == -1 ) {
+            old_data_document.push(data_object);
+        } else {
+            old_data_document[dindex] = data_object;
+        }
+
+        try {
+            
+            // Storing Items of Invoices
+            await doc_details.instance.save({
+                key: doc_details.key,
+                data: old_data_details
+            }); 
+
+            // storing invoice data
+            await doc_item.instance.save({
+                key: doc_item.key,
+                data: old_data_document
+            }); 
+
+            return {
+                is_error: false, 
+                login_redirect: false, 
+                data: [], 
+                message: "You added a new sales invoice successfuly!"
+            }
+
+        } catch (error) {
+            return {
+                is_error: false, 
+                login_redirect: false, 
+                data: [], 
+                message: "Something went wrong"
+            }
+        }
+
     }
     
     /**

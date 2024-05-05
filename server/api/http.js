@@ -879,17 +879,85 @@ apiRouters.post("/store_full_invoice_document", verify_user_tokens_and_keys, asy
         message: "Something went wrong, try later"
     }
 
-    if( req.body.mobject_data == undefined ) {
-        return response; 
-    }
+    var database = req.body.database_name;
+    if( database == undefined || req.body.mobject_data == undefined ) {
+        response.is_error = true;
+        response.message = localize.peroperties_required;
+        return res.send(response);
+    } 
     
     // Modal Names
-    var doc_item = req.body.mobject_data.doc_item.key;
-    var doc_details = req.body.mobject_data.doc_details.key;
+    var doc_item = flat_schema_name(req.body.mobject_data.doc_item.key);
+    var doc_details = flat_schema_name(req.body.mobject_data.doc_details.key);
 
-    // delete hyphen from modal names 
+    // Schemas
+    var doc_item_schema = get_schema_object(doc_item); 
+    var doc_detail_schema = get_schema_object(doc_details); 
+    
+    // Connections 
+    var DocItemConnection = await create_connection(database, {
+        model: doc_item, 
+        schemaObject:doc_item_schema
+    }); 
 
-    res.send(doc_details)
+    var DocDetailsConnection = await create_connection(database, {
+        model: doc_details, 
+        schemaObject:doc_detail_schema
+    }); 
+
+    if( ! DocItemConnection || ! DocDetailsConnection ) {
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.services_disabled; 
+        return res.send(response); 
+    }
+
+    // checking for data object 
+   if( req.body.data_object == undefined || req.body.data_array == undefined ) {
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.data_object_required; 
+        return res.send(response); 
+    }
+
+    var param_id = req.body.param_id == undefined ? -1: req.body.param_id 
+
+    // working on invoice Items   
+    var data_array = req.body.data_array;
+    var _response = {
+        is_error: true, 
+        data: [],
+        message: "Something went wrong! please try later"
+    };
+
+    if( data_array.length ) { 
+        _response = await performBulkUpsert(data_array, DocDetailsConnection, param_id);        
+    }
+
+    if( _response.is_error ) {
+        return _response;
+    }
+
+    if(param_id.doc_id != undefined) {
+        param_id = { local_id: param_id.doc_id }
+    }
+    
+
+    var data_object = req.body.data_object;
+    var finder = await DocItemConnection.find(param_id)
+    if( finder.length ) {
+        _response.is_error = false;
+        _response.message = "";
+        _response.data = await DocItemConnection.updateOne(param_id, data_object);
+    } else {
+        _response.is_error = false;
+        _response.message = "";
+        _response.data = await DocItemConnection.create(data_object);
+    }
+     
+    res.send(_response)
+    // Working on invoice data 
+    
 
 });
 

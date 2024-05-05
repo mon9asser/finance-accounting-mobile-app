@@ -290,11 +290,15 @@ class AddNewSalesInvoiceComponents extends Component {
             invoices_details: [], // Document Details 
             
             quantity_number: 1,
-            
+        
+
             notificationBox: { display: 'none' },
             notificationCssClass: {},
             notificationTextCssClass: {},
-            notificationMessage: ""
+            notificationMessage: "",
+
+            doc_id: "77251nyimvkykg617149332153532579",
+            invoices_details: [{"application_id": "663637096b3ae0ea71feccee", "branch": {"__v": 0, "_id": "6636370e6b3ae0ea71feccf9", "application_id": "", "branch_address": "", "branch_city": "", "branch_country": "", "branch_name": "Main Branch", "branch_number": "", "created_by": [Object], "created_date": null, "local_id": "000000012345_default_branch", "note": "", "updated_by": [Object], "updated_date": null}, "created_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "created_date": 1714933237452, "doc_id": "77251nyimvkykg617149332153532579", "doc_type": 0, "is_out": true, "local_id": "71296wvkgn6ybm1m17149332374522483", "price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}, "product": {"default_discount": [Object], "local_id": "57814hlhexwck2217148290812061323", "name": "Temaki"}, "quantity": 1, "subtotal": 15, "total_cost": 8, "total_price": 15, "total_quantity": 1, "updated_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "updated_date": 1714933237452, "updated_discount": {"is_percentage": false, "percentage": 0, "value": 0}, "updated_price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}}, {"application_id": "663637096b3ae0ea71feccee", "branch": {"__v": 0, "_id": "6636370e6b3ae0ea71feccf9", "application_id": "", "branch_address": "", "branch_city": "", "branch_country": "", "branch_name": "Main Branch", "branch_number": "", "created_by": [Object], "created_date": null, "local_id": "000000012345_default_branch", "note": "", "updated_by": [Object], "updated_date": null}, "created_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "created_date": 1714933237452, "doc_id": "77251nyimvkykg617149332153532579", "doc_type": 0, "is_out": true, "local_id": "4899b9q8obkt62c17149332374521979", "price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}, "product": {"default_discount": [Object], "local_id": "57814hlhexwck2217148290812061323", "name": "Temaki"}, "quantity": "2", "subtotal": 30, "total_cost": 16, "total_price": 30, "total_quantity": 2, "updated_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "updated_date": 1714933237452, "updated_discount": {"is_percentage": false, "percentage": 0, "value": 0}, "updated_price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}}, {"application_id": "663637096b3ae0ea71feccee", "branch": {"__v": 0, "_id": "6636370e6b3ae0ea71feccf9", "application_id": "", "branch_address": "", "branch_city": "", "branch_country": "", "branch_name": "Main Branch", "branch_number": "", "created_by": [Object], "created_date": null, "local_id": "000000012345_default_branch", "note": "", "updated_by": [Object], "updated_date": null}, "created_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "created_date": 1714933237452, "doc_id": "77251nyimvkykg617149332153532579", "doc_type": 0, "is_out": true, "local_id": "16550abj3wag54q717149332374522442", "price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}, "product": {"default_discount": [Object], "local_id": "57814hlhexwck2217148290812061323", "name": "Temaki"}, "quantity": "4", "subtotal": 60, "total_cost": 32, "total_price": 60, "total_quantity": 4, "updated_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "updated_date": 1714933237452, "updated_discount": {"is_percentage": false, "percentage": 0, "value": 0}, "updated_price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}}],
         } 
 
     } 
@@ -2129,6 +2133,7 @@ class AddNewSalesInvoiceComponents extends Component {
         var response = await RecordedInstance.create_update({
             number, zero_left, type
         });
+ 
          
         if( response.is_error ) {
             this.setPressBtn(false);
@@ -2150,6 +2155,7 @@ class AddNewSalesInvoiceComponents extends Component {
         }
         
         var objectData = {
+            local_id: this.state.doc_id,
             invoice_number: this.state.doc_number, 
             invoice_status: this.state.selected_invoice_status,  
             payment_status: this.state.selected_payment_status,  
@@ -2163,6 +2169,7 @@ class AddNewSalesInvoiceComponents extends Component {
             discount: this.state.discount,  
             tax: this.state.tax,  
             vat: this.state.vat,  
+            tracking_number: this.state.tracking_number,
             shipping_or_delivery_cost: this.state.shipping_or_delivery_cost,
             param_id: this.state.doc_id
         };
@@ -2171,14 +2178,10 @@ class AddNewSalesInvoiceComponents extends Component {
         var res = await DocDetailsInstance.blk_invoice_details_document({
             doc_item: Models.sales_doc, 
             doc_details: Models.doc_details
-        },{
-            data_array: this.state.invoices_details,
-            data_object: objectData
-        },{
+        }, objectData, this.state.invoices_details, {
             doc_id: this.state.doc_id
         });       
-        
-        return console.log(res);
+         
         
         if(res.is_error) {
             this.setPressBtn(false);
@@ -2188,29 +2191,14 @@ class AddNewSalesInvoiceComponents extends Component {
             this.setNotificationMessage("Cannot save invoice, something went wrong!"); 
             return;
         }
-        
-        // store the invoice body 
-        
+          
+        this.setPressBtn(false);
+        this.setNotificationBox("flex")
+        this.setNotificationCssClass(styles.success_message);
+        this.setNotificationCssTextClass(styles.success_text)
+        this.setNotificationMessage("You added a new sales invoice successfully"); 
+        return;
          
-        var invoiceBody = await SalesInvoiceInstance.create_update(objectData)
-
-        if(invoiceBody.is_error) {
-            this.setPressBtn(false);
-            this.setNotificationBox("flex")
-            this.setNotificationCssClass(styles.error_message);
-            this.setNotificationCssTextClass(styles.error_text)
-            this.setNotificationMessage("Cannot save invoice, something went wrong!"); 
-            return;
-        }
-
-        if( ! invoiceBody.is_error) {
-            this.setPressBtn(false);
-            this.setNotificationBox("flex")
-            this.setNotificationCssClass(styles.success_message);
-            this.setNotificationCssTextClass(styles.success_text)
-            this.setNotificationMessage("You added a new sales invoice successfully"); 
-            return;
-        } 
 
     }
 
