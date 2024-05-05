@@ -660,7 +660,7 @@ class A_P_I_S {
             request = await this.axiosRequest(axiosOptions);
             console.log(request);            
 
-        };
+        }; 
 
         var is_updated_remotely = false; 
         if( request.is_error == false ) {
@@ -770,6 +770,10 @@ class A_P_I_S {
                 login_redirect: false
             }
         }
+    }
+
+    async blk_invoice_details_and_number ( mobject, data_object = [], where_keys = {} ) {
+        alert();
     }
     
     /**

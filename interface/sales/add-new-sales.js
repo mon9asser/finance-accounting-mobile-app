@@ -2149,13 +2149,13 @@ class AddNewSalesInvoiceComponents extends Component {
             return;
         }
         
-         
-
         // store invoice data  updateAsync
         var res = await DocDetailsInstance.updateBasedOnKeys(this.state.invoices_details, {
             doc_id: this.state.doc_id
         });        
-         
+
+        return; 
+        
         if(res.is_error) {
             this.setPressBtn(false);
             this.setNotificationBox("flex")
