@@ -870,6 +870,30 @@ apiRouters.post("/update_by_keys", verify_user_tokens_and_keys, async (req, res)
 });
 
 
+apiRouters.post("/store_full_invoice_document", verify_user_tokens_and_keys, async (req, res) => {
+
+    var response = {
+        data: [],
+        is_error: true, 
+        login_redirect: false, 
+        message: "Something went wrong, try later"
+    }
+
+    if( req.body.mobject_data == undefined ) {
+        return response; 
+    }
+    
+    // Modal Names
+    var doc_item = req.body.mobject_data.doc_item.key;
+    var doc_details = req.body.mobject_data.doc_details.key;
+
+    // delete hyphen from modal names 
+
+    res.send(doc_details)
+
+});
+
+
 apiRouters.post("/update_insert_delete_by_keys", verify_user_tokens_and_keys, async (req, res) => {
      
     // handling current language

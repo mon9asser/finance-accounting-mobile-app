@@ -51,15 +51,17 @@ class A_P_I_S {
 
         }  
          
-        if( model_name == undefined ) {
+      
+
+        if( model_name == undefined && model_name != null ) {
+             
             return {
                 login_redirect: false, 
                 message: language.something_error, 
                 is_error: true , 
                 data: []
             };
-        }
-
+        } 
 
         if( ! is_media && ( dataObject.data_object == undefined || typeof dataObject.data_object != 'object' ) && ( dataObject.data_array == undefined || ! Array.isArray(dataObject.data_array) )  ) {
             return {
@@ -772,8 +774,57 @@ class A_P_I_S {
         }
     }
 
-    async blk_invoice_details_and_number ( mobject, data_object = [], where_keys = {} ) {
-        alert();
+    async blk_invoice_details_document ({ doc_item, doc_details } = null , data_object = [], data_array = [], where_keys = {} ) {
+        
+        var settings, user_data; 
+        
+        try{
+            settings = await get_setting();
+            user_data = await usr.get_session();
+        } catch(error){}
+        
+         
+        // getting user data and check for session expiration 
+        if( user_data == null || ! Object.keys(user_data).length ) {
+            return {
+                login_redirect: true, 
+                message: language.user_session_expired, 
+                is_error: true , 
+                data: []
+            };
+        }
+         
+        var request = {
+            is_error: true, 
+            message: "", 
+            data: []
+        };
+
+        var axiosOptions = {
+            api: "api/store_full_invoice_document",
+            dataObject: {
+                data_object: data_object,
+                data_array: data_array,
+                mobject_data: {
+                    doc_item: doc_item, 
+                    doc_details: doc_details
+                },
+                param_id: where_keys
+            }, 
+            method: "post",  
+            model_name: null
+        };
+
+        // Request 
+        if( ! config.disable_remote_server ) { 
+            request = await this.axiosRequest(axiosOptions); 
+            return request;
+        }
+
+
+
+        // Local Storage 
+        
     }
     
     /**

@@ -2149,23 +2149,6 @@ class AddNewSalesInvoiceComponents extends Component {
             return;
         }
         
-        // store invoice data  updateAsync => issue here
-        var res = await DocDetailsInstance.updateBasedOnKeys(this.state.invoices_details, {
-            doc_id: this.state.doc_id
-        });        
-
-        return; 
-        
-        if(res.is_error) {
-            this.setPressBtn(false);
-            this.setNotificationBox("flex")
-            this.setNotificationCssClass(styles.error_message);
-            this.setNotificationCssTextClass(styles.error_text)
-            this.setNotificationMessage("Cannot save invoice, something went wrong!"); 
-            return;
-        }
-        
-        // store the invoice body 
         var objectData = {
             invoice_number: this.state.doc_number, 
             invoice_status: this.state.selected_invoice_status,  
@@ -2183,6 +2166,31 @@ class AddNewSalesInvoiceComponents extends Component {
             shipping_or_delivery_cost: this.state.shipping_or_delivery_cost,
             param_id: this.state.doc_id
         };
+
+        // store invoice data  updateAsync => issue here
+        var res = await DocDetailsInstance.blk_invoice_details_document({
+            doc_item: Models.sales_doc, 
+            doc_details: Models.doc_details
+        },{
+            data_array: this.state.invoices_details,
+            data_object: objectData
+        },{
+            doc_id: this.state.doc_id
+        });       
+        
+        return console.log(res);
+        
+        if(res.is_error) {
+            this.setPressBtn(false);
+            this.setNotificationBox("flex")
+            this.setNotificationCssClass(styles.error_message);
+            this.setNotificationCssTextClass(styles.error_text)
+            this.setNotificationMessage("Cannot save invoice, something went wrong!"); 
+            return;
+        }
+        
+        // store the invoice body 
+        
          
         var invoiceBody = await SalesInvoiceInstance.create_update(objectData)
 
