@@ -14,8 +14,7 @@ import _ from 'lodash';
  * 
  */
 
-alert("Need to create a visualization id like this #0000000014");
-
+ 
 class Branches extends A_P_I_S {
 
     constructor(props) {

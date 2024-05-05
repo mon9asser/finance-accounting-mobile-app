@@ -544,7 +544,7 @@ class AddNewSalesInvoiceComponents extends Component {
                     unit_name: itemObject.default_price.unit_name,
                     unit_short: itemObject.default_price.unit_short,
                     factor: itemObject.default_price.factor
-                },
+                }, 
                 updated_discount: {
                     is_percentage: false,
                     percentage: discount_percentage,
@@ -2148,14 +2148,13 @@ class AddNewSalesInvoiceComponents extends Component {
             this.setNotificationMessage("There are no items added to this invoice"); 
             return;
         }
-
-      
         
         // store invoice data  updateAsync => issue here
         var res = await DocDetailsInstance.updateBasedOnKeys(this.state.invoices_details, {
             doc_id: this.state.doc_id
         });        
-        
+
+        return; 
         
         if(res.is_error) {
             this.setPressBtn(false);
@@ -2166,8 +2165,6 @@ class AddNewSalesInvoiceComponents extends Component {
             return;
         }
         
-        
-
         // store the invoice body 
         var objectData = {
             invoice_number: this.state.doc_number, 
@@ -2186,10 +2183,8 @@ class AddNewSalesInvoiceComponents extends Component {
             shipping_or_delivery_cost: this.state.shipping_or_delivery_cost,
             param_id: this.state.doc_id
         };
-        
          
         var invoiceBody = await SalesInvoiceInstance.create_update(objectData)
-        
 
         if(invoiceBody.is_error) {
             this.setPressBtn(false);

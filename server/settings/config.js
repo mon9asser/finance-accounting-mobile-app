@@ -11,7 +11,7 @@ const conf = {
 
     server: {
         
-        port: "3000",
+        port: "5000",
         api: "/api",
 
         keys: {
