@@ -7,6 +7,9 @@ import axios from 'axios';
 import Modal from "react-native-modal"; 
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker'; 
+import * as Sharing from 'expo-sharing';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+
 
 // Distruct 
 import { StatusBar } from 'expo-status-bar';
@@ -1525,6 +1528,43 @@ class AddNewSalesInvoiceComponents extends Component {
         });
     }
 
+
+    async createPDF() {
+        let options = {
+          html: '<h1>PDF TEST</h1>',
+          fileName: 'test',
+          directory: 'Documents',
+        };
+    
+        let file = await RNHTMLtoPDF.convert(options)
+        
+        return file.filePath;
+    }
+    
+
+    shareLink = async() => {
+
+        const localFileUri = await this.createPDF();
+        if (!localFileUri) {
+            alert('Failed to create the PDF.');
+            return;
+        } 
+         
+        // Check if sharing is available
+        if (!(await Sharing.isAvailableAsync())) {
+            alert('Sharing is not available on your device');
+            return;
+        }
+
+        // Share the file
+        try {
+            await Sharing.shareAsync(localFileUri);
+            alert('File shared successfully!');
+        } catch (error) {
+            alert('Failed to share the file: ' + error.message);
+        }
+    }
+
     PriceModal = ({ isVisible, toggleModal }) => {
 
         
@@ -2519,7 +2559,7 @@ class AddNewSalesInvoiceComponents extends Component {
                             </View>
 
                             <View style={{ gap: 10, marginTop: 30, flex: 1, flexDirection: "column", overflow: "hidden"}}> 
-                                <TouchableOpacity style={{marginBottom: 5}} onPress={() => alert("print , export, etc")}>
+                                <TouchableOpacity style={{marginBottom: 5}} onPress={this.shareLink}>
                                     <Text style={{fontWeight:"bold", color: this.state.default_color}}>
                                         More Options
                                     </Text> 
