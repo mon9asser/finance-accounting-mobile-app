@@ -1,4 +1,4 @@
-
+// https://medium.com/@josematheusnoveli/creating-and-sharing-pdf-in-react-native-using-expo-c6d3c3cb047f
 // Default
 import React, { Component } from "react";
 import NetInfo from '@react-native-community/netinfo';
@@ -7,8 +7,9 @@ import axios from 'axios';
 import Modal from "react-native-modal"; 
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker'; 
-import * as Sharing from 'expo-sharing';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import * as Sharing from 'expo-sharing'; 
+import * as Print from 'expo-print';
+
 
 
 // Distruct 
@@ -85,7 +86,70 @@ class AddNewSalesInvoiceComponents extends Component {
 
         this.state = {
 
-            // custom discount
+            selectedPrinter: "",
+            invoice_in_html: ` <!DOCTYPE html>
+            <html>
+              <head>
+                <style>
+                  body {
+                    font-family: 'Helvetica', 'Arial', sans-serif;
+                    margin: 0;
+                    padding: 20px;
+                    font-size: 12px; /* Adjust based on your needs */
+                    width: 280px; /* Adjust the width to match the 80mm paper width minus margins */
+                  }
+                  .header, .footer {
+                    text-align: center;
+                    margin-bottom: 20px;
+                  }
+                  .content {
+                    margin-bottom: 20px;
+                  }
+                  table {
+                    width: 100%;
+                    border-collapse: collapse;
+                  }
+                  th, td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                    text-align: left;
+                  }
+                  th {
+                    background-color: #f2f2f2;
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="header">
+                  <h1>Company Name</h1>
+                  <p>Address Line 1<br>Address Line 2</p>
+                </div>
+                <div class="content">
+                  <h2>Invoice #123456</h2>
+                  <p>Date: 2024-05-01</p>
+                  <table>
+                    <tr>
+                      <th>Item</th>
+                      <th>Qty</th>
+                      <th>Price</th>
+                    </tr>
+                    <tr>
+                      <td>Item One</td>
+                      <td>1</td>
+                      <td>$10.00</td>
+                    </tr>
+                    <tr>
+                      <td>Item Two</td>
+                      <td>2</td>
+                      <td>$20.00</td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="footer">
+                  <p>Thank you for your business!</p>
+                </div>
+              </body>
+            </html>`,
             discountValue: '', 
             discountPercentage: '',
             enabled_discount_percentage: false, 
@@ -299,6 +363,9 @@ class AddNewSalesInvoiceComponents extends Component {
             notificationCssClass: {},
             notificationTextCssClass: {},
             notificationMessage: "",
+            
+            share_is_pressed: false, 
+            print_is_pressed: false, 
 
             doc_id: "77251nyimvkykg617149332153532579",
             invoices_details: [{"application_id": "663637096b3ae0ea71feccee", "branch": {"__v": 0, "_id": "6636370e6b3ae0ea71feccf9", "application_id": "", "branch_address": "", "branch_city": "", "branch_country": "", "branch_name": "Main Branch", "branch_number": "", "created_by": [Object], "created_date": null, "local_id": "000000012345_default_branch", "note": "", "updated_by": [Object], "updated_date": null}, "created_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "created_date": 1714933237452, "doc_id": "77251nyimvkykg617149332153532579", "doc_type": 0, "is_out": true, "local_id": "71296wvkgn6ybm1m17149332374522483", "price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}, "product": {"default_discount": [Object], "local_id": "57814hlhexwck2217148290812061323", "name": "Temaki"}, "quantity": 1, "subtotal": 15, "total_cost": 8, "total_price": 15, "total_quantity": 1, "updated_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "updated_date": 1714933237452, "updated_discount": {"is_percentage": false, "percentage": 0, "value": 0}, "updated_price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}}, {"application_id": "663637096b3ae0ea71feccee", "branch": {"__v": 0, "_id": "6636370e6b3ae0ea71feccf9", "application_id": "", "branch_address": "", "branch_city": "", "branch_country": "", "branch_name": "Main Branch", "branch_number": "", "created_by": [Object], "created_date": null, "local_id": "000000012345_default_branch", "note": "", "updated_by": [Object], "updated_date": null}, "created_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "created_date": 1714933237452, "doc_id": "77251nyimvkykg617149332153532579", "doc_type": 0, "is_out": true, "local_id": "4899b9q8obkt62c17149332374521979", "price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}, "product": {"default_discount": [Object], "local_id": "57814hlhexwck2217148290812061323", "name": "Temaki"}, "quantity": "2", "subtotal": 30, "total_cost": 16, "total_price": 30, "total_quantity": 2, "updated_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "updated_date": 1714933237452, "updated_discount": {"is_percentage": false, "percentage": 0, "value": 0}, "updated_price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}}, {"application_id": "663637096b3ae0ea71feccee", "branch": {"__v": 0, "_id": "6636370e6b3ae0ea71feccf9", "application_id": "", "branch_address": "", "branch_city": "", "branch_country": "", "branch_name": "Main Branch", "branch_number": "", "created_by": [Object], "created_date": null, "local_id": "000000012345_default_branch", "note": "", "updated_by": [Object], "updated_date": null}, "created_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "created_date": 1714933237452, "doc_id": "77251nyimvkykg617149332153532579", "doc_type": 0, "is_out": true, "local_id": "16550abj3wag54q717149332374522442", "price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}, "product": {"default_discount": [Object], "local_id": "57814hlhexwck2217148290812061323", "name": "Temaki"}, "quantity": "4", "subtotal": 60, "total_cost": 32, "total_price": 60, "total_quantity": 4, "updated_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "updated_date": 1714933237452, "updated_discount": {"is_percentage": false, "percentage": 0, "value": 0}, "updated_price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}}],
@@ -306,7 +373,31 @@ class AddNewSalesInvoiceComponents extends Component {
 
     } 
 
-     
+    setSelectedPrinter = (val) => {
+        this.setState({
+            selectedPrinter: val
+        })
+    }
+
+    selectPrinter = async () => {
+        const printer = await Print.selectPrinterAsync(); // iOS only
+        setSelectedPrinter(printer);
+    }
+    
+    setShareBtnPressed = (value) => {
+        this.setState({
+            share_is_pressed: value
+        })
+    }
+
+    setPrintBtnPressed = (value) => {
+        this.setState({
+            print_is_pressed: value
+        })
+    }
+
+
+    
 
     setDefaultQuantity = (increase = true) => {
    
@@ -1527,42 +1618,50 @@ class AddNewSalesInvoiceComponents extends Component {
             this.calculateInvoiceData();
         });
     }
-
-
-    async createPDF() {
-        let options = {
-          html: '<h1>PDF TEST</h1>',
-          fileName: 'test',
-          directory: 'Documents',
-        };
+ 
     
-        let file = await RNHTMLtoPDF.convert(options)
+
+    share_this_document = async() => { 
         
-        return file.filePath;
-    }
-    
+        this.setShareBtnPressed(true);
 
-    shareLink = async() => {
+        //setPrintBtnPressed
+        await this.saveData(false);
 
-        const localFileUri = await this.createPDF();
-        if (!localFileUri) {
-            alert('Failed to create the PDF.');
-            return;
-        } 
-         
-        // Check if sharing is available
-        if (!(await Sharing.isAvailableAsync())) {
-            alert('Sharing is not available on your device');
-            return;
-        }
-
-        // Share the file
         try {
-            await Sharing.shareAsync(localFileUri);
-            alert('File shared successfully!');
-        } catch (error) {
-            alert('Failed to share the file: ' + error.message);
+            const { uri } = await Print.printToFileAsync({ html: this.state.invoice_in_html });
+            Sharing.shareAsync(uri);   
+        } catch (error) { 
         }
+
+        setTimeout(() => {this.setShareBtnPressed(false); }, 1000)
+    }
+
+    print_this_document = async() => { 
+        
+        this.setPrintBtnPressed(true);
+         
+        //setPrintBtnPressed
+        await this.saveData(false);
+
+        try {
+            await Print.printAsync({
+                html: this.state.invoice_in_html,
+                printerUrl: this.state.selectedPrinter?.url // for os only 
+            })
+        } catch (error) {}
+
+        setTimeout(() => {this.setPrintBtnPressed(false); }, 1000)
+    }
+
+    MoreOptionModal = ( { isVisible, toggleModal } ) => {
+        return (
+            <Modal isVisible={isVisible} animationType="slide">
+                <View style={{...styles.modalContainer, flex: 1}}>
+                <Text>Option Modal</Text>
+                </View>
+            </Modal>
+        );
     }
 
     PriceModal = ({ isVisible, toggleModal }) => {
@@ -2157,9 +2256,10 @@ class AddNewSalesInvoiceComponents extends Component {
         });
     }
 
-    saveData = async () => {
+    saveData = async (useLoading = true) => {
 
-        this.setPressBtn(true);
+        if( useLoading )
+            this.setPressBtn(true);
 
         // generate invoice number by this.state.last_recorded object if it is not null
         if( this.state.last_recorded == null ) {
@@ -2175,7 +2275,8 @@ class AddNewSalesInvoiceComponents extends Component {
         });
  
          
-        if( response.is_error ) {
+        if( response.is_error && useLoading) {
+            
             this.setPressBtn(false);
             this.setNotificationBox("flex")
             this.setNotificationCssClass(styles.error_message);
@@ -2185,7 +2286,7 @@ class AddNewSalesInvoiceComponents extends Component {
         }
         
         // store bulk invoice details
-        if(!this.state.invoices_details.length) {
+        if(!this.state.invoices_details.length && useLoading ) {
             this.setPressBtn(false);
             this.setNotificationBox("flex")
             this.setNotificationCssClass(styles.error_message);
@@ -2223,7 +2324,7 @@ class AddNewSalesInvoiceComponents extends Component {
         });       
          
         
-        if(res.is_error) {
+        if(res.is_error && useLoading ) {
             this.setPressBtn(false);
             this.setNotificationBox("flex")
             this.setNotificationCssClass(styles.error_message);
@@ -2231,7 +2332,9 @@ class AddNewSalesInvoiceComponents extends Component {
             this.setNotificationMessage("Cannot save invoice, something went wrong!"); 
             return;
         }
-          
+        
+        if( ! useLoading ) return; 
+
         this.setPressBtn(false);
         this.setNotificationBox("flex")
         this.setNotificationCssClass(styles.success_message);
@@ -2411,7 +2514,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                     <this.InvoiceTaxModal isVisible={this.state.invoice_tax_modal} toggleModal={this.setOpenTaxInvoiceModal} />
                                     <this.InvoiceVatModal isVisible={this.state.invoice_vat_modal} toggleModal={this.setOpenVatInvoiceModal} />
                                     <this.ShippingDeliveryModal isVisible={this.state.invoice_shipping_delivery} toggleModal={this.setOpenShippingInvoiceModal} />
-
+                                    
                                     <View style={{borderWidth: 1, borderColor: this.state.default_color, marginTop: 10}}>
                                         <View>
                                             <View style={{flex: 1, flexDirection: "row", backgroundColor: this.state.default_color, padding: 5, gap: 10, borderRadius: 0 , paddingBottom:5, paddingTop:5}}>
@@ -2559,19 +2662,46 @@ class AddNewSalesInvoiceComponents extends Component {
                             </View>
 
                             <View style={{ gap: 10, marginTop: 30, flex: 1, flexDirection: "column", overflow: "hidden"}}> 
-                                <TouchableOpacity style={{marginBottom: 5}} onPress={this.shareLink}>
-                                    <Text style={{fontWeight:"bold", color: this.state.default_color}}>
-                                        More Options
-                                    </Text> 
-                                </TouchableOpacity>
-                                <Button onPress={this.saveData} style={{...styles.default_btn, backgroundColor: this.state.default_color }}>
-                                    {
-                                        this.state.isPressed ?
-                                        <ActivityIndicator color={styles.direct.color.white} />
-                                        :
-                                        <Text style={{color:styles.direct.color.white, ...styles.size.medium}}> {this.state.language.save} </Text> 
-                                    }
-                                </Button>  
+                                
+                                {Platform.OS === 'ios' && (
+                                    <Button style={{...styles.default_btnx, backgroundColor: this.state.default_color, backgroundColor: "#192a56", flexGrow: 1 }} onPress={this.selectPrinter}> 
+                                        <Text style={{color:styles.direct.color.white, ...styles.size.medium}}>
+                                            {this.state.selectedPrinter == ""? <Text>Select printer</Text>: selectedPrinter.name}
+                                        </Text>
+                                    </Button> 
+                                )}
+
+                                <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10}}>
+                                    
+                                    <TouchableOpacity style={{...styles.default_btnx, backgroundColor: this.state.default_color, backgroundColor: "#6F1E51", flexGrow: 1 }} onPress={this.share_this_document}>
+                                        
+                                        {
+                                            this.state.share_is_pressed ?
+                                            <ActivityIndicator color={"#fff"}></ActivityIndicator>
+                                            :
+                                            <Image style={{width:35, height:35, objectFit: "fill" }} source={require("./../../assets/icons/share-icon.png")} />
+                                        } 
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity style={{...styles.default_btnx, backgroundColor: this.state.default_color, backgroundColor: "#192a56", flexGrow: 1 }} onPress={this.print_this_document}>
+                                        {
+                                            this.state.print_is_pressed ?
+                                            <ActivityIndicator color={"#fff"}></ActivityIndicator>
+                                            :
+                                            <Image style={{width:28, height: 28, objectFit: "fill" }}  source={require("./../../assets/icons/printer-icon.png")} />
+                                        } 
+                                    </TouchableOpacity>
+                                
+                                    <TouchableOpacity onPress={this.saveData} style={{...styles.default_btnx, backgroundColor: this.state.default_color, flexGrow: 3}}>
+                                        {
+                                            this.state.isPressed ?
+                                            <ActivityIndicator color={styles.direct.color.white} />
+                                            :
+                                            <Text style={{color:styles.direct.color.white, ...styles.size.medium}}> {this.state.language.save} </Text> 
+                                        }
+                                    </TouchableOpacity>  
+
+                                </View>
                             </View>
                         </View> 
                         

@@ -576,6 +576,14 @@ var styles = StyleSheet.create({
         padding: 5, 
         borderRadius: 5
     },
+    default_btnx: {
+        width: 'auto', 
+        padding: 5, 
+        height:45,
+        alignItems: "center",
+        justifyContent:"center",
+        borderRadius: 5
+    },
 
     primary_button: {
         width: '100%', 
