@@ -87,68 +87,171 @@ class AddNewSalesInvoiceComponents extends Component {
         this.state = {
 
             selectedPrinter: "",
-            invoice_in_html: ` <!DOCTYPE html>
-            <html>
-              <head>
-                <style>
-                  body {
-                    font-family: 'Helvetica', 'Arial', sans-serif;
-                    margin: 0;
-                    padding: 20px;
-                    font-size: 12px; /* Adjust based on your needs */
-                    width: 280px; /* Adjust the width to match the 80mm paper width minus margins */
-                  }
-                  .header, .footer {
-                    text-align: center;
-                    margin-bottom: 20px;
-                  }
-                  .content {
-                    margin-bottom: 20px;
-                  }
-                  table {
-                    width: 100%;
-                    border-collapse: collapse;
-                  }
-                  th, td {
-                    border: 1px solid #ddd;
-                    padding: 8px;
-                    text-align: left;
-                  }
-                  th {
-                    background-color: #f2f2f2;
-                  }
-                </style>
-              </head>
-              <body>
-                <div class="header">
-                  <h1>Company Name</h1>
-                  <p>Address Line 1<br>Address Line 2</p>
-                </div>
-                <div class="content">
-                  <h2>Invoice #123456</h2>
-                  <p>Date: 2024-05-01</p>
-                  <table>
-                    <tr>
-                      <th>Item</th>
-                      <th>Qty</th>
-                      <th>Price</th>
-                    </tr>
-                    <tr>
-                      <td>Item One</td>
-                      <td>1</td>
-                      <td>$10.00</td>
-                    </tr>
-                    <tr>
-                      <td>Item Two</td>
-                      <td>2</td>
-                      <td>$20.00</td>
-                    </tr>
-                  </table>
-                </div>
-                <div class="footer">
-                  <p>Thank you for your business!</p>
-                </div>
-              </body>
+            invoice_in_html: `<!DOCTYPE html>
+            <html lang="en">
+                <head>
+                    <style>
+                        body {
+                            font-family: 'Helvetica', 'Arial', sans-serif;
+                            margin: 0;
+                            padding: 20px;
+                            font-size: 12px; /* Adjust based on your needs */
+                            width: 280px; /* Adjust the width to match the 80mm paper width minus margins */
+                        }
+                        .header, .footer {
+                            text-align: center;
+                            margin-bottom: 20px;
+                        }
+                        .content {
+                            margin-bottom: 20px;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                        }
+                        th, td {
+                            border: 1px solid #ddd;
+                            padding: 8px;
+                            text-align: left;
+                        }
+                        th {
+                            background-color: #f2f2f2;
+                        }
+            
+                        img {
+                            width: 100%;
+                            max-width: 80px;
+                        }
+                        p {
+                            line-height: 18px;
+                        }
+            
+                        .flex {
+                            display: flex;
+                            justify-content: space-between;
+                        }
+                        .text-center {
+                            text-align: center;
+                        }
+                        .mt-20 {
+                            margin-top: 15px;
+                        }
+                        p b {
+                            display: block;
+                        }
+            
+                        .line-bottom { 
+                            border-bottom: 1px dashed #ddd;
+                            padding-bottom: 10px;
+                        }
+            
+                        .bordered {
+                            border: 1px solid #ddd;
+                            padding: 20px;
+                            font-size: 14px;
+                            background-color: #f2f2f2;
+                        }
+                        .p-20 {
+                            padding: 20px;
+                        }
+                        .mt-10 {
+                            margin-top: 10px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    
+                    <div class="header">
+                        
+                        <img src="../assets/icon.png" />
+                        <h2>Company Name</h2>
+                        <p>
+                            <b>Grand City</b>
+                            <span>Lorem ipsum dolor sit amet, consectetur adipisicing elit. </span>
+                        </p>
+                        <p>
+                            Vat Number : 1021458755
+                        </p>
+                        
+                    </div>
+                    <div class="content text-center line-bottom">
+                        <h3>No: #0002145</h3> 
+                    </div>
+            
+                    <div class="content text-center line-bottom">
+                        <span>Customer Name:</span><b> Micha'el Para</b>
+                        <p>Phone Number: 0214587554455</p>
+                        <p>City Name</p>
+                        <p>Full address here</p>
+                    </div>
+                    
+                    <div>
+                        <div class="flex">
+                            <p>Date : 15/02/1988 12:00 PM</p> 
+                        </div>
+                        <table>
+                            <tr>
+                              <th>Item</th>
+                              <th>Qty</th>
+                              <th>Price</th>
+                              <th>total</th>
+                            </tr>
+                            <tr>
+                              <td>Item One</td>
+                              <td>1</td>
+                              <td>$10.00</td>
+                              <td>$10.00</td>
+                            </tr>
+                            <tr>
+                              <td>Item Two</td>
+                              <td>2</td>
+                              <td>$20.00</td>
+                              <td>$20.00</td>
+                            </tr>
+                          </table>
+                          <div class="flex mt-20">
+                            <span>Subtotal</span>
+                            <span>$20.00</span>
+                          </div>
+                          <div class="flex mt-20">
+                            <span>Discount</span>
+                            <span>$20.00</span>
+                          </div>
+                          <div class="flex mt-20">
+                            <span>Tax</span>
+                            <span>$20.00</span>
+                          </div>
+                          <div class="flex mt-20">
+                            <span>Vat</span>
+                            <span>$20.00</span>
+                          </div>
+                          <div class="flex mt-20">
+                            <span>Shipping or delivery Cost</span>
+                            <span>$20.00</span>
+                          </div>
+                    </div>
+            
+                    <div class="flex mt-20 bordered">
+                        <b>Total</b>
+                        <b>50,000</b>
+                    </div>
+            
+                    <div class="flex line-bottom">
+                        <p>Delivery</p>
+                        <p>Branch Name</p> 
+                    </div>
+            
+                    <div class="text-center p-20">
+                        <div>
+                            Barcode
+                        </div> 
+                        <div class="mt-10">
+                            QR Code
+                        </div>
+                    </div>
+             
+                    
+                </body>
             </html>`,
             discountValue: '', 
             discountPercentage: '',
@@ -372,6 +475,85 @@ class AddNewSalesInvoiceComponents extends Component {
         } 
 
     } 
+
+    build_html_document_for_print = () => {
+        
+        var doc_language = "en";
+        var doc_type = "mm58";
+        var currency = "$";
+
+
+        var html = "<!DOCTYPE html>";
+            html += `<html><head>`;
+
+            if( doc_type == "mm58" ) {
+
+                html += `<style>`;
+                html += `body {
+                        font-family: 'Helvetica', 'Arial', sans-serif;
+                        margin: 0;
+                        padding: 20px;
+                        font-size: 12px; /* Adjust based on your needs */
+                        width: 280px; /* Adjust the width to match the 80mm paper width minus margins */
+                    }
+                    .header, .footer {
+                        text-align: center;
+                        margin-bottom: 20px;
+                    }
+                    .content {
+                        margin-bottom: 20px;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    th, td {
+                        border: 1px solid #ddd;
+                        padding: 8px;
+                        text-align: left;
+                    }
+                    th {
+                        background-color: #f2f2f2;
+                    }`;
+                html += `</style>`;
+
+            }
+
+
+
+            html +=`</head><body>`;
+
+            // invoice number           xxxxxx
+            
+            // Logo and company name     xxxxxx
+            // company Address          xxxxxx
+            // dashed line
+            // vat number of any        xxxxxx
+            // Date of invoice          xxxxxx
+            // dashed line
+            // customer data like name, mobile number, all address if any   xxxxxx
+            // Items table ( Item - qty - price - total ) xxxxxx
+            // dashed line  
+            // order type
+            // branch name 
+            // payment method 
+            // dashed line 
+            // sub total xxx
+            // discount  xxx
+            // tax if any  xxx
+            // vat if any  xxx
+            // shipping if any  xxx
+            // dashed line 
+            // total  xxx
+            // dashed line 
+            // barcode if any with ( order tracking number if any )
+            // qr code if vat any 
+            
+            html += `</body></html>`;
+
+        return html;
+        
+    }
 
     setSelectedPrinter = (val) => {
         this.setState({
