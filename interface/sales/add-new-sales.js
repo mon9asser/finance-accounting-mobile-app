@@ -1,4 +1,7 @@
 // https://medium.com/@josematheusnoveli/creating-and-sharing-pdf-in-react-native-using-expo-c6d3c3cb047f
+// https://www.npmjs.com/package/currency-list
+// https://www.npmjs.com/package/number-formatter
+
 // Default
 import React, { Component } from "react";
 import NetInfo from '@react-native-community/netinfo';
@@ -9,7 +12,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker'; 
 import * as Sharing from 'expo-sharing'; 
 import * as Print from 'expo-print';
-
+import formatter from 'number-formatter';
 
 
 // Distruct 
@@ -86,173 +89,7 @@ class AddNewSalesInvoiceComponents extends Component {
 
         this.state = {
 
-            selectedPrinter: "",
-            invoice_in_html: `<!DOCTYPE html>
-            <html lang="en">
-                <head>
-                    <style>
-                        body {
-                            font-family: 'Helvetica', 'Arial', sans-serif;
-                            margin: 0;
-                            padding: 20px;
-                            font-size: 12px; /* Adjust based on your needs */
-                            width: 280px; /* Adjust the width to match the 80mm paper width minus margins */
-                        }
-                        .header, .footer {
-                            text-align: center;
-                            margin-bottom: 20px;
-                        }
-                        .content {
-                            margin-bottom: 20px;
-                        }
-                        table {
-                            width: 100%;
-                            border-collapse: collapse;
-                        }
-                        th, td {
-                            border: 1px solid #ddd;
-                            padding: 8px;
-                            text-align: left;
-                        }
-                        th {
-                            background-color: #f2f2f2;
-                        }
-            
-                        img {
-                            width: 100%;
-                            max-width: 80px;
-                        }
-                        p {
-                            line-height: 18px;
-                        }
-            
-                        .flex {
-                            display: flex;
-                            justify-content: space-between;
-                        }
-                        .text-center {
-                            text-align: center;
-                        }
-                        .mt-20 {
-                            margin-top: 15px;
-                        }
-                        p b {
-                            display: block;
-                        }
-            
-                        .line-bottom { 
-                            border-bottom: 1px dashed #ddd;
-                            padding-bottom: 10px;
-                        }
-            
-                        .bordered {
-                            border: 1px solid #ddd;
-                            padding: 20px;
-                            font-size: 14px;
-                            background-color: #f2f2f2;
-                        }
-                        .p-20 {
-                            padding: 20px;
-                        }
-                        .mt-10 {
-                            margin-top: 10px;
-                        }
-                    </style>
-                </head>
-                <body>
-                    
-                    <div class="header">
-                        
-                        <img src="../assets/icon.png" />
-                        <h2>Company Name</h2>
-                        <p>
-                            <b>Grand City</b>
-                            <span>Lorem ipsum dolor sit amet, consectetur adipisicing elit. </span>
-                        </p>
-                        <p>
-                            Vat Number : 1021458755
-                        </p>
-                        
-                    </div>
-                    <div class="content text-center line-bottom">
-                        <h3>No: #0002145</h3> 
-                    </div>
-            
-                    <div class="content text-center line-bottom">
-                        <span>Customer Name:</span><b> Micha'el Para</b>
-                        <p>Phone Number: 0214587554455</p>
-                        <p>City Name</p>
-                        <p>Full address here</p>
-                    </div>
-                    
-                    <div>
-                        <div class="flex">
-                            <p>Date : 15/02/1988 12:00 PM</p> 
-                        </div>
-                        <table>
-                            <tr>
-                              <th>Item</th>
-                              <th>Qty</th>
-                              <th>Price</th>
-                              <th>total</th>
-                            </tr>
-                            <tr>
-                              <td>Item One</td>
-                              <td>1</td>
-                              <td>$10.00</td>
-                              <td>$10.00</td>
-                            </tr>
-                            <tr>
-                              <td>Item Two</td>
-                              <td>2</td>
-                              <td>$20.00</td>
-                              <td>$20.00</td>
-                            </tr>
-                          </table>
-                          <div class="flex mt-20">
-                            <span>Subtotal</span>
-                            <span>$20.00</span>
-                          </div>
-                          <div class="flex mt-20">
-                            <span>Discount</span>
-                            <span>$20.00</span>
-                          </div>
-                          <div class="flex mt-20">
-                            <span>Tax</span>
-                            <span>$20.00</span>
-                          </div>
-                          <div class="flex mt-20">
-                            <span>Vat</span>
-                            <span>$20.00</span>
-                          </div>
-                          <div class="flex mt-20">
-                            <span>Shipping or delivery Cost</span>
-                            <span>$20.00</span>
-                          </div>
-                    </div>
-            
-                    <div class="flex mt-20 bordered">
-                        <b>Total</b>
-                        <b>50,000</b>
-                    </div>
-            
-                    <div class="flex line-bottom">
-                        <p>Delivery</p>
-                        <p>Branch Name</p> 
-                    </div>
-            
-                    <div class="text-center p-20">
-                        <div>
-                            Barcode
-                        </div> 
-                        <div class="mt-10">
-                            QR Code
-                        </div>
-                    </div>
-             
-                    
-                </body>
-            </html>`,
+            selectedPrinter: "", 
             discountValue: '', 
             discountPercentage: '',
             enabled_discount_percentage: false, 
@@ -479,78 +316,247 @@ class AddNewSalesInvoiceComponents extends Component {
     build_html_document_for_print = () => {
         
         var doc_language = "en";
-        var doc_type = "mm58";
-        var currency = "$";
-
+        
+        var doc_width = "";
+        var fsize = "12";
+        var currency = "EGP";
+        var company_name = "Mori Sushi";
+        var company_address = {
+            city: "Cairo",
+            address: "Dokki inside egypt"
+        };
+        var invoice_number = "";
+        var vat_number = "";
+        var customer = this.state.selected_customer;
+        var logo_src = "https://e7.pngegg.com/pngimages/50/606/png-clipart-computer-icons-scalable-graphics-api-icon-text-logo-thumbnail.png";
+        var invoice_date = "";
 
         var html = "<!DOCTYPE html>";
-            html += `<html><head>`;
+            html += `<html lang="en"><head><style>`;
 
-            if( doc_type == "mm58" ) {
+            html += `body{
+                font-family: 'Helvetica', 'Arial', sans-serif;
+                margin: 0;
+                padding: 20px;
+                font-size: 12px;
+                width: 280px;
+            }`;
 
-                html += `<style>`;
-                html += `body {
-                        font-family: 'Helvetica', 'Arial', sans-serif;
-                        margin: 0;
-                        padding: 20px;
-                        font-size: 12px; /* Adjust based on your needs */
-                        width: 280px; /* Adjust the width to match the 80mm paper width minus margins */
-                    }
-                    .header, .footer {
-                        text-align: center;
-                        margin-bottom: 20px;
-                    }
-                    .content {
-                        margin-bottom: 20px;
-                    }
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                    }
-                    th, td {
-                        border: 1px solid #ddd;
-                        padding: 8px;
-                        text-align: left;
-                    }
-                    th {
-                        background-color: #f2f2f2;
-                    }`;
-                html += `</style>`;
-
+            if( doc_width != "") {
+                html += `body{ 
+                    width: ${doc_width}px;
+                }`;
             }
 
+            if( fsize != "") {
+                html += `body{ 
+                    font-size: ${fsize}px;
+                }`;
+            }
+
+            html += `.header, .footer {
+                text-align: center;
+                margin-bottom: 20px;
+            }`;
+
+            html += `.content {
+                margin-bottom: 20px;
+            }`;
+
+            html += `table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+
+            img {
+                width: 100%;
+                max-width: 80px;
+            }
+            p {
+                line-height: 18px;
+            }
+
+            .flex {
+                display: flex;
+                justify-content: space-between;
+            }
+            .text-center {
+                text-align: center;
+            }
+            .mt-20 {
+                margin-top: 15px;
+            }
+            p b {
+                display: block;
+            }
+
+            .line-bottom { 
+                border-bottom: 1px dashed #999;
+                padding-bottom: 10px;
+            }
+            small {
+                font-size: 9px;
+            }
+            .bordered { 
+                border: 1px solid #ddd;
+                padding: 20px;
+                font-size: 14px;
+                background-color: #f2f2f2;
+            }
+            .p-20 {
+                padding: 20px;
+            }
+            .block {
+                display: block;
+                margin-bottom: 5px
+            }
+            .mt-10 {
+                margin-top: 10px;
+            }`;
+            html += `</style><body>`;
 
 
-            html +=`</head><body>`;
-
-            // invoice number           xxxxxx
+            // Header Section 
+            html += `<div class="header">`;
             
-            // Logo and company name     xxxxxx
-            // company Address          xxxxxx
-            // dashed line
-            // vat number of any        xxxxxx
-            // Date of invoice          xxxxxx
-            // dashed line
-            // customer data like name, mobile number, all address if any   xxxxxx
-            // Items table ( Item - qty - price - total ) xxxxxx
-            // dashed line  
-            // order type
-            // branch name 
-            // payment method 
-            // dashed line 
-            // sub total xxx
-            // discount  xxx
-            // tax if any  xxx
-            // vat if any  xxx
-            // shipping if any  xxx
-            // dashed line 
-            // total  xxx
-            // dashed line 
-            // barcode if any with ( order tracking number if any )
-            // qr code if vat any 
+            if( logo_src != "" )
+                html += `<img src="${logo_src}" />`;
+
+            if( company_name != "" )
+                html += `<h2>${company_name}</h2>`;
+
+            if( company_address != "" ) {
+                html += `<p>
+                            <b>${company_address.city}</b>
+                            <span>${company_address.address}</span>
+                        </p>`;
+            }
+
+            if( vat_number != "" ) {
+                html += `<p>
+                    Vat Number : ${vat_number}
+                </p>`;
+            }
             
+            html += `</div>`;
+
+            // Invoice Number Section 
+            if( invoice_number != "" ) {
+                html +=`<div class="content text-center line-bottom">
+                            <h3>No: ${invoice_number}</h3> 
+                        </div>`;
+            }
+
+            // Custom Data if any
+            if( customer != null ) { 
+                html +=`<div class="content text-center line-bottom">`;
+                html +=`<p>
+                <span class="block"><b>${customer.customer_name}</b></span>`;
+                html +=`<span class="block">Tel: ${customer.phone_number}</span>`;
+                html +=`<span class="block">${customer.address}</span></p>`; 
+                html +=`</div>`; 
+            }
+
+            // Document Item Section
+            html +=`<div>`;
+
+            if( invoice_date != "" ) {
+                html +=`<div class="flex">
+                    <p>Date: ${invoice_date}</p> 
+                </div>`;
+            }
+
+            html +=`<table>`;
+            html +=`<tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>total</th>
+                    </tr>`;
+            
+            
+            // Setup Items 
+            this.state.invoices_details.map(x => {
+                 
+                html +=`<tr>
+                            <td>${x.product.name}</td>
+                            <td>${x.total_quantity}</td>
+                            <td>${x.updated_price.sale}</td>
+                            <td><small>${currency}</small>${formatter('#,##0.00', x.total_price)}</td>
+                        </tr>`;
+            
+            });
+
+
+            html +=`</table>`;
+
+            // Total Calculations 
+            html +=`<div class="flex mt-20">
+                <span>Subtotal</span>
+                <span><small>${currency}</small>${formatter('#,##0.00', this.state.subtotal)}</span>
+            </div>`;
+
+            html +=`<div class="flex mt-20">
+                <span>Discount</span>
+                <span><small>${currency}</small>${formatter('#,##0.00', this.state.discount.value == ""? 0: this.state.discount.value )}</span>
+            </div>`;
+
+            if( ! this.state.tax.value == "" ) {
+                html +=`<div class="flex mt-20">
+                    <span>Tax</span>
+                    <span><small>${currency}</small>${formatter('#,##0.00', this.state.tax.value == ""? 0: this.state.tax.value)}</span>
+                </div>`;
+            }
+
+            if( ! this.state.vat.value == "" ) {
+                html +=`<div class="flex mt-20">
+                    <span>Vat</span>
+                    <span><small>${currency}</small>${formatter('#,##0.00', this.state.vat.value == ""? 0: this.state.vat.value)}</span>
+                </div>`;
+            }
+
+            if( ! this.state.shipping_or_delivery_cost == "" ) {
+                html +=`<div class="flex mt-20">
+                    <span>Shipping or delivery Cost</span>
+                    <span><small>${currency}</small>${formatter('#,##0.00', this.state.shipping_or_delivery_cost == ""? 0: this.state.shipping_or_delivery_cost)}</span>
+                </div>`;
+            }
+
+            html +=`</div>`;
+
+            // Final Total 
+            html +=`<div class="flex mt-20 bordered">
+                <b>Total</b>
+                <b><small>${currency}</small>${formatter('#,##0.00', this.state.total == ""? 0: this.state.total)}</b>
+            </div>`;
+
+            html += `<div class="flex line-bottom">`;
+            html += `<p>Delivery</p>`;
+            html += `<p>Branch Name</p>` ;
+            html += `</div>`;
+            
+            
+            html +=`<div class="text-center p-20">`;
+
+            html +=`<div>Barcode</div>`;
+            html +=`<div class="mt-10">QR Code</div>`;
+
+            html +=`</div>`;
+
+
+
             html += `</body></html>`;
 
+            
+            
         return html;
         
     }
@@ -1811,7 +1817,7 @@ class AddNewSalesInvoiceComponents extends Component {
         await this.saveData(false);
 
         try {
-            const { uri } = await Print.printToFileAsync({ html: this.state.invoice_in_html });
+            const { uri } = await Print.printToFileAsync({ html: this.build_html_document_for_print() });
             Sharing.shareAsync(uri);   
         } catch (error) { 
         }
@@ -1828,7 +1834,7 @@ class AddNewSalesInvoiceComponents extends Component {
 
         try {
             await Print.printAsync({
-                html: this.state.invoice_in_html,
+                html: this.build_html_document_for_print(),
                 printerUrl: this.state.selectedPrinter?.url // for os only 
             })
         } catch (error) {}
