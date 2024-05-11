@@ -39,7 +39,7 @@ import {LoginComponents} from './interface/user/login.js';
 import {ResetPasswordComponents} from './interface/user/password-reset.js';
 import {RegisterComponents} from './interface/user/register.js';
 import { ChangePasswordComponents } from "./interface/user/password-change.js";
-
+ 
 import {DashboardComponents} from './interface/dashboard.js';
 import { AppSettingsComponents } from './interface/settings.js';
 import { AppNotificationsComponents } from './interface/notifications.js';
@@ -135,7 +135,7 @@ var CustomDrawerContent = (props) => {
             </View>
 
             <View style={{...styles.sidebar_nav_item}}>
-                <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
+                <TouchableOpacity onPress={() => props.navigation.navigate("Settings")} style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
                     <Image
                         source={require('./assets/icons/settings-icon.png')}
@@ -301,7 +301,8 @@ const App = () => {
 
                 <Stack.Screen name="Login" component={LoginComponents}/>
                 <Stack.Screen name="Register" component={RegisterComponents} />
-              
+                <Stack.Screen name="Settings" component={AppSettingsComponents} />
+                
             </Stack.Navigator> 
           </NavigationContainer> 
         </SafeAreaView>

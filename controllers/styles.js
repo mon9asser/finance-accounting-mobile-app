@@ -26,6 +26,24 @@ var styles = StyleSheet.create({
             maxWidth: 230
         },               
     },
+
+    selectorStyle2: {
+        inputIOS: {
+            color: '#999',
+            paddingHorizontal: 0,
+            backgroundColor: '#f9f9f9', 
+            maxWidth: 220
+        },
+        placeholder: {
+            color: '#999',
+        },
+        inputAndroid: {
+            color: '#999',
+            paddingHorizontal: 0,
+            backgroundColor: '#f9f9f9', 
+            maxWidth: 220
+        },               
+    },
     radioBox: {
         height: 24,
         width: 24,
