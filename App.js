@@ -301,7 +301,7 @@ const App = () => {
 
                 <Stack.Screen name="Login" component={LoginComponents}/>
                 <Stack.Screen name="Register" component={RegisterComponents} />
-                <Stack.Screen name="Settings" component={AppSettingsComponents} />
+                <Stack.Screen name="Settings" component={AppSettingsComponents} initialParams={{ langs: language }} />
                 
             </Stack.Navigator> 
           </NavigationContainer> 

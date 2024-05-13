@@ -32,7 +32,7 @@ var styles = StyleSheet.create({
             color: '#999',
             paddingHorizontal: 0,
             backgroundColor: '#f9f9f9', 
-            maxWidth: 220
+            maxWidth: "100%"
         },
         placeholder: {
             color: '#999',
@@ -41,7 +41,7 @@ var styles = StyleSheet.create({
             color: '#999',
             paddingHorizontal: 0,
             backgroundColor: '#f9f9f9', 
-            maxWidth: 220
+            maxWidth: "100%"
         },               
     },
     radioBox: {
@@ -62,6 +62,10 @@ var styles = StyleSheet.create({
     },
     field_container: {
         marginBottom: 30
+    },
+
+    field_containerx: {
+        marginBottom: 13
     },
     colors: {
         white: { color: "#fff" }
