@@ -584,6 +584,16 @@ class AppSettingsComponents extends Component {
             />
         );
     }
+
+    ModalDocumentSettings = () => {
+
+        
+
+        return (
+            <Text>Data +++</Text>
+        );
+    }
+
     render() {
         return(
             <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>
@@ -715,16 +725,16 @@ class AppSettingsComponents extends Component {
                                 <this.AllBranchesSelector /> 
                             </View>
                         </View>
+                        
+                        <this.ModalDocumentSettings/>
 
                         <View style={{...styles.field_containerx}}>
                             <View style={styles.inputLabel}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-branch")}>
+                                <TouchableOpacity onPress={() => console.log("data ++++")}>
                                     <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>Document Settings</Text>
                                 </TouchableOpacity>
                             </View> 
                         </View> 
-
-                        
             
                         <View style={{ ...styles.wrapper, ...this.state.notificationBox, ...this.state.notificationCssClass, ...styles.space_top_25}}>
                             <Text style={this.state.notificationTextCssClass}>{this.state.notificationMessage}</Text>
@@ -740,6 +750,7 @@ class AppSettingsComponents extends Component {
                                     <Text style={{color:styles.direct.color.white, ...styles.size.medium}}> {this.state.language.save} </Text> 
                                 }
                             </Button>
+
                         </View>       
 
                     </View> 
