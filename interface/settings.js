@@ -72,6 +72,8 @@ class AppSettingsComponents extends Component {
 
         this.state = {
 
+            document_settings_state: false, 
+
             language: {}, 
             default_color: "#82589F",  
             isPressed: false,            
@@ -585,14 +587,31 @@ class AppSettingsComponents extends Component {
         );
     }
 
-    ModalDocumentSettings = () => {
-
-        
+    ModalDocumentSettings = ({ isVisible, toggleModal }) => {
+        isVisible = true;
 
         return (
-            <Text>Data +++</Text>
+        
+            <Modal isVisible={isVisible}>
+                <View style={styles.modalContainer}>
+                    
+                    <Text>Hello World!</Text>
+
+                    <Button  style={{...styles.default_btn, backgroundColor: this.state.default_color }} onPress={this.toggleModalOfMoreSettings}>
+                        <Text style={{color: "#fff"}}>Close</Text>
+                    </Button>
+                </View>
+            </Modal>
+ 
         );
     }
+
+    toggleModalOfMoreSettings = () => {
+        this.setState({
+            document_settings_state: !this.state.document_settings_state
+        })
+    }
+    
 
     render() {
         return(
@@ -726,11 +745,12 @@ class AppSettingsComponents extends Component {
                             </View>
                         </View>
                         
-                        <this.ModalDocumentSettings/>
+                        <this.ModalDocumentSettings isVisible={this.state.document_settings_state} toggleModal={this.toggleModalOfMoreSettings} />
+                        
 
                         <View style={{...styles.field_containerx}}>
                             <View style={styles.inputLabel}>
-                                <TouchableOpacity onPress={() => console.log("data ++++")}>
+                                <TouchableOpacity onPress={this.toggleModalOfMoreSettings}>
                                     <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>Document Settings</Text>
                                 </TouchableOpacity>
                             </View> 
