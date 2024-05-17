@@ -225,7 +225,45 @@ class AppSettingsComponents extends Component {
           />
         );
     };
-      
+    
+    AllPaperSizeSelector = (objx) => {
+        
+        var sizes = [
+            {
+                label: "Roll Paper Size: 80mm",
+                value: "80mm"
+            },
+            {
+                label: "Roll Paper Size: 57mm",
+                value: "57mm"
+            },
+            {
+                label: "Roll Paper Size: 76mm",
+                value: "76mm"
+            },
+            {
+                label: "Paper Size: A4",
+                value: "297mm"
+            },
+            {
+                label: "Paper Size: Letter",
+                value: "279mm"
+            }
+        ];
+
+        if( objx.type != undefined && objx.type == "report" ) {
+            
+        }
+
+        return (
+            <RNPickerSelect 
+              value={sizes[0].value}
+              onValueChange={(value) => console.log(value)}
+              items={sizes}
+            />
+          );
+
+    }
     
     setLanguage = async (lang ) => {
  
@@ -585,17 +623,28 @@ class AppSettingsComponents extends Component {
                 style={{...styles.selectorStyle2}}
             />
         );
-    }
+    } 
 
     ModalDocumentSettings = ({ isVisible, toggleModal }) => {
-        isVisible = true;
+        //isVisible = true;
 
         return (
         
             <Modal isVisible={isVisible}>
                 <View style={styles.modalContainer}>
                     
-                    <Text>Hello World!</Text>
+                    <View style={{...styles.field_container}}>
+                        
+                        <View>
+                            <Text style={styles.inputLabelText}>Invoice Paper Size</Text>
+                        </View>
+                        
+                        <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf' }}>
+                            <TextInput value={this.state.customer_name} onChangeText={text => this.setChangedValue(text, this.setCustomerName)} style={{flex: 1}} placeholder={"Company Name"} />
+                        </View>
+
+                    </View>
+                    
 
                     <Button  style={{...styles.default_btn, backgroundColor: this.state.default_color }} onPress={this.toggleModalOfMoreSettings}>
                         <Text style={{color: "#fff"}}>Close</Text>
@@ -745,9 +794,27 @@ class AppSettingsComponents extends Component {
                             </View>
                         </View>
                         
+                        <View style={{...styles.field_container}}>
+                            <View style={styles.inputLabel}>
+                                <View><Text style={styles.inputLabelText}>Default paper size for receipts</Text></View> 
+                            </View>
+                            <View style={{...styles.textInputNoMarginsPaddingChanged, borderColor: '#dfdfdf' }}>
+                                <this.AllPaperSizeSelector type="10" /> 
+                            </View>
+                        </View>
+
+                        <View style={{...styles.field_container}}>
+                            <View style={styles.inputLabel}>
+                                <View><Text style={styles.inputLabelText}>Default paper size for reports</Text></View> 
+                            </View>
+                            <View style={{...styles.textInputNoMarginsPaddingChanged, borderColor: '#dfdfdf' }}>
+                                <this.AllPaperSizeSelector /> 
+                            </View>
+                        </View>
+
                         <this.ModalDocumentSettings isVisible={this.state.document_settings_state} toggleModal={this.toggleModalOfMoreSettings} />
                         
-
+                        
                         <View style={{...styles.field_containerx}}>
                             <View style={styles.inputLabel}>
                                 <TouchableOpacity onPress={this.toggleModalOfMoreSettings}>
@@ -755,6 +822,7 @@ class AppSettingsComponents extends Component {
                                 </TouchableOpacity>
                             </View> 
                         </View> 
+                        
             
                         <View style={{ ...styles.wrapper, ...this.state.notificationBox, ...this.state.notificationCssClass, ...styles.space_top_25}}>
                             <Text style={this.state.notificationTextCssClass}>{this.state.notificationMessage}</Text>
