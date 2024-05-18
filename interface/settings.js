@@ -253,6 +253,20 @@ class AppSettingsComponents extends Component {
 
         if( objx.type != undefined && objx.type == "report" ) {
             
+            sizes = [
+                {
+                    label: "Roll Paper Size: 80mm",
+                    value: "80mm"
+                }, 
+                {
+                    label: "Paper Size: A4",
+                    value: "297mm"
+                },
+                {
+                    label: "Paper Size: Letter",
+                    value: "279mm"
+                }
+            ];
         }
 
         return (

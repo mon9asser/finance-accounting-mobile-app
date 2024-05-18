@@ -332,7 +332,7 @@ class AddNewSalesInvoiceComponents extends Component {
         var invoice_date = "";
 
         var html = "<!DOCTYPE html>";
-            html += `<html lang="en"><head><style>`;
+            html += `<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=80, maximum-scale=80, minimum-scale=80, user-scalable=no" /><style>`;
 
             html += `body{
                 font-family: 'Helvetica', 'Arial', sans-serif;
