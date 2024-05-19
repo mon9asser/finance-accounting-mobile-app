@@ -72,29 +72,50 @@ class AppSettingsComponents extends Component {
 
         this.state = {
 
-            document_settings_state: false, 
-
+            all_languages: [
+                {
+                    value: "en",
+                    label: "English"
+                },
+                {
+                    value: "ar",
+                    label: "Arabic"
+                }
+            ],
             language: {}, 
             default_color: "#82589F",  
-            isPressed: false,            
-            customer_thumbnail: require('./../assets/logo/logo.jpg'),
-            customer_name: '',
-            gender: 1,  
-            email_address: '',
-            user_type: 0,
-            phone_number: "",
-            address: "",
-            selected_branch: {},  
-            customer_local_id: generateId() , 
+            isPressed: false, 
+
+            document_settings_state: false, 
+
+            logo_image: require('./../assets/logo/logo.jpg'),
+            company_name: '',
+            company_city: '',
+            company_address: "",
+            company_vat_number: "",
+            vat_percentage: 0,
+            tax_percentage: 0,
+            shipping_cost: 0,
+            selected_currency: { value: "$", label: "US Dollar ($)" },
+            selected_language:  { value: "en", label: "English" },
+            selected_branch: null,
+            
+            application_id: "",  
+            
+            file: null,
+
+            branches: [],
+            all_currencies: [
+                { value: "$", label: "US Dollar ($)" },
+                { value: "EGP", label: "Egyptian Pound (EGP)" },
+            ],
+            
             notificationBox: { display: 'none' },
             notificationCssClass: {},
             notificationTextCssClass: {},
             notificationMessage: "",
-
-            customer_name_hlgt: "",  
-            file: null,
-
-            branches: []
+ 
+            
         };
 
     } 
@@ -148,42 +169,32 @@ class AppSettingsComponents extends Component {
         })
     }
 
-    setCustomerThumbnail = (image) => {
+    setCompanyLogo = (image) => {
         this.setState({
-            customer_thumbnail: image == "" ? require('./../assets/icons/customer-placeholder.png'): {uri: image}
+            logo_image: image == "" ? require('./../assets/icons/customer-placeholder.png'): {uri: image}
         })
     }
 
    
-    setCustomerName = ( value ) => {
+    setCompanyName = ( value ) => {
         this.setState({
-            customer_name: value
+            company_name: value
+        })
+    }
+     
+
+    setCompanyCity = ( value ) => {
+        this.setState({
+            company_city: value
         })
     }
     
-    setGender = (value) => {
+    setCompanyAddress = ( value ) => {
         this.setState({
-            gender: value
+            company_address: value
         })
     }
-
-    setEmailAddress = ( value ) => {
-        this.setState({
-            email_address: value
-        })
-    }
-    
-    setPhoneNumber = ( value ) => {
-        this.setState({
-            phone_number: value
-        })
-    }
-
-    setAddress = ( value ) => {
-        this.setState({
-            address: value
-        })
-    }
+ 
 
     setCategoryObject = ( local_id ) => {
 
@@ -212,7 +223,7 @@ class AppSettingsComponents extends Component {
                 value: item.local_id
             };
             
-        });
+        }); 
          
         var default_branch_index = branches.findIndex( x => x.value == "000000012345_default_branch" );
         var default_value = branches[default_branch_index] ? branches[default_branch_index].value: -1;
@@ -384,7 +395,7 @@ class AppSettingsComponents extends Component {
         if (permissionResult.granted === false) {
             Alert.alert(this.state.language.photo_permission_required, this.state.language.photo_perm_open);
             return;
-        } 
+        }
 
         /// this.toggleBrowseImagesOpen(); 
         var reqs = await ImagePicker.launchImageLibraryAsync({ 
@@ -402,9 +413,9 @@ class AppSettingsComponents extends Component {
         const fileInfo = await FileSystem.getInfoAsync(file_url); 
          
         if( ! fileInfo.exists ) {
-            this.setCustomerThumbnail("");
+            this.setCompanyLogo("");
         } else {
-            this.setCustomerThumbnail(file_url);
+            this.setCompanyLogo(file_url);
             this.setFileObject( reqs.assets[0] );
         }
 
@@ -420,7 +431,7 @@ class AppSettingsComponents extends Component {
 
     setCustomerHlght = (value) => {
         this.setState({
-            customer_name_hlgt: value
+            company_name_hlgt: value
         })
     } 
 
@@ -477,10 +488,10 @@ class AppSettingsComponents extends Component {
         this.setCustomerHlght(false);
         
 
-        var customer_name = this.state.customer_name;
+        var company_name = this.state.company_name;
         var gender = this.state.gender;
-        var email = this.state.email_address;
-        var phone_number = this.state.phone_number; 
+        var email = this.state.company_city;
+        var company_address = this.state.company_address; 
         var customer_address = this.state.address;
         var branch_object = {
             local_id: this.isUndefined(this.state.selected_branch.local_id),
@@ -495,10 +506,10 @@ class AppSettingsComponents extends Component {
 
             var productObject = {
                 param_id: this.state.customer_local_id,
-                customer_name: customer_name,
-                phone_number: phone_number,
+                company_name: company_name,
+                company_address: company_address,
                 gender: gender, 
-                email_address: email, 
+                company_city: email, 
                 user_type: this.state.user_type,
                 branch: branch_object, 
                 address: customer_address, 
@@ -538,7 +549,7 @@ class AppSettingsComponents extends Component {
               
 
             // required data 
-            if( this.state.customer_name == "") {
+            if( this.state.company_name == "") {
     
                 this.setPressBtn(false); 
                 this.setCustomerHlght(true)
@@ -546,7 +557,7 @@ class AppSettingsComponents extends Component {
                 this.setNotificationBox("flex")
                 this.setNotificationCssClass(styles.error_message);
                 this.setNotificationCssTextClass(styles.error_text)
-                this.setNotificationMessage(this.state.language.customer_name_required);
+                this.setNotificationMessage(this.state.language.company_name_required);
 
                 return; 
             };
@@ -606,18 +617,58 @@ class AppSettingsComponents extends Component {
     }
 
     setSelectedLanguage = (value) => {
-        console.log(value);
+        var objx = this.state.all_languages.findIndex(x => x.value == value );
+        if( objx == -1 ) {
+            return; 
+        }  
+
+        this.setState({
+            selected_language: this.state.all_languages[objx]
+        });
+    }
+
+    setNewSelectedCurrency = (val) => {
+        
+        var objx = this.state.all_currencies.findIndex(x => x.value == val );
+        if( objx == -1 ) {
+            return; 
+        } 
+
+        this.setState({
+            selected_currency: this.state.all_currencies[objx]
+        });
+    }
+
+    setVatPercentage = (value) => {
+        this.setState({
+            vat_percentage: value
+        })
+    }
+
+    setShippingCost = (val) => {
+        this.setState({
+            shipping_cost: val
+        })
+    }
+    seTaxPercentage = (value) => {
+        this.setState({
+            tax_percentage: value
+        })
+    }
+
+    setCompanyVatNumber = (vatNumber) => {
+         
+        this.setState({
+            company_vat_number: vatNumber
+        });
     }
 
     CurrencySelector = () => {
         return (
             <RNPickerSelect
-                value={"$"}
-                onValueChange={val => console.log(val)}
-                items={[
-                    { value: "$", label: "US Dollar ($)" },
-                    { value: "EGP", label: "Egyptian Pound (EGP)" },
-                ]}
+                value={this.state.selected_currency.value}
+                onValueChange={val => this.setNewSelectedCurrency(val)}
+                items={this.state.all_currencies}
                 style={{...styles.selectorStyle2}}
             />
         );
@@ -626,21 +677,15 @@ class AppSettingsComponents extends Component {
     LanguageSelector = () => {
         return (
             <RNPickerSelect
-                value={"en"}
+                value={this.state.selected_language.value}
                 onValueChange={(value) => this.setSelectedLanguage(value)}
-                items={[
-                    {
-                        value: "en",
-                        label: "English"
-                    }
-                ]}
+                items={this.state.all_languages}
                 style={{...styles.selectorStyle2}}
             />
         );
     } 
 
     ModalDocumentSettings = ({ isVisible, toggleModal }) => {
-        //isVisible = true;
 
         return (
         
@@ -648,17 +693,43 @@ class AppSettingsComponents extends Component {
                 <View style={styles.modalContainer}>
                     
                     <View style={{...styles.field_container}}>
-                        
-                        <View>
-                            <Text style={styles.inputLabelText}>Invoice Paper Size</Text>
-                        </View>
-                        
-                        <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf' }}>
-                            <TextInput value={this.state.customer_name} onChangeText={text => this.setChangedValue(text, this.setCustomerName)} style={{flex: 1}} placeholder={"Company Name"} />
+                        <Text style={{fontWeight: "bold", marginBottom: 10}}>Sales Invoice Options</Text>
+                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                            <Text style={{}}>Enable Order Type</Text>
+                            <Checkbox />
+                        </View> 
+
+                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                            <Text style={{}}>Enable Payment Status</Text>
+                            <Checkbox />
                         </View>
 
-                    </View>
-                    
+                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                            <Text style={{}}>Enable Payment Method</Text>
+                            <Checkbox />
+                        </View>
+
+                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                            <Text style={{}}>Enable Tax</Text>
+                            <Checkbox />
+                        </View>
+
+                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                            <Text style={{}}>Enable Vat</Text>
+                            <Checkbox />
+                        </View> 
+
+                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                            <Text style={{}}>Enable Shipping or Delivery Cost</Text>
+                            <Checkbox />
+                        </View>
+
+                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                            <Text style={{}}>Enable Order Tracking Number</Text>
+                            <Checkbox />
+                        </View>
+
+                    </View> 
 
                     <Button  style={{...styles.default_btn, backgroundColor: this.state.default_color }} onPress={this.toggleModalOfMoreSettings}>
                         <Text style={{color: "#fff"}}>Close</Text>
@@ -695,7 +766,7 @@ class AppSettingsComponents extends Component {
                                 onPress={this.openGallery}
                                 > 
                                 <Image
-                                    source={this.state.customer_thumbnail}
+                                    source={this.state.logo_image}
                                     style={{height: 200, width:200, borderRadius: 20, borderWidth: 1, borderColor: "#fff"}}
                                     resizeMode="cover"
                                     PlaceholderContent={<ActivityIndicator />} 
@@ -709,8 +780,8 @@ class AppSettingsComponents extends Component {
                                 <Text style={styles.inputLabelText}>Company Name</Text>
                             </View>
                             
-                            <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.customer_name_hlgt) ? 'red': '#dfdfdf' }}>
-                                <TextInput value={this.state.customer_name} onChangeText={text => this.setChangedValue(text, this.setCustomerName)} style={{flex: 1}} placeholder={"Company Name"} />
+                            <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.company_name_hlgt) ? 'red': '#dfdfdf' }}>
+                                <TextInput value={this.state.company_name} onChangeText={text => this.setChangedValue(text, this.setCompanyName)} style={{flex: 1}} placeholder={"Company Name"} />
                             </View>
 
                         </View>
@@ -721,7 +792,7 @@ class AppSettingsComponents extends Component {
                                 <Text style={styles.inputLabelText}>Company City</Text>
                             </View>
                             <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
-                                <TextInput value={this.state.phone_number} onChangeText={text => this.setChangedValue(text, this.setPhoneNumber)} style={{flex: 1}} placeholder={'Company City'} />
+                                <TextInput value={this.state.company_city} onChangeText={text => this.setChangedValue(text, this.setCompanyCity)} style={{flex: 1}} placeholder={'Company City'} />
                             </View>
                         </View>
 
@@ -734,7 +805,7 @@ class AppSettingsComponents extends Component {
                                 multiline={true} 
                                 numberOfLines={10}  
                                 value={this.state.address} 
-                                onChangeText={text => this.setChangedValue(text, this.setAddress)}
+                                onChangeText={text => this.setChangedValue(text, this.setCompanyAddress)}
                                 placeholder={this.state.language.address}
                                 style={{...styles.textarea_field}} />
                             </View>
@@ -765,7 +836,7 @@ class AppSettingsComponents extends Component {
                                 <Text style={styles.inputLabelText}>Vat Number</Text>
                             </View>
                             <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
-                                <TextInput value={this.state.phone_number} onChangeText={text => this.setChangedValue(text, this.setPhoneNumber)} style={{flex: 1}} placeholder={'Vat Number'} />
+                                <TextInput value={this.state.company_vat_number} onChangeText={text => this.setChangedValue(text, this.setCompanyVatNumber)} style={{flex: 1}} placeholder={'Vat Number'} />
                             </View>
                         </View>
 
@@ -774,7 +845,7 @@ class AppSettingsComponents extends Component {
                                 <Text style={styles.inputLabelText}>Vat Percentage (%)</Text>
                             </View>
                             <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
-                                <TextInput value={this.state.phone_number} onChangeText={text => this.setChangedValue(text, this.setPhoneNumber)} style={{flex: 1}} placeholder={'Vat Percentage'} keyboardType="numeric" />
+                                <TextInput value={this.state.vat_percentage} onChangeText={text => this.setChangedValue(text, this.setVatPercentage)} style={{flex: 1}} placeholder={'Vat Percentage'} keyboardType="numeric" />
                             </View>
                         </View>
 
@@ -783,7 +854,7 @@ class AppSettingsComponents extends Component {
                                 <Text style={styles.inputLabelText}>Tax Percentage (%)</Text>
                             </View>
                             <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
-                                <TextInput value={this.state.phone_number} onChangeText={text => this.setChangedValue(text, this.setPhoneNumber)} style={{flex: 1}} placeholder={'Tax Percentage'} keyboardType="numeric" />
+                                <TextInput value={this.state.tax_percentage} onChangeText={text => this.setChangedValue(text, this.seTaxPercentage)} style={{flex: 1}} placeholder={'Tax Percentage'} keyboardType="numeric" />
                             </View>
                         </View> 
 
@@ -792,7 +863,7 @@ class AppSettingsComponents extends Component {
                                 <Text style={styles.inputLabelText}>Delivery or shipping cost</Text>
                             </View>
                             <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
-                                <TextInput value={this.state.phone_number} onChangeText={text => this.setChangedValue(text, this.setPhoneNumber)} style={{flex: 1}} placeholder={'Delivery or shipping cost'} keyboardType="numeric" />
+                                <TextInput value={this.state.shipping_cost} onChangeText={text => this.setChangedValue(text, this.setShippingCost)} style={{flex: 1}} placeholder={'Delivery or shipping cost'} keyboardType="numeric" />
                             </View>
                         </View> 
 
@@ -813,7 +884,7 @@ class AppSettingsComponents extends Component {
                                 <View><Text style={styles.inputLabelText}>Default paper size for receipts</Text></View> 
                             </View>
                             <View style={{...styles.textInputNoMarginsPaddingChanged, borderColor: '#dfdfdf' }}>
-                                <this.AllPaperSizeSelector type="10" /> 
+                                <this.AllPaperSizeSelector /> 
                             </View>
                         </View>
 
@@ -822,17 +893,16 @@ class AppSettingsComponents extends Component {
                                 <View><Text style={styles.inputLabelText}>Default paper size for reports</Text></View> 
                             </View>
                             <View style={{...styles.textInputNoMarginsPaddingChanged, borderColor: '#dfdfdf' }}>
-                                <this.AllPaperSizeSelector /> 
+                                <this.AllPaperSizeSelector type="report" /> 
                             </View>
                         </View>
 
                         <this.ModalDocumentSettings isVisible={this.state.document_settings_state} toggleModal={this.toggleModalOfMoreSettings} />
                         
-                        
                         <View style={{...styles.field_containerx}}>
                             <View style={styles.inputLabel}>
                                 <TouchableOpacity onPress={this.toggleModalOfMoreSettings}>
-                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>Document Settings</Text>
+                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>Sales Invoice Settings</Text>
                                 </TouchableOpacity>
                             </View> 
                         </View> 
