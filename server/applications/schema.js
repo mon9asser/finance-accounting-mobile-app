@@ -98,7 +98,7 @@ var allSchema = {
         branch_local_id: { type: String, default: ""},
         ...default_properties,
     },
-
+    
     sales_doc: {
         invoice_number: { type: String, default: ""},
         invoice_status: { type: {}, default: {}},
@@ -133,6 +133,31 @@ var allSchema = {
         subtotal: { type: String, default: ""},
         total_price: { type: String, default: ""}, 
         ...default_properties,
+    },
+
+    options: {
+        company_name: { type: String, default: ""},
+        company_city: { type: String, default: ""},
+        company_address: { type: String, default: ""},
+        selected_currency:  { type: {}, default: {}},
+        selected_language:  { type: {}, default: {}},
+        vat_percentage: { type: String, default: ""},
+        tax_percentage: { type: String, default: ""},
+        shipping_cost: { type: String, default: ""},
+        selected_branch: { type: {}, default: {}},
+        selected_paper_size_for_receipts: { type: {}, default: {}},
+        selected_paper_size_for_reports: { type: {}, default: {}},
+        sales_options: {
+            enable_order_type: { type: Boolean, default: true},
+            enable_payment_status: { type: Boolean, default: true},
+            enable_payment_method: { type: Boolean, default: true},
+            enable_tax: { type: Boolean, default: true},
+            enable_va: { type: Boolean, default: true},
+            enable_shipping_cost: { type: Boolean, default: true},
+            enable_tracking_number: { type: Boolean, default: true},
+        },
+        file: { type: {}, default: {}},
+
     },
 
     /**

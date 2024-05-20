@@ -82,6 +82,42 @@ class AppSettingsComponents extends Component {
                     label: "Arabic"
                 }
             ],
+            print_reports: [
+                {
+                    label: "Roll Paper Size: 80mm",
+                    value: "80mm"
+                }, 
+                {
+                    label: "Paper Size: A4",
+                    value: "297mm"
+                },
+                {
+                    label: "Paper Size: Letter",
+                    value: "279mm"
+                }
+            ], 
+            print_receipts: [
+                {
+                    label: "Roll Paper Size: 80mm",
+                    value: "80mm"
+                },
+                {
+                    label: "Roll Paper Size: 57mm",
+                    value: "57mm"
+                },
+                {
+                    label: "Roll Paper Size: 76mm",
+                    value: "76mm"
+                },
+                {
+                    label: "Paper Size: A4",
+                    value: "297mm"
+                },
+                {
+                    label: "Paper Size: Letter",
+                    value: "279mm"
+                }
+            ],
             language: {}, 
             default_color: "#82589F",  
             isPressed: false, 
@@ -93,13 +129,28 @@ class AppSettingsComponents extends Component {
             company_city: '',
             company_address: "",
             company_vat_number: "",
-            vat_percentage: 0,
-            tax_percentage: 0,
-            shipping_cost: 0,
+            vat_percentage: "0",
+            tax_percentage: "0",
+            shipping_cost: "0",
             selected_currency: { value: "$", label: "US Dollar ($)" },
             selected_language:  { value: "en", label: "English" },
+            selected_paper_size_for_receipts:  { value: "80mm", label: "Roll Paper Size: 80mm" },
+            selected_paper_size_for_reports:  { 
+                label: "Paper Size: A4",
+                value: "297mm"
+             },
             selected_branch: null,
             
+            sales_options: {
+                enable_order_type: true,
+                enable_payment_status: true,
+                enable_payment_method: true,
+                enable_tax: true,
+                enable_vat: true,
+                enable_shipping_cost: true,
+                enable_tracking_number: true,
+            },
+
             application_id: "",  
             
             file: null,
@@ -236,54 +287,43 @@ class AppSettingsComponents extends Component {
           />
         );
     };
+
+    setPrintSizeReport = (value) => { 
+
+        var index = this.state.print_reports.findIndex( x => x.value == value);
+        if( index == -1 ) {
+            return; 
+        }
+        this.setState({
+            selected_paper_size_for_reports: this.state.print_reports[index]
+        })
+    }
+
+    setPrintSizeReceipt = (value) => {
+        var index = this.state.print_receipts.findIndex( x => x.value == value);
+        if( index == -1 ) {
+            return; 
+        }
+        this.setState({
+            selected_paper_size_for_receipts: this.state.print_receipts[index]
+        })
+    }
     
     AllPaperSizeSelector = (objx) => {
         
-        var sizes = [
-            {
-                label: "Roll Paper Size: 80mm",
-                value: "80mm"
-            },
-            {
-                label: "Roll Paper Size: 57mm",
-                value: "57mm"
-            },
-            {
-                label: "Roll Paper Size: 76mm",
-                value: "76mm"
-            },
-            {
-                label: "Paper Size: A4",
-                value: "297mm"
-            },
-            {
-                label: "Paper Size: Letter",
-                value: "279mm"
-            }
-        ];
+        var sizes = this.state.print_receipts;
 
+        var selectedValue = this.state.selected_paper_size_for_receipts.value;
         if( objx.type != undefined && objx.type == "report" ) {
             
-            sizes = [
-                {
-                    label: "Roll Paper Size: 80mm",
-                    value: "80mm"
-                }, 
-                {
-                    label: "Paper Size: A4",
-                    value: "297mm"
-                },
-                {
-                    label: "Paper Size: Letter",
-                    value: "279mm"
-                }
-            ];
+            selectedValue = this.state.selected_paper_size_for_reports.value;
+            sizes = this.state.print_reports;
         }
 
         return (
             <RNPickerSelect 
-              value={sizes[0].value}
-              onValueChange={(value) => console.log(value)}
+              value={selectedValue}
+              onValueChange={(value) => objx.type != undefined && objx.type == "report"? this.setPrintSizeReport(value):this.setPrintSizeReceipt(value)}
               items={sizes}
             />
           );
@@ -479,6 +519,7 @@ class AppSettingsComponents extends Component {
 
     saveData = () => {
         
+         
         if( this.state.isPressed ) {
             Alert.alert(this.state.language.please_wait, this.state.language.btn_clicked_twice);
             return;
@@ -685,6 +726,16 @@ class AppSettingsComponents extends Component {
         );
     } 
 
+    checkedItem = (propertyname) => {
+
+        var props_value = {...this.state.sales_options};
+        props_value[propertyname] = !this.state.sales_options[propertyname]
+
+        this.setState({
+            sales_options: props_value
+        })
+    }
+
     ModalDocumentSettings = ({ isVisible, toggleModal }) => {
 
         return (
@@ -694,40 +745,40 @@ class AppSettingsComponents extends Component {
                     
                     <View style={{...styles.field_container}}>
                         <Text style={{fontWeight: "bold", marginBottom: 10}}>Sales Invoice Options</Text>
-                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                        <TouchableOpacity onPress={() => this.checkedItem( "enable_order_type" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
                             <Text style={{}}>Enable Order Type</Text>
-                            <Checkbox />
-                        </View> 
+                            <Checkbox status={this.state.sales_options.enable_order_type? "checked": ""} />
+                        </TouchableOpacity> 
 
-                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                        <TouchableOpacity onPress={() => this.checkedItem( "enable_payment_status" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
                             <Text style={{}}>Enable Payment Status</Text>
-                            <Checkbox />
-                        </View>
+                            <Checkbox status={this.state.sales_options.enable_payment_status? "checked": ""} />
+                        </TouchableOpacity>
 
-                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                        <TouchableOpacity onPress={() => this.checkedItem( "enable_payment_method" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
                             <Text style={{}}>Enable Payment Method</Text>
-                            <Checkbox />
-                        </View>
+                            <Checkbox status={this.state.sales_options.enable_payment_method? "checked": ""} />
+                        </TouchableOpacity>
 
-                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                        <TouchableOpacity onPress={() => this.checkedItem( "enable_tax" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
                             <Text style={{}}>Enable Tax</Text>
-                            <Checkbox />
-                        </View>
+                            <Checkbox status={this.state.sales_options.enable_tax? "checked": ""} />
+                        </TouchableOpacity>
 
-                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                        <TouchableOpacity onPress={() => this.checkedItem( "enable_vat" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
                             <Text style={{}}>Enable Vat</Text>
-                            <Checkbox />
-                        </View> 
+                            <Checkbox status={this.state.sales_options.enable_vat? "checked": ""} />
+                        </TouchableOpacity> 
 
-                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                        <TouchableOpacity onPress={() => this.checkedItem( "enable_shipping_cost" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
                             <Text style={{}}>Enable Shipping or Delivery Cost</Text>
-                            <Checkbox />
-                        </View>
+                            <Checkbox status={this.state.sales_options.enable_shipping_cost? "checked": ""} />
+                        </TouchableOpacity>
 
-                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                        <TouchableOpacity onPress={() => this.checkedItem( "enable_tracking_number" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
                             <Text style={{}}>Enable Order Tracking Number</Text>
-                            <Checkbox />
-                        </View>
+                            <Checkbox status={this.state.sales_options.enable_tracking_number? "checked": ""} />
+                        </TouchableOpacity>
 
                     </View> 
 
