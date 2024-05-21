@@ -127,6 +127,16 @@ var Models = {
         })
     },
 
+    options: {
+        key: "options",
+        doc_type: 10,
+        instance: new Storage({
+            size: 120,
+            storageBackend: AsyncStorage,
+            defaultExpires: null
+        })
+    },
+
 
     log_history: {
         key: "log-history",

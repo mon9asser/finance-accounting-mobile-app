@@ -113,7 +113,239 @@ const compressBase64Image = async (base64String) => {
 };
   
  
+//Company Options
 
+apiRouters.post("/update_company__options", verify_user_tokens_and_keys, async (req, res ) => {
+      
+    // handling current language
+    var current_language = req.body.language == undefined? "en": req.body.language; 
+    var localize = language[current_language];
+    
+   
+    //preparing response object 
+    var response = {
+        is_error: true, 
+        data: [], 
+        message: localize.something_wrong
+    }
+
+    // Basics Of Each API: checking for database name and model 
+    var database = req.body.database_name;
+    var model = req.body.model_name;
+    var param_id = req.body.param_id == undefined? -1: req.body.param_id;
+    var image_name;
+
+    
+
+    if( database == undefined || model == undefined ) {
+        response.is_error = true;
+        response.message = localize.peroperties_required;
+        return res.send(response);
+    }
+     
+    var model_name = flat_schema_name(model);
+    var schema_object = get_schema_object(model_name); 
+   
+    var db_connection = await create_connection(database, {
+        model: model_name, 
+        schemaObject:schema_object
+    }); 
+    
+    if( ! db_connection ) {
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.services_disabled; 
+        return res.send(response); 
+    } 
+
+    // checking for data object 
+    if( req.body.data_object == undefined ) {
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.data_object_required; 
+        return res.send(response); 
+    }
+
+    var data_object = req.body.data_object;
+
+    
+    var finderObject = { local_id: param_id };
+    if( param_id == -1 ) {
+        finderObject.local_id = data_object.local_id == undefined ? -1: data_object.local_id
+    }
+
+    if( typeof param_id == 'object' ) {
+        finderObject = {...param_id}; 
+    } 
+    
+    
+
+    // handling file data 
+    if( data_object.file != undefined && data_object.file.base_64 != undefined && data_object.file.uri != undefined && data_object.file.property_name   != undefined ) {
+        
+        var localid = data_object.local_id;
+        if( data_object.local_id == undefined || data_object.local_id == "" ) {
+            localid = "undefined";
+        }
+       
+        var uri = data_object.file.uri;
+        var extension = ".jpg"; 
+        if( uri.indexOf(".jpeg") != -1 )
+            extension = ".jpg"; 
+        else if ( uri.indexOf(".jpg") != -1  )
+            extension = ".jpg";
+        else {
+
+            response["data"] = [];
+            response["is_error"] = true;
+            response["message"] = localize.file_type_not_supported; 
+
+            return res.send(response);
+        }
+
+        var db_slug = removeDynamicPrefix(database); 
+        
+        // ( modal name - database name - post id - small random - extenstion  )
+        image_name = `company-logo-${db_slug}${extension}`;
+        var field_name = data_object.file.property_name; 
+
+        const directory = "./server/uploads";
+
+        if (!fs.existsSync(directory)){
+            fs.mkdirSync(directory); 
+        }
+        
+        var updated_base64 = await compressBase64Image(data_object.file.base_64);
+        var base64Data = updated_base64.replace(/^data:image\/\w+;base64,/, "");
+        var buffer = Buffer.from(base64Data, 'base64');
+
+        fs.writeFileSync(`${directory}/${image_name}`, buffer, (err) => {
+            
+            if (err) {
+                return res.send({ 
+                    data: [], 
+                    is_error: true, 
+                    message: localize.saving_img_error
+                });
+            } 
+        }); 
+
+        // store image in field
+        data_object[field_name] = image_name;
+    }
+
+    
+
+    // build data object 
+    var finder = await db_connection.findOne({});
+     
+    // insert data 
+    if( finder == null ) {
+
+        var insertDoc = await db_connection.create(data_object); 
+
+        if(insertDoc.error) { 
+            response["data"] = [];
+            response["is_error"] = true;
+            response["message"] = localize.insert_error; 
+            
+            return res.send(response); 
+        } else {
+            response["data"] = insertDoc;
+            response["is_error"] = false;
+            response["message"] = localize.add_successfully; 
+            
+            return res.send(response); 
+        }
+
+    } else {
+        
+        var updatedDocument = await db_connection.findOneAndUpdate(
+            {_id: finder._id},
+            { $set: data_object },
+            { new: true }
+        );
+
+        if (updatedDocument) {
+            response["data"] = updatedDocument;
+            response["is_error"] = false;
+            response["message"] = localize.updated_successfully; 
+            
+            return res.send(response); 
+        } else {
+            response["data"] = [];
+            response["is_error"] = true;
+            response["message"] = localize.update_failed; 
+            
+            return res.send(response); 
+        }
+
+    } 
+});
+
+apiRouters.post("/get_company_options", verify_user_tokens_and_keys, async (req, res) => {
+   
+    // handling current language
+    var current_language = req.body.language == undefined? "en": req.body.language; 
+    var localize = language[current_language];
+ 
+    //preparing response object 
+    var response = {
+        is_error: true, 
+        data: [],
+        message: localize.something_wrong
+    }
+
+    // Basics Of Each API: checking for database name and model 
+    var database = req.body.database_name;
+    var model = req.body.model_name;
+    var param_id = req.body.data_object == undefined? -1: req.body.data_object;
+
+    if( database == undefined || model == undefined ) {
+        response.is_error = true;
+        response.message = localize.peroperties_required;
+        return res.send(response);
+    }
+     
+    var model_name = flat_schema_name(model);
+    var schema_object = get_schema_object(model_name);
+    
+    
+    var db_connection = await create_connection(database, {
+        model: model_name, 
+        schemaObject:schema_object 
+    }); 
+     
+    
+    if( ! db_connection ) {
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.services_disabled; 
+        return res.send(response); 
+    }  
+
+    var ones = await db_connection.findOne(param_id)
+
+    
+    try {         
+        
+        var allData = await db_connection.findOne(param_id).sort({created_date: -1 });  
+        response["data"] = allData;
+        response["is_error"] = false;
+        response["message"] = localize.data_get_success; 
+         
+        res.send(response);
+
+    } catch (error) { 
+        
+        response["data"] = [];
+        response["is_error"] = true;
+        response["message"] = localize.no_data_found; 
+        return res.send(response); 
+    }
+
+});
+ 
 
 // add data by one row + update by one row 
 apiRouters.post("/create_update", verify_user_tokens_and_keys, async (req, res ) => {

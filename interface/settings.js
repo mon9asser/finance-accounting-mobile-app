@@ -188,6 +188,17 @@ class AppSettingsComponents extends Component {
 
         }
 
+        if(! _branches.length) {
+            _branches.push({
+                branch_address: "", 
+                branch_city: "", 
+                branch_country: "", 
+                branch_name: "Main Branch", 
+                branch_number: "", 
+                local_id: "000000012345_default_branch"
+            })
+        }
+
         this.setState({
             branches: _branches
         })
@@ -349,7 +360,7 @@ class AppSettingsComponents extends Component {
     }
 
     restore_data_to_fields = async () => {
-         
+        
         if( this.props.route.params.branches ) {
             await this.fill_all_branches( this.props.route.params.branches );
         } else  {
@@ -519,6 +530,8 @@ class AppSettingsComponents extends Component {
 
     saveData = () => {
         
+
+        
          
         if( this.state.isPressed ) {
             Alert.alert(this.state.language.please_wait, this.state.language.btn_clicked_twice);
@@ -528,6 +541,7 @@ class AppSettingsComponents extends Component {
         this.setNotificationBox("none")
         this.setCustomerHlght(false);
         
+        
 
         var company_name = this.state.company_name;
         var gender = this.state.gender;
@@ -535,13 +549,14 @@ class AppSettingsComponents extends Component {
         var company_address = this.state.company_address; 
         var customer_address = this.state.address;
         var branch_object = {
-            local_id: this.isUndefined(this.state.selected_branch.local_id),
+           // local_id: this.isUndefined(this.state.selected_branch.local_id),
             branch_name: this.isUndefined(this.state.selected_branch.branch_name),
             branch_number: this.isUndefined(this.state.selected_branch.branch_number),
             branch_city: this.isUndefined(this.state.selected_branch.branch_city),
             branch_country: this.isUndefined(this.state.selected_branch.branch_country),
         };
 
+        
         (async() => {
              
 
@@ -558,7 +573,7 @@ class AppSettingsComponents extends Component {
             };
             
             // case is there image 
-            if( this.state.file != null ) {
+            if( this.state.file != null ) { 
                         
         
                 // Base 64
@@ -586,8 +601,7 @@ class AppSettingsComponents extends Component {
                 productObject.thumbnail = new_name; 
 
             }
-
-              
+             
 
             // required data 
             if( this.state.company_name == "") {

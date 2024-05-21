@@ -12,6 +12,8 @@ var verify_user_tokens_and_keys = async (req, res, next) => {
         new Default_Values( req.body.database_name,  req.body.language );
     }
 
+  
+
     // checking for language property 
     if( req.body.language == undefined ) {
 
@@ -22,6 +24,8 @@ var verify_user_tokens_and_keys = async (req, res, next) => {
         }); 
 
     }
+
+    
 
     var current_language = req.body.language == undefined? "en": req.body.language; 
     var localize = language[current_language];

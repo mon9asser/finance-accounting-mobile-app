@@ -156,7 +156,7 @@ var allSchema = {
             enable_shipping_cost: { type: Boolean, default: true},
             enable_tracking_number: { type: Boolean, default: true},
         },
-        file: { type: {}, default: {}},
+        file:  { type: {}, default: {}},
 
     },
 
