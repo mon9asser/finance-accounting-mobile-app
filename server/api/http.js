@@ -115,7 +115,7 @@ const compressBase64Image = async (base64String) => {
  
 //Company Options
 
-apiRouters.post("/update_company__options", verify_user_tokens_and_keys, async (req, res ) => {
+apiRouters.post("/update_company_options", verify_user_tokens_and_keys, async (req, res ) => {
       
     // handling current language
     var current_language = req.body.language == undefined? "en": req.body.language; 

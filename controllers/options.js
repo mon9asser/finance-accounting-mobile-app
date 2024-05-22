@@ -1,8 +1,8 @@
  
-import {A_P_I_S} from "../cores/apis.js"; 
-import {Models} from "../cores/models.js"; 
-import { get_setting} from "../cores/settings.js";
-import { get_lang } from "../languages";
+import {A_P_I_S} from "./cores/apis.js"; 
+import {Models} from "./cores/models.js"; 
+import { get_setting} from "./cores/settings.js";
+import { get_lang } from "./languages";
 
 import _ from 'lodash';
 
@@ -24,18 +24,30 @@ class Options extends A_P_I_S {
     }
 
     /** Insert and update a record */
-    create_update = async ({  = null ) => {
+    create_update = async ({ company_name, company_city, company_address, selected_currency, selected_language, vat_percentage, tax_percentage, shipping_cost, selected_branch, selected_paper_size_for_receipts, selected_paper_size_for_reports, sales_options, file }) => {
        
-         console.log(branch);
+          
         var _object =  { 
-            customer_name: customer_name == undefined? "": customer_name ,
-            phone_number: phone_number == undefined? "": phone_number ,
-            gender: gender == undefined? "": gender ,
-            email_address: email_address == undefined? "": email_address ,
-            user_type : user_type == undefined? 0: user_type ,
-            branch: branch == undefined? {}: branch ,
-            address: address == undefined? "": address ,
-            thumbnail: thumbnail == undefined? "": thumbnail ,
+            company_name: company_name == undefined ? "": company_name, 
+            company_city: company_city == undefined ? "": company_city, 
+            company_address: company_address == undefined? "": company_address,
+            selected_currency: selected_currency == undefined? {}: selected_currency,
+            selected_language: selected_language == undefined? {}: selected_language, 
+            vat_percentage: vat_percentage == undefined? "0": vat_percentage, 
+            tax_percentage: tax_percentage == undefined? "0": tax_percentage, 
+            shipping_cost: shipping_cost == undefined ? "0": shipping_cost, 
+            selected_branch: selected_branch == undefined ? "" : selected_branch, 
+            selected_paper_size_for_receipts: selected_paper_size_for_receipts == undefined ? {}: selected_paper_size_for_receipts, 
+            selected_paper_size_for_reports: selected_paper_size_for_reports == undefined? {}: selected_paper_size_for_reports, 
+            sales_options: sales_options == undefined ? {
+                enable_order_type: true,
+                enable_payment_status: true,
+                enable_payment_method: true,
+                enable_tax: true,
+                enable_vat: true,
+                enable_shipping_cost: true,
+                enable_tracking_number: true,
+            }: sales_options 
         };
 
         if( file != undefined ) {
@@ -58,7 +70,7 @@ class Options extends A_P_I_S {
             param_value = {...param_id};
         }  
           
-        var asynced = await this.coreAsync(
+        var asynced = await this.coreAsync2(
             this.Schema,
             _object,
             param_value
@@ -69,58 +81,8 @@ class Options extends A_P_I_S {
         return asynced;
 
     }
+     
     
-    // array data shouln't include meta data such as create by , updated by etc
-    // use array data only and keep conside_flags as a false
-    // case need to bulk insert from locally just do this:-
-    /**
-     * array_data = []; keep empty array 
-     * consider_flags = true 
-     */
-    bulk_create_update = async(array_data, consider_flags = false) => {
-
-        // getting settings and language
-        var settings;
-
-        try{
-            settings = await get_setting(); 
-        } catch(error){}
-        
-        var language =  get_lang(settings.language);
-
-        if( ! Array.isArray(array_data) ) {
-            return {
-                login_redirect: false, 
-                is_error: true, 
-                data: [],
-                message: language.array_data_required
-            }
-        }
-
-        var core = await this.bulkCoreAsync(this.Schema, array_data, consider_flags )
-        return core;
-
-    }
-    
-
-    /**
-     * Delete all records in database based on array of ids remotely and locally
-     */
-    delete_records = async (param_id = [] ) => {
-
-        var param_value = Array.isArray(param_id) ? param_id : [];
- 
-        // getting all data 
-        var reqs = await this.deleteAsync(this.Schema,param_value );
-
-        return reqs; 
-
-    }
-    
-    /**
-     * paging = { page, size }
-     * async: case true it will get data from remote and store it in locally
-     */
     get_records = async(param_id = [], paging = {}, async = false, desc = true ) => {
  
         
