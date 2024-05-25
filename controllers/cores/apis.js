@@ -571,7 +571,7 @@ class A_P_I_S {
          }
          
         
-         __object = {...__object, ...obj_data}; 
+         //__object = {...__object, ...obj_data}; 
         
          // case it is update 
          if( (obj_data.local_id != undefined || parameter_id != null) && is_update && objectIndex == -1 ) {

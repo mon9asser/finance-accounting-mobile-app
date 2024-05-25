@@ -34,7 +34,7 @@ import { usr } from "../controllers/storage/user.js";
 import {CategoryInstance} from "../controllers/storage/categories.js";
 import { generateId } from "../controllers/helpers.js";
 import { PriceInstance } from "../controllers/storage/prices.js";
-import { CustomerInstance } from "../controllers/storage/customers.js";
+import { OptionInstance } from "../controllers/options.js";
 import { A_P_I_S } from "../controllers/cores/apis.js";
 import { Models } from "../controllers/cores/models.js";
 
@@ -480,7 +480,7 @@ class AppSettingsComponents extends Component {
         });
     }
 
-    setCustomerHlght = (value) => {
+    setCompanyHlght = (value) => {
         this.setState({
             company_name_hlgt: value
         })
@@ -528,146 +528,80 @@ class AppSettingsComponents extends Component {
         return value == undefined ? "": value
     }
 
-    saveData = () => {
-        
-
-        
-         
+    saveData = async () => {
+       
+        // enable press of button 
         if( this.state.isPressed ) {
             Alert.alert(this.state.language.please_wait, this.state.language.btn_clicked_twice);
             return;
         }  
-        this.setPressBtn(true);  
-        this.setNotificationBox("none")
-        this.setCustomerHlght(false);
-        
-        
 
-        var company_name = this.state.company_name;
-        var gender = this.state.gender;
-        var email = this.state.company_city;
-        var company_address = this.state.company_address; 
-        var customer_address = this.state.address;
-        var branch_object = {
-           // local_id: this.isUndefined(this.state.selected_branch.local_id),
-            branch_name: this.isUndefined(this.state.selected_branch.branch_name),
-            branch_number: this.isUndefined(this.state.selected_branch.branch_number),
-            branch_city: this.isUndefined(this.state.selected_branch.branch_city),
-            branch_country: this.isUndefined(this.state.selected_branch.branch_country),
-        };
+        this.setPressBtn(true);
+        this.setNotificationBox("none");
 
-        
-        (async() => {
-             
+        // prepare object
+        var object_data = {
+            company_name: this.state.company_name,
+            company_city: this.state.company_city,
+            company_address: this.state.company_address,
+            selected_currency:  this.state.selected_currency,
+            selected_language:  this.state.selected_language,
+            vat_percentage: this.state.vat_percentage,
+            tax_percentage: this.state.tax_percentage,
+            shipping_cost: this.state.shipping_cost,
+            selected_branch: this.state.selected_branch,
+            selected_paper_size_for_receipts:this.state.selected_paper_size_for_receipts,
+            selected_paper_size_for_reports:this.state.selected_paper_size_for_reports,
+            sales_options: this.state.sales_options,
+            file: this.state.file
+        }
 
-            var productObject = {
-                param_id: this.state.customer_local_id,
-                company_name: company_name,
-                company_address: company_address,
-                gender: gender, 
-                company_city: email, 
-                user_type: this.state.user_type,
-                branch: branch_object, 
-                address: customer_address, 
-                thumbnail: ""
-            };
-            
-            // case is there image 
-            if( this.state.file != null ) { 
+        if( this.state.file != null ) { 
                         
         
-                // Base 64
-                var base64 = await this.generate_base64_data( this.state.file.uri );
-                
-                if(!base64) {
-                    this.setPressBtn(false); 
-                    this.setNotificationBox("flex")
-                    this.setNotificationCssClass(styles.error_message);
-                    this.setNotificationCssTextClass(styles.error_text)
-                    this.setNotificationMessage(this.state.language.failed_to_save_image);
-                    return; 
-                }
-
-                // generate image name which saved on server  
-                var new_name = await this.geneate_image_name();
-                
-                // storing file object 
-                productObject.file = {
-                    base_64: base64,
-                    thumbnail_url: new_name, 
-                    uri: this.state.file.uri,
-                    property_name: "thumbnail"
-                };
-                productObject.thumbnail = new_name; 
-
-            }
-             
-
-            // required data 
-            if( this.state.company_name == "") {
-    
-                this.setPressBtn(false); 
-                this.setCustomerHlght(true)
-
-                this.setNotificationBox("flex")
-                this.setNotificationCssClass(styles.error_message);
-                this.setNotificationCssTextClass(styles.error_text)
-                this.setNotificationMessage(this.state.language.company_name_required);
-
-                return; 
-            };
-
-            var customerReq = await CustomerInstance.create_update(productObject);
-            console.log(customerReq);
-
+            // Base 64
+            var base64 = await this.generate_base64_data( this.state.file.uri );
             
-            if(customerReq.login_redirect) { 
-    
-                this.setPressBtn(false);    
-
+            if(!base64) {
+                this.setPressBtn(false); 
                 this.setNotificationBox("flex")
                 this.setNotificationCssClass(styles.error_message);
                 this.setNotificationCssTextClass(styles.error_text)
-                this.setNotificationMessage(customerReq.message);
-
-                
-                // store data of form in session 
-                setTimeout(async () => {
-                    
-                    await add_last_session_form({
-                        name: "add-new-customer",
-                        data_object: productObject
-                    }); 
-    
-                    this.props.navigation.navigate("Login", { redirect_to: "add-new-customer" });
-                
-                }, 1500); 
-
+                this.setNotificationMessage(this.state.language.failed_to_save_image);
                 return; 
             }
 
-            if( customerReq.is_error ) {
+            // generate image name which saved on server  
+            var new_name = await this.geneate_image_name();
+            
+            // storing file object 
+            object_data.file = {
+                base_64: base64,
+                thumbnail_url: new_name, 
+                uri: this.state.file.uri,
+                property_name: "thumbnail"
+            };
+            object_data.thumbnail = new_name; 
+
+        }
+
+
+        // required data 
+        if( this.state.company_name == "") {
     
-                this.setPressBtn(false);  
-                this.setNotificationBox("flex")
-                this.setNotificationCssClass(styles.error_message);
-                this.setNotificationCssTextClass(styles.error_text); 
-                this.setNotificationMessage(customerReq.message);
-                
-                return; 
-            }
+            this.setPressBtn(false); 
+            this.setCompanyHlght(true)
 
-            // delete restored data 
-            await delete_session_form(); 
-
-            this.setPressBtn(false);   
             this.setNotificationBox("flex")
-            this.setNotificationCssClass(styles.success_message);
-            this.setNotificationCssTextClass(styles.success_text); 
-            this.setNotificationMessage(customerReq.message);
+            this.setNotificationCssClass(styles.error_message);
+            this.setNotificationCssTextClass(styles.error_text)
+            this.setNotificationMessage("Company name is required!");
 
+            return; 
+        };
 
-        })(); 
+        var settingOptions = await OptionInstance.create_update(object_data);
+        console.log(settingOptions);
 
     }
 

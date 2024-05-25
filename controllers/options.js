@@ -3,9 +3,7 @@ import {A_P_I_S} from "./cores/apis.js";
 import {Models} from "./cores/models.js"; 
 import { get_setting} from "./cores/settings.js";
 import { get_lang } from "./languages";
-
-import _ from 'lodash';
-
+ 
  
 /**
  * 
@@ -19,8 +17,7 @@ class Options extends A_P_I_S {
     constructor(props) {
 
         super(props); 
-        this.Schema =  Models.Options;
-
+        this.Schema =  Models.options; 
     }
 
     /** Insert and update a record */
@@ -53,27 +50,10 @@ class Options extends A_P_I_S {
         if( file != undefined ) {
             _object.file = file;
         }
-        
-        var param_value = null;
-
-        if( typeof param_id != 'object' && param_id != null ) {
-            _object = {
-                ..._object,
-                local_id: param_id
-            }
-            param_value = {
-                local_id: param_id
-            }
-        }
-
-        if( typeof param_id == 'object' && param_id != null ) {
-            param_value = {...param_id};
-        }  
-          
+         
         var asynced = await this.coreAsync2(
             this.Schema,
-            _object,
-            param_value
+            _object 
         );
         
         // await this.bulkCoreAsync( this.Schema );
