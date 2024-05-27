@@ -3,7 +3,7 @@ import axios from "axios";
 
 import { get_lang } from "../languages";
 import {generateId} from '../helpers';
-import {get_setting} from '../cores/settings'; 
+import {get_setting, add_setting} from '../cores/settings'; 
 import {config} from '../../settings/config';
 import {usr} from '../storage/user';
 import {Models} from "./models";
@@ -441,221 +441,74 @@ class A_P_I_S {
 
 
     async coreAsync2( mobject, obj_data, parameter_id = null ) {
-         // getting settings and language
-         var settings, user_data, param_id, param_id_object, old_data, is_update; 
+       
+        // getting settings and language
+        var settings, user_data, param_id, param_id_object, old_data, is_update; 
 
-         try{
-             settings = await get_setting();
-             user_data = await usr.get_session();
-         } catch(error){}
- 
-         var language =  get_lang(settings.language);
-         
-         // getting user data and check for session expiration 
-         if( user_data == null || ! Object.keys(user_data).length ) {
-             return {
-                 login_redirect: true, 
-                 message: language.user_session_expired, 
-                 is_error: true , 
-                 data: []
-             };
-         }
-         
-         // checking for instance and key in mobject 
-         var {key, instance} = mobject;
-         if(key == undefined || instance == undefined) {
-             return {
-                 login_redirect: false, 
-                 message: language.api_error, 
-                 is_error: true , 
-                 data: []
-             };
-         }
-         
-         // check if parameter id is not null so store it in given variables
-         param_id = obj_data.local_id == undefined ? generateId(): obj_data.local_id; 
-         if(parameter_id != null && typeof parameter_id != 'object') {
-             param_id = parameter_id;
-         }   
-        
-         
-         if( typeof parameter_id == 'object' && parameter_id != null ) {
-             if( parameter_id.local_id != undefined ) {
-                 param_id = parameter_id.local_id;
-             }
-         }
-         
-         param_id_object = {local_id:  param_id }
-         if(parameter_id != null && typeof parameter_id == 'object') {
-             param_id_object = {...parameter_id};
-         }  
-         
-        
-         // getting the records from storage 
-        old_data = await this.get_data_locally(mobject);
-         
-         // preparing insertion data 
-         var __object = {
-             application_id:user_data.application_id,
-             local_id: param_id,
-             updated_date: Date.now(),
-             created_date: Date.now(),
-             updated_by: {
-                 id:  user_data.id,
-                 name: user_data.name,
-                 email: user_data.email 
-             },
-             created_by: {
-                 id:  user_data.id,
-                 name: user_data.name,
-                 email: user_data.email 
-             }
-         }
- 
-         // build update object 
-         if( obj_data.local_id != undefined || parameter_id != null ) {
-             
-             __object = {
-                 local_id: param_id,
-                 updated_date: Date.now(),
-                 updated_by: {
-                     id:  user_data.id,
-                     name: user_data.name,
-                     email: user_data.email 
-                 },
-             }
-         } 
- 
-        
-         // check if it is update or insert process 
-         var objectIndex = old_data.findIndex(x => {
-                 
-             if( typeof param_id_object == 'object'  ) {
-                 var key__ = Object.keys(param_id_object)[0]; 
-                  
-                 return x[key__] == param_id_object[key__]; 
-             }
-              
-             return x.local_id == param_id;
- 
-         });
- 
-         
-         if( objectIndex == -1 ) {
-             
-             // check it is not update 
-             is_update = false; 
- 
-             // attatch the create object here 
-             __object = {
-                 application_id:user_data.application_id,
-                 local_id: param_id,
-                 updated_date: Date.now(),
-                 created_date: Date.now(),
-                 updated_by: {
-                     id:  user_data.id,
-                     name: user_data.name,
-                     email: user_data.email 
-                 },
-                 created_by: {
-                     id:  user_data.id,
-                     name: user_data.name,
-                     email: user_data.email 
-                 }
-             }
- 
-         } else {
- 
-             // update an existing object 
-             is_update = true; 
-         }
-         
-        
-         //__object = {...__object, ...obj_data}; 
-        
-         // case it is update 
-         if( (obj_data.local_id != undefined || parameter_id != null) && is_update && objectIndex == -1 ) {
-             return {
-                 message: language.no_records,
-                 login_redirect: false, 
-                 data: [], 
-                 is_error: true 
-             };
-         } 
-         
-         // prepare data of remote server 
-         var axiosOptions = { 
-             api: "api/update_company_options", 
-             dataObject: {
-                 data_object: __object,
-                 param_id: param_id_object
-             }, 
-             method: "post",  
-             model_name: key
-         };
-          
-         // send request for remote server 
-         var request = {
-             is_error: true,
-             data: [],
-             message: "data"
-         };
-         
-         if( ! config.disable_remote_server ) { 
-             request = await this.axiosRequest(axiosOptions);
-             return request;
-         }; 
+        try{
+            settings = await get_setting();
+            user_data = await usr.get_session();
+        } catch(error){}
 
-         // assig log history 
-         //// await this.assign_log(mobject, rowData.local_id, is_update? "update": "create" );
- 
-         // update data locally
-         try {
- 
-             if(! config.disable_local_storage) { 
-                 var is_saved = await instance.save({
-                     key: key,
-                     data: __object
-                 }); 
-             } 
- 
-             if( ! config.disable_local_storage || (! config.disable_remote_server && request.is_error == false )) {
-                 return {
-                     message: language.saved_success,
-                     data: __object,
-                     is_error: false, 
-                     login_redirect: false
-                 }
-             }
- 
-             return {
-                 message: language.services_disabled_by_app_admin,
-                 data: [],
-                 is_error: true, 
-                 login_redirect: false
-             }
- 
-         } catch (error) {
-             
-             var message = language.something_error;
- 
-             if(error.toString().includes('Quota exceeded')) {
-                 message = language.quota_exceeded
-             } else {
-                 message = language.unexpected_error 
-             }
- 
-             return {
-                 message: message,
-                 data: [],
-                 is_error: true, 
-                 login_redirect: false
-             }
- 
-         }
- 
-         // send response 
-         // return __object;
+        var language = get_lang(settings.language);
+        
+        // getting user data and check for session expiration 
+        if( user_data == null || ! Object.keys(user_data).length ) {
+            return {
+                login_redirect: true, 
+                message: language.user_session_expired, 
+                is_error: true , 
+                data: []
+            };
+        }
+         
+        // checking for instance and key in mobject 
+        var {key, instance} = mobject;
+        if(key == undefined || instance == undefined) {
+            return {
+                login_redirect: false, 
+                message: language.api_error, 
+                is_error: true , 
+                data: []
+            };
+        }
+         
+        // prepare data of remote server 
+        var axiosOptions = { 
+            api: "api/update_company_options", 
+            dataObject: {
+                data_object: obj_data 
+            }, 
+            method: "post",  
+            model_name: key
+        };
+
+        // send request for remote server 
+        var request = {
+            is_error: true,
+            data: [],
+            message: ""
+        };
+
+        /* Store some data in localstorage */ 
+        await add_setting({
+            language: obj_data.selected_language.value
+        });
+        
+        if( ! config.disable_remote_server ) { 
+            request = await this.axiosRequest(axiosOptions); 
+            return request; 
+        }; 
+
+        
+        if(! config.disable_local_storage) { 
+            await instance.save({
+                key: key,
+                data: obj_data 
+            }); 
+        }
+
+         
     }
 
     /**
