@@ -21,13 +21,15 @@ class Options extends A_P_I_S {
     }
 
     /** Insert and update a record */
-    create_update = async ({ company_name, company_city, company_address, selected_currency, selected_language, vat_percentage, tax_percentage, shipping_cost, selected_branch, selected_paper_size_for_receipts, selected_paper_size_for_reports, sales_options, file }) => {
+    create_update = async ({ company_name, company_city, company_address, selected_currency, selected_language, vat_percentage, tax_percentage, shipping_cost, selected_branch, selected_paper_size_for_receipts, selected_paper_size_for_reports, sales_options, company_vat_number, file }) => {
        
           
         var _object =  { 
             company_name: company_name == undefined ? "": company_name, 
             company_city: company_city == undefined ? "": company_city, 
             company_address: company_address == undefined? "": company_address,
+            company_vat_number: company_vat_number == undefined? "": company_vat_number,
+            
             selected_currency: selected_currency == undefined? {}: selected_currency,
             selected_language: selected_language == undefined? {}: selected_language, 
             vat_percentage: vat_percentage == undefined? "0": vat_percentage, 

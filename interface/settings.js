@@ -72,6 +72,7 @@ class AppSettingsComponents extends Component {
 
         this.state = {
 
+            settings: null,
             all_languages: [
                 {
                     value: "en",
@@ -233,7 +234,7 @@ class AppSettingsComponents extends Component {
 
     setCompanyLogo = (image) => {
         this.setState({
-            logo_image: image == "" ? require('./../assets/icons/customer-placeholder.png'): {uri: image}
+            logo_image: image == "" ? require('./../assets/logo/logo.jpg'): {uri: image}
         })
     }
 
@@ -367,11 +368,58 @@ class AppSettingsComponents extends Component {
             await this.fill_all_branches();
         }
         
-        var session_ = await get_last_session_form("add-new-customer");  
-        if( session_ == null ) {
+        var load = await OptionInstance.get_records();
+        if( load.is_error ) {
             return; 
-        }  
+        }
+
+        if(load.login_redirect) {
+            this.props.navigation.navigate("Login")
+        }
         
+        // var image = config.api(`uploads/${load.data[0].file.thumbnail_url}?timestamp=${new Date().getTime()}` ) ;
+        if(!load.data.length) {
+            return;
+        }
+
+        var file_data = load.data[0].file;
+        var basics = load.data[0];
+        var local = await get_setting();
+        // language
+        // branch
+        if( local != null && local.language != undefined ) {
+            var index = this.state.all_languages.findIndex(x => x.value == local.language );
+            if( index != -1 ) {
+                basics.selected_language = this.state.all_languages[index];
+            }
+        }
+
+        if( local != null && local.branch != undefined ) {
+            basics.selected_branch = local.branch;
+        }
+
+        var image = config.api(`uploads/${basics.file.thumbnail_url}?timestamp=${new Date().getTime()}` ) ;
+
+        this.setState({
+            file: file_data,
+            company_name: basics.company_name,
+            company_city: basics.company_city,
+            company_address: basics.company_address,
+            company_vat_number: basics.company_vat_number,
+            company_address: basics.company_address,
+            selected_currency: basics.selected_currency,
+            selected_language: basics.selected_language,
+            vat_percentage: basics.vat_percentage,
+            tax_percentage: basics.tax_percentage,
+            shipping_cost: basics.shipping_cost,
+            selected_branch: basics.selected_branch,
+            selected_paper_size_for_receipts: basics.selected_paper_size_for_receipts,
+            selected_paper_size_for_reports: basics.selected_paper_size_for_reports,
+            sales_options: basics.sales_options,
+            logo_image: {uri: image}
+        }); 
+ 
+
     }
 
  
@@ -518,7 +566,7 @@ class AppSettingsComponents extends Component {
             extension = ".png";
              
 
-        var new_name = `customers-${dbslug}-${this.state.customer_local_id}${extension}`;
+        var new_name = `company-logo-${dbslug}${extension}`;
          
         return new_name;
 
@@ -539,11 +587,12 @@ class AppSettingsComponents extends Component {
         this.setPressBtn(true);
         this.setNotificationBox("none");
 
-        // prepare object
+        // prepare object 
         var object_data = {
             company_name: this.state.company_name,
             company_city: this.state.company_city,
             company_address: this.state.company_address,
+            company_vat_number: this.state.company_vat_number,
             selected_currency:  this.state.selected_currency,
             selected_language:  this.state.selected_language,
             vat_percentage: this.state.vat_percentage,
@@ -601,7 +650,25 @@ class AppSettingsComponents extends Component {
         };
 
         var settingOptions = await OptionInstance.create_update(object_data);
-        console.log(settingOptions);
+        if(settingOptions.is_error) {
+            this.setPressBtn(false);  
+
+            this.setNotificationBox("flex")
+            this.setNotificationCssClass(styles.error_message);
+            this.setNotificationCssTextClass(styles.error_text)
+            this.setNotificationMessage("Something went wrong!");
+
+            return; 
+        }
+
+        this.setPressBtn(false);  
+
+        this.setNotificationBox("flex")
+        this.setNotificationCssClass(styles.success_message);
+        this.setNotificationCssTextClass(styles.success_text)
+        this.setNotificationMessage("Saved Successfully!");
+
+        return; 
 
     }
 
@@ -745,6 +812,11 @@ class AppSettingsComponents extends Component {
         })
     }
     
+    logo_company_error = () => {
+        this.setState({
+            logo_image: require('./../assets/logo/logo.jpg')
+        })
+    }
 
     render() {
         return(
@@ -768,6 +840,7 @@ class AppSettingsComponents extends Component {
                                     source={this.state.logo_image}
                                     style={{height: 200, width:200, borderRadius: 20, borderWidth: 1, borderColor: "#fff"}}
                                     resizeMode="cover"
+                                    onError={this.logo_company_error}
                                     PlaceholderContent={<ActivityIndicator />} 
                                 />
                             </TouchableOpacity>  
@@ -803,7 +876,7 @@ class AppSettingsComponents extends Component {
                                 <TextInput 
                                 multiline={true} 
                                 numberOfLines={10}  
-                                value={this.state.address} 
+                                value={this.state.company_address} 
                                 onChangeText={text => this.setChangedValue(text, this.setCompanyAddress)}
                                 placeholder={this.state.language.address}
                                 style={{...styles.textarea_field}} />

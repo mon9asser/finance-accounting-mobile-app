@@ -492,6 +492,7 @@ class A_P_I_S {
 
         /* Store some data in localstorage */ 
         await add_setting({
+            branch: obj_data.selected_branch,
             language: obj_data.selected_language.value
         });
         

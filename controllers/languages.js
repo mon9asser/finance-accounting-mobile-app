@@ -7,7 +7,11 @@ const language = {
         {
             name: "English",
             extention: "en"
-        } 
+        },
+        {
+            name: "Arabic",
+            extention: "ar"
+        }  
     ],
 
     // => Languages
