@@ -14,6 +14,7 @@ import * as Sharing from 'expo-sharing';
 import * as Print from 'expo-print';
 import formatter from 'number-formatter';
 
+import { OptionInstance } from "../../controllers/options.js";
 
 // Distruct 
 import { StatusBar } from 'expo-status-bar';
@@ -89,6 +90,7 @@ class AddNewSalesInvoiceComponents extends Component {
 
         this.state = {
 
+            settings: null, 
             selectedPrinter: "", 
             discountValue: '', 
             discountPercentage: '',
@@ -317,18 +319,18 @@ class AddNewSalesInvoiceComponents extends Component {
         
         var doc_language = "en";
         
-        var doc_width = "";
+        var doc_width = this.state.settings.selected_paper_size_for_receipts.value || "280px";
         var fsize = "12";
-        var currency = "EGP";
-        var company_name = "Mori Sushi";
+        var currency = this.state.settings.selected_currency.value || "$";
+        var company_name = this.state.settings.company_name || "";
         var company_address = {
-            city: "Cairo",
-            address: "Dokki inside egypt"
+            city: this.state.settings.company_city || "",
+            address: this.state.settings.company_address || ""
         };
-        var invoice_number = "";
-        var vat_number = "";
-        var customer = this.state.selected_customer;
-        var logo_src = "https://e7.pngegg.com/pngimages/50/606/png-clipart-computer-icons-scalable-graphics-api-icon-text-logo-thumbnail.png";
+        var invoice_number = this.state.doc_number || "";
+        var vat_number = this.state.settings.company_vat_number || "";
+        var customer = this.state.selected_customer || "";
+        var logo_src = this.state.settings.file.base_64 || "";
         var invoice_date = "";
 
         var html = "<!DOCTYPE html>";
@@ -456,13 +458,16 @@ class AddNewSalesInvoiceComponents extends Component {
             }
 
             // Custom Data if any
+            console.log("---------------------------");
+            console.log(customer);
+            console.log("---------------------------");
             if( customer != null ) { 
                 html +=`<div class="content text-center line-bottom">`;
                 html +=`<p>
                 <span class="block"><b>${customer.customer_name}</b></span>`;
                 html +=`<span class="block">Tel: ${customer.phone_number}</span>`;
                 html +=`<span class="block">${customer.address}</span></p>`; 
-                html +=`</div>`; 
+                html +=`</div>`;  
             }
 
             // Document Item Section
@@ -2392,6 +2397,40 @@ class AddNewSalesInvoiceComponents extends Component {
         }); 
     }
 
+    load_default_options = async () => {
+        
+        var options = await OptionInstance.get_records();
+        if(options.is_error) {
+            return; 
+        }
+        
+        var settings = null; 
+        if(options.data.length) {
+            settings = options.data[0];
+        }
+        
+        if( settings == null ) {
+            return; 
+        }
+
+        // getting local storage options 
+        var local_settings = await get_setting();
+        
+        // update settings using local storage
+        if( local_settings.language) {
+            settings.selected_language = { value: local_settings.language, label: "" }
+        }
+
+        if(local_settings.branch) {
+            settings.selected_branch = { value: local_settings.branch, label: "" }
+        }
+
+        this.setState({
+           settings:  settings
+        });
+
+    }
+
     componentDidMount = async () => {
          
         
@@ -2419,6 +2458,10 @@ class AddNewSalesInvoiceComponents extends Component {
         // add data to fields if session already expired before 
         await this.restore_data_to_fields();  
         
+        // Load default options
+        await this.load_default_options(); 
+
+         
     }
 
     AnimatedBoxforInternetWarning = () => (
@@ -2644,7 +2687,8 @@ class AddNewSalesInvoiceComponents extends Component {
 
                                     <this.CustomerModal isVisible={this.state.customer_modal_open} toggleModal={this.setOpenCustomerModal} />
                                 </View>
-
+                               
+                                
                                 <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
                                     <Text style={{fontWeight: "bold"}}>Order Status</Text>
                                     <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
@@ -2652,12 +2696,17 @@ class AddNewSalesInvoiceComponents extends Component {
                                     </View> 
                                 </View>
 
-                                <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
-                                    <Text style={{fontWeight: "bold"}}>Order Type</Text>
-                                    <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
-                                        <this.AllOrdersTypesSelector/>
-                                    </View> 
-                                </View>
+                                {
+                                    this.state.settings != null && this.state.settings.sales_options.enable_order_type ?
+                                        <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
+                                            <Text style={{fontWeight: "bold"}}>Order Type</Text>
+                                            <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
+                                                <this.AllOrdersTypesSelector/>
+                                            </View> 
+                                        </View>
+                                    :""
+                                }
+                                
 
                                 <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
                                     <Text style={{fontWeight: "bold"}}>Branch</Text>
@@ -2665,21 +2714,31 @@ class AddNewSalesInvoiceComponents extends Component {
                                         <this.AllBranchesSelector/>
                                     </View> 
                                 </View>
+                                
+                                {
+                                    this.state.settings != null && this.state.settings.sales_options.enable_payment_status ?
+                                        <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
+                                            <Text style={{fontWeight: "bold"}}>Payment Status</Text>
+                                            <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
+                                                <this.AllPaymentStatusSelector/>
+                                            </View> 
+                                        </View>
+                                    :""
+                                }
+                                
 
-                                <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
-                                    <Text style={{fontWeight: "bold"}}>Payment Status</Text>
-                                    <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
-                                        <this.AllPaymentStatusSelector/>
-                                    </View> 
-                                </View>
-
-                                <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
-                                    <Text style={{fontWeight: "bold"}}>Payment Method</Text>
-                                    <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
-                                        <this.AllPaymentMethodSelector/>
-                                    </View> 
-                                </View>
-
+                                
+                                
+                                {
+                                    this.state.settings != null && this.state.settings.sales_options.enable_payment_method ?
+                                        <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
+                                            <Text style={{fontWeight: "bold"}}>Payment Method</Text>
+                                            <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
+                                                <this.AllPaymentMethodSelector/>
+                                            </View> 
+                                        </View>
+                                    :""
+                                }
 
                                 <View>
                                     <View style={{flexDirection: "row", gap: 10, marginTop: 20, alignItems: "center"}}> 
@@ -2802,26 +2861,42 @@ class AddNewSalesInvoiceComponents extends Component {
                                             <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.discount.value == ""? "0.00": this.state.discount.value }</Text>
                                         </TouchableOpacity> 
                                     </View>
-                                    <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
-                                        <Text>Tax</Text>
-                                        <TouchableOpacity onPress={this.setOpenTaxInvoiceModal}>
-                                            <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.tax.value ==""? "0.00": this.state.tax.value}</Text>
-                                        </TouchableOpacity> 
-                                    </View>
+                                    
 
-                                    <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
-                                        <Text>Vat</Text>
-                                        <TouchableOpacity onPress={this.setOpenVatInvoiceModal}>
-                                            <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.vat.value == "" ?"0.00": this.state.vat.value}</Text>
-                                        </TouchableOpacity> 
-                                    </View>  
+                                    {
+                                        this.state.settings != null && this.state.settings.sales_options.enable_tax ?
+                                            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
+                                                <Text>Tax</Text>
+                                                <TouchableOpacity onPress={this.setOpenTaxInvoiceModal}>
+                                                    <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.tax.value ==""? "0.00": this.state.tax.value}</Text>
+                                                </TouchableOpacity> 
+                                            </View>
+                                        :""
+                                    }
+                                    
+                                    
+                                    {
+                                        this.state.settings != null && this.state.settings.sales_options.enable_vat ?
+                                            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
+                                                <Text>Vat</Text>
+                                                <TouchableOpacity onPress={this.setOpenVatInvoiceModal}>
+                                                    <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.vat.value == "" ?"0.00": this.state.vat.value}</Text>
+                                                </TouchableOpacity> 
+                                            </View>    
+                                        :""
+                                    }
+                                    
 
-                                    <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 10}}>
-                                        <Text>Shipping or Delivery Cost</Text>
-                                        <TouchableOpacity onPress={this.setOpenShippingInvoiceModal}>
-                                            <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.shipping_or_delivery_cost == ""? "0.00": this.state.shipping_or_delivery_cost}</Text>
-                                        </TouchableOpacity> 
-                                    </View>  
+                                    {
+                                        this.state.settings != null && this.state.settings.sales_options.enable_shipping_cost ?
+                                            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 10}}>
+                                                <Text>Shipping or Delivery Cost</Text>
+                                                <TouchableOpacity onPress={this.setOpenShippingInvoiceModal}>
+                                                    <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.shipping_or_delivery_cost == ""? "0.00": this.state.shipping_or_delivery_cost}</Text>
+                                                </TouchableOpacity> 
+                                            </View>  
+                                        :""
+                                    }
 
                                 </View>
 
@@ -2837,12 +2912,17 @@ class AddNewSalesInvoiceComponents extends Component {
                                 </View>
                                  
 
-                                <View style={{ gap: 10, marginTop: 30, flex: 1, flexDirection: "column", overflow: "hidden"}}> 
-                                    <Text style={{fontWeight: "bold"}}>Order Tracking Number</Text>
-                                    <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
-                                        <TextInput value={this.state.tracking_number} onChangeText={text => this.setChangedValue(text, this.setOrderTrackingNumber)} style={{flex: 1}} placeholder={this.state.language.tracking_number} />
-                                    </View>
-                                </View>
+                                
+                                {
+                                    this.state.settings != null && this.state.settings.sales_options.enable_tracking_number ?
+                                        <View style={{ gap: 10, marginTop: 30, flex: 1, flexDirection: "column", overflow: "hidden"}}> 
+                                            <Text style={{fontWeight: "bold"}}>Order Tracking Number</Text>
+                                            <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
+                                                <TextInput value={this.state.tracking_number} onChangeText={text => this.setChangedValue(text, this.setOrderTrackingNumber)} style={{flex: 1}} placeholder={this.state.language.tracking_number} />
+                                            </View>
+                                        </View>
+                                    :""
+                                }
                             </View> 
 
                             <View style={{ ...styles.wrapper, ...this.state.notificationBox, ...this.state.notificationCssClass, ...styles.space_top_25}}>

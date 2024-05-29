@@ -238,7 +238,6 @@ class AppSettingsComponents extends Component {
         })
     }
 
-   
     setCompanyName = ( value ) => {
         this.setState({
             company_name: value
@@ -474,8 +473,7 @@ class AppSettingsComponents extends Component {
 
             <Text style={{...styles.intenet_connection_text}}>
                 {this.state.language.internet_msg_box}
-            </Text>
-            
+            </Text> 
             
         </View>
     ) 
@@ -644,7 +642,7 @@ class AppSettingsComponents extends Component {
             this.setNotificationBox("flex")
             this.setNotificationCssClass(styles.error_message);
             this.setNotificationCssTextClass(styles.error_text)
-            this.setNotificationMessage("Company name is required!");
+            this.setNotificationMessage(this.state.language.company_name_required);
 
             return; 
         };
@@ -656,7 +654,7 @@ class AppSettingsComponents extends Component {
             this.setNotificationBox("flex")
             this.setNotificationCssClass(styles.error_message);
             this.setNotificationCssTextClass(styles.error_text)
-            this.setNotificationMessage("Something went wrong!");
+            this.setNotificationMessage(this.state.language.something_error);
 
             return; 
         }
@@ -666,7 +664,7 @@ class AppSettingsComponents extends Component {
         this.setNotificationBox("flex")
         this.setNotificationCssClass(styles.success_message);
         this.setNotificationCssTextClass(styles.success_text)
-        this.setNotificationMessage("Saved Successfully!");
+        this.setNotificationMessage(this.state.language.saved_success);
 
         return; 
 
@@ -761,44 +759,44 @@ class AppSettingsComponents extends Component {
                     <View style={{...styles.field_container}}>
                         <Text style={{fontWeight: "bold", marginBottom: 10}}>Sales Invoice Options</Text>
                         <TouchableOpacity onPress={() => this.checkedItem( "enable_order_type" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-                            <Text style={{}}>Enable Order Type</Text>
+                            <Text style={{}}>{this.state.language.enable_order_type}</Text>
                             <Checkbox status={this.state.sales_options.enable_order_type? "checked": ""} />
                         </TouchableOpacity> 
 
                         <TouchableOpacity onPress={() => this.checkedItem( "enable_payment_status" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-                            <Text style={{}}>Enable Payment Status</Text>
+                            <Text style={{}}>{this.state.language.enable_payment_status}</Text>
                             <Checkbox status={this.state.sales_options.enable_payment_status? "checked": ""} />
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={() => this.checkedItem( "enable_payment_method" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-                            <Text style={{}}>Enable Payment Method</Text>
+                            <Text style={{}}>{this.state.language.enable_payment_method}</Text>
                             <Checkbox status={this.state.sales_options.enable_payment_method? "checked": ""} />
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={() => this.checkedItem( "enable_tax" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-                            <Text style={{}}>Enable Tax</Text>
+                            <Text style={{}}>{this.state.language.enable_payment_tax}</Text>
                             <Checkbox status={this.state.sales_options.enable_tax? "checked": ""} />
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={() => this.checkedItem( "enable_vat" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-                            <Text style={{}}>Enable Vat</Text>
+                            <Text style={{}}>{this.state.language.enable_payment_vat}</Text>
                             <Checkbox status={this.state.sales_options.enable_vat? "checked": ""} />
                         </TouchableOpacity> 
 
                         <TouchableOpacity onPress={() => this.checkedItem( "enable_shipping_cost" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-                            <Text style={{}}>Enable Shipping or Delivery Cost</Text>
+                            <Text style={{}}>{this.state.language.enable_delivery_cost}</Text>
                             <Checkbox status={this.state.sales_options.enable_shipping_cost? "checked": ""} />
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={() => this.checkedItem( "enable_tracking_number" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-                            <Text style={{}}>Enable Order Tracking Number</Text>
+                            <Text style={{}}>{this.state.language.enable_order_tracking_number}</Text>
                             <Checkbox status={this.state.sales_options.enable_tracking_number? "checked": ""} />
                         </TouchableOpacity>
 
                     </View> 
 
                     <Button  style={{...styles.default_btn, backgroundColor: this.state.default_color }} onPress={this.toggleModalOfMoreSettings}>
-                        <Text style={{color: "#fff"}}>Close</Text>
+                        <Text style={{color: "#fff"}}>{this.state.language.closing}</Text>
                     </Button>
                 </View>
             </Modal>
@@ -819,18 +817,19 @@ class AppSettingsComponents extends Component {
     }
 
     render() {
+        
+        var language = this.state.language;
+        
         return(
             <SafeAreaView style={{...styles.container_fluid, backgroundColor: styles.direct.color.white }}>
-                
-               
-                
-                 <ScrollView contentContainerStyle={{...styles.container1}}>
+                                
+                <ScrollView contentContainerStyle={{...styles.container1}}>
                     {this.state.isConnected? "" : this.AnimatedBoxforInternetWarning()} 
 
                     <View  style={{...styles.space_bottom_25, flex: 1, flexDirection: "column", gap: 0, marginTop: 35 }}>
                         <View style={{ height: 240, marginBottom: 30 }}>
                             <View style={{...styles.inputLabel}}>
-                                <Text style={styles.inputLabelText}>Company Logo</Text>
+                                <Text style={styles.inputLabelText}>{language.company_logo}</Text>
                             </View>
                             <TouchableOpacity 
                                 style={{width: "100%",  marginTop: 5, flexDirection: "row",  justifyContent: "center"}}
@@ -849,11 +848,11 @@ class AppSettingsComponents extends Component {
                         <View style={{...styles.field_container}}>
                             
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Company Name</Text>
+                                <Text style={styles.inputLabelText}>{language.company_name}</Text>
                             </View>
                             
                             <View style={{...styles.textInputNoMarginsChanged, borderColor:(this.state.company_name_hlgt) ? 'red': '#dfdfdf' }}>
-                                <TextInput value={this.state.company_name} onChangeText={text => this.setChangedValue(text, this.setCompanyName)} style={{flex: 1}} placeholder={"Company Name"} />
+                                <TextInput value={this.state.company_name} onChangeText={text => this.setChangedValue(text, this.setCompanyName)} style={{flex: 1}} placeholder={language.company_name} />
                             </View>
 
                         </View>
@@ -861,10 +860,10 @@ class AppSettingsComponents extends Component {
                         
                         <View style={{...styles.field_container}}>
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Company City</Text>
+                                <Text style={styles.inputLabelText}>{language.company_city}</Text>
                             </View>
                             <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
-                                <TextInput value={this.state.company_city} onChangeText={text => this.setChangedValue(text, this.setCompanyCity)} style={{flex: 1}} placeholder={'Company City'} />
+                                <TextInput value={this.state.company_city} onChangeText={text => this.setChangedValue(text, this.setCompanyCity)} style={{flex: 1}} placeholder={language.company_city} />
                             </View>
                         </View>
 
@@ -886,7 +885,7 @@ class AppSettingsComponents extends Component {
                         <View style={{...styles.field_container}}>
                             
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Currency</Text>
+                                <Text style={styles.inputLabelText}>{language.currency}</Text>
                             </View>
                             
                             <this.CurrencySelector/>
@@ -896,7 +895,7 @@ class AppSettingsComponents extends Component {
                         <View style={{...styles.field_container}}>
                             
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Language</Text>
+                                <Text style={styles.inputLabelText}>{language.language}</Text>
                             </View>
                             
                             <this.LanguageSelector/>
@@ -905,43 +904,43 @@ class AppSettingsComponents extends Component {
 
                         <View style={{...styles.field_container}}>
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Vat Number</Text>
+                                <Text style={styles.inputLabelText}>{language.vat_number}</Text>
                             </View>
                             <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
-                                <TextInput value={this.state.company_vat_number} onChangeText={text => this.setChangedValue(text, this.setCompanyVatNumber)} style={{flex: 1}} placeholder={'Vat Number'} />
+                                <TextInput value={this.state.company_vat_number} onChangeText={text => this.setChangedValue(text, this.setCompanyVatNumber)} style={{flex: 1}} placeholder={language.vat_number} />
                             </View>
                         </View>
 
                         <View style={{...styles.field_container}}>
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Vat Percentage (%)</Text>
+                                <Text style={styles.inputLabelText}>{language.vat_percentage}</Text>
                             </View>
                             <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
-                                <TextInput value={this.state.vat_percentage} onChangeText={text => this.setChangedValue(text, this.setVatPercentage)} style={{flex: 1}} placeholder={'Vat Percentage'} keyboardType="numeric" />
+                                <TextInput value={this.state.vat_percentage} onChangeText={text => this.setChangedValue(text, this.setVatPercentage)} style={{flex: 1}} placeholder={language.vat_percentage} keyboardType="numeric" />
                             </View>
                         </View>
 
                         <View style={{...styles.field_container}}>
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Tax Percentage (%)</Text>
+                                <Text style={styles.inputLabelText}>{language.tax_percentage}</Text>
                             </View>
                             <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
-                                <TextInput value={this.state.tax_percentage} onChangeText={text => this.setChangedValue(text, this.seTaxPercentage)} style={{flex: 1}} placeholder={'Tax Percentage'} keyboardType="numeric" />
+                                <TextInput value={this.state.tax_percentage} onChangeText={text => this.setChangedValue(text, this.seTaxPercentage)} style={{flex: 1}} placeholder={language.tax_percentage} keyboardType="numeric" />
                             </View>
                         </View> 
 
                         <View style={{...styles.field_container}}>
                             <View style={styles.inputLabel}>
-                                <Text style={styles.inputLabelText}>Delivery or shipping cost</Text>
+                                <Text style={styles.inputLabelText}>{language.delivery_or_shipping}</Text>
                             </View>
                             <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
-                                <TextInput value={this.state.shipping_cost} onChangeText={text => this.setChangedValue(text, this.setShippingCost)} style={{flex: 1}} placeholder={'Delivery or shipping cost'} keyboardType="numeric" />
+                                <TextInput value={this.state.shipping_cost} onChangeText={text => this.setChangedValue(text, this.setShippingCost)} style={{flex: 1}} placeholder={language.delivery_or_shipping} keyboardType="numeric" />
                             </View>
                         </View> 
 
                         <View style={{...styles.field_container}}>
                             <View style={styles.inputLabel}>
-                                <View><Text style={styles.inputLabelText}>Affiliated to branch</Text></View>
+                                <View><Text style={styles.inputLabelText}>{language.affiliated_to_branch}</Text></View>
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-branch")}>
                                     <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>{this.state.language.add_new}</Text>
                                 </TouchableOpacity>
@@ -953,7 +952,7 @@ class AppSettingsComponents extends Component {
                         
                         <View style={{...styles.field_container}}>
                             <View style={styles.inputLabel}>
-                                <View><Text style={styles.inputLabelText}>Default paper size for receipts</Text></View> 
+                                <View><Text style={styles.inputLabelText}>{language.default_paper_receipts}</Text></View> 
                             </View>
                             <View style={{...styles.textInputNoMarginsPaddingChanged, borderColor: '#dfdfdf' }}>
                                 <this.AllPaperSizeSelector /> 
@@ -962,7 +961,7 @@ class AppSettingsComponents extends Component {
 
                         <View style={{...styles.field_container}}>
                             <View style={styles.inputLabel}>
-                                <View><Text style={styles.inputLabelText}>Default paper size for reports</Text></View> 
+                                <View><Text style={styles.inputLabelText}>{language.default_paper_report}</Text></View> 
                             </View>
                             <View style={{...styles.textInputNoMarginsPaddingChanged, borderColor: '#dfdfdf' }}>
                                 <this.AllPaperSizeSelector type="report" /> 
@@ -974,7 +973,7 @@ class AppSettingsComponents extends Component {
                         <View style={{...styles.field_containerx}}>
                             <View style={styles.inputLabel}>
                                 <TouchableOpacity onPress={this.toggleModalOfMoreSettings}>
-                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>Sales Invoice Settings</Text>
+                                    <Text style={{color: "#0B4BAA", fontWeight: "bold"}}>{language.sales_invoice_settings}</Text>
                                 </TouchableOpacity>
                             </View> 
                         </View> 
