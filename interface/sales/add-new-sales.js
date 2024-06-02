@@ -309,8 +309,8 @@ class AddNewSalesInvoiceComponents extends Component {
             share_is_pressed: false, 
             print_is_pressed: false, 
 
-            doc_id: "77251nyimvkykg617149332153532579",
-            invoices_details: [{"application_id": "663637096b3ae0ea71feccee", "branch": {"__v": 0, "_id": "6636370e6b3ae0ea71feccf9", "application_id": "", "branch_address": "", "branch_city": "", "branch_country": "", "branch_name": "Main Branch", "branch_number": "", "created_by": [Object], "created_date": null, "local_id": "000000012345_default_branch", "note": "", "updated_by": [Object], "updated_date": null}, "created_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "created_date": 1714933237452, "doc_id": "77251nyimvkykg617149332153532579", "doc_type": 0, "is_out": true, "local_id": "71296wvkgn6ybm1m17149332374522483", "price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}, "product": {"default_discount": [Object], "local_id": "57814hlhexwck2217148290812061323", "name": "Temaki"}, "quantity": 1, "subtotal": 15, "total_cost": 8, "total_price": 15, "total_quantity": 1, "updated_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "updated_date": 1714933237452, "updated_discount": {"is_percentage": false, "percentage": 0, "value": 0}, "updated_price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}}, {"application_id": "663637096b3ae0ea71feccee", "branch": {"__v": 0, "_id": "6636370e6b3ae0ea71feccf9", "application_id": "", "branch_address": "", "branch_city": "", "branch_country": "", "branch_name": "Main Branch", "branch_number": "", "created_by": [Object], "created_date": null, "local_id": "000000012345_default_branch", "note": "", "updated_by": [Object], "updated_date": null}, "created_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "created_date": 1714933237452, "doc_id": "77251nyimvkykg617149332153532579", "doc_type": 0, "is_out": true, "local_id": "4899b9q8obkt62c17149332374521979", "price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}, "product": {"default_discount": [Object], "local_id": "57814hlhexwck2217148290812061323", "name": "Temaki"}, "quantity": "2", "subtotal": 30, "total_cost": 16, "total_price": 30, "total_quantity": 2, "updated_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "updated_date": 1714933237452, "updated_discount": {"is_percentage": false, "percentage": 0, "value": 0}, "updated_price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}}, {"application_id": "663637096b3ae0ea71feccee", "branch": {"__v": 0, "_id": "6636370e6b3ae0ea71feccf9", "application_id": "", "branch_address": "", "branch_city": "", "branch_country": "", "branch_name": "Main Branch", "branch_number": "", "created_by": [Object], "created_date": null, "local_id": "000000012345_default_branch", "note": "", "updated_by": [Object], "updated_date": null}, "created_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "created_date": 1714933237452, "doc_id": "77251nyimvkykg617149332153532579", "doc_type": 0, "is_out": true, "local_id": "16550abj3wag54q717149332374522442", "price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}, "product": {"default_discount": [Object], "local_id": "57814hlhexwck2217148290812061323", "name": "Temaki"}, "quantity": "4", "subtotal": 60, "total_cost": 32, "total_price": 60, "total_quantity": 4, "updated_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "updated_date": 1714933237452, "updated_discount": {"is_percentage": false, "percentage": 0, "value": 0}, "updated_price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}}],
+            //doc_id: "77251nyimvkykg617149332153532579",
+            // invoices_details:[{"application_id": "663637096b3ae0ea71feccee", "branch": {"__v": 0, "_id": "6636370e6b3ae0ea71feccf9", "application_id": "", "branch_address": "", "branch_city": "", "branch_country": "", "branch_name": "Main Branch", "branch_number": "", "created_by": [Object], "created_date": null, "local_id": "000000012345_default_branch", "note": "", "updated_by": [Object], "updated_date": null}, "created_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "created_date": 1714933237452, "doc_id": "77251nyimvkykg617149332153532579", "doc_type": 0, "is_out": true, "local_id": "71296wvkgn6ybm1m17149332374522483", "price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}, "product": {"default_discount": [Object], "local_id": "57814hlhexwck2217148290812061323", "name": "Temaki"}, "quantity": 1, "subtotal": 15, "total_cost": 8, "total_price": 15, "total_quantity": 1, "updated_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "updated_date": 1714933237452, "updated_discount": {"is_percentage": false, "percentage": 0, "value": 0}, "updated_price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}}, {"application_id": "663637096b3ae0ea71feccee", "branch": {"__v": 0, "_id": "6636370e6b3ae0ea71feccf9", "application_id": "", "branch_address": "", "branch_city": "", "branch_country": "", "branch_name": "Main Branch", "branch_number": "", "created_by": [Object], "created_date": null, "local_id": "000000012345_default_branch", "note": "", "updated_by": [Object], "updated_date": null}, "created_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "created_date": 1714933237452, "doc_id": "77251nyimvkykg617149332153532579", "doc_type": 0, "is_out": true, "local_id": "4899b9q8obkt62c17149332374521979", "price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}, "product": {"default_discount": [Object], "local_id": "57814hlhexwck2217148290812061323", "name": "Temaki"}, "quantity": "2", "subtotal": 30, "total_cost": 16, "total_price": 30, "total_quantity": 2, "updated_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "updated_date": 1714933237452, "updated_discount": {"is_percentage": false, "percentage": 0, "value": 0}, "updated_price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}}, {"application_id": "663637096b3ae0ea71feccee", "branch": {"__v": 0, "_id": "6636370e6b3ae0ea71feccf9", "application_id": "", "branch_address": "", "branch_city": "", "branch_country": "", "branch_name": "Main Branch", "branch_number": "", "created_by": [Object], "created_date": null, "local_id": "000000012345_default_branch", "note": "", "updated_by": [Object], "updated_date": null}, "created_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "created_date": 1714933237452, "doc_id": "77251nyimvkykg617149332153532579", "doc_type": 0, "is_out": true, "local_id": "16550abj3wag54q717149332374522442", "price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}, "product": {"default_discount": [Object], "local_id": "57814hlhexwck2217148290812061323", "name": "Temaki"}, "quantity": "4", "subtotal": 60, "total_cost": 32, "total_price": 60, "total_quantity": 4, "updated_by": {"email": "moun2030@gmail.com", "id": "6636370a6b3ae0ea71feccf0", "name": "Montasser"}, "updated_date": 1714933237452, "updated_discount": {"is_percentage": false, "percentage": 0, "value": 0}, "updated_price": {"cost": "8", "factor": 1, "local_id": "54148gxgmfk07ix1714829081206601", "name": "", "sale": "15", "unit_name": "Gram", "unit_short": "gm"}}],
         } 
 
     } 
@@ -321,7 +321,7 @@ class AddNewSalesInvoiceComponents extends Component {
         
         var doc_width = this.state.settings.selected_paper_size_for_receipts.value || "280px";
         var fsize = "12";
-        var currency = this.state.settings.selected_currency.value || "$";
+        var currency = this.state.settings == null ? "$": this.state.settings.selected_currency.value;
         var company_name = this.state.settings.company_name || "";
         var company_address = {
             city: this.state.settings.company_city || "",
@@ -329,7 +329,7 @@ class AddNewSalesInvoiceComponents extends Component {
         };
         var invoice_number = this.state.doc_number || "";
         var vat_number = this.state.settings.company_vat_number || "";
-        var customer = this.state.selected_customer || "";
+        var customer = this.state.selected_customer;
         var logo_src = this.state.settings.file.base_64 || "";
         var invoice_date = "";
 
@@ -457,10 +457,7 @@ class AddNewSalesInvoiceComponents extends Component {
                         </div>`;
             }
 
-            // Custom Data if any
-            console.log("---------------------------");
-            console.log(customer);
-            console.log("---------------------------");
+            // Custom Data if any 
             if( customer != null ) { 
                 html +=`<div class="content text-center line-bottom">`;
                 html +=`<p>
@@ -549,12 +546,12 @@ class AddNewSalesInvoiceComponents extends Component {
             html += `</div>`;
             
             
-            html +=`<div class="text-center p-20">`;
+            //html +=`<div class="text-center p-20">`;
 
-            html +=`<div>Barcode</div>`;
-            html +=`<div class="mt-10">QR Code</div>`;
+           // html +=`<div>Barcode</div>`;
+           // html +=`<div class="mt-10">QR Code</div>`;
 
-            html +=`</div>`;
+           // html +=`</div>`;
 
 
 
@@ -1261,7 +1258,7 @@ class AddNewSalesInvoiceComponents extends Component {
         return (
             <Modal isVisible={isVisible} animationType="slide">
                 <View style={{...styles.modalContainer}}>
-                    <Text style={{fontWeight: "bold"}}>Shipping or Delivery Cost</Text>
+                    <Text style={{fontWeight: "bold"}}>{this.state.language.delivery_cost}</Text>
 
                     <View style={{marginTop: 10, color: "#999"}}>       
                         
@@ -1291,18 +1288,18 @@ class AddNewSalesInvoiceComponents extends Component {
                  <View style={{...styles.modalContainer}}>
                     
                     <View style={{marginBottom: 15, width: "100%"}}>
-                        <Text style={{ fontWeight: "bold", textAlign: "center", }}>Invoice Vat</Text>
+                        <Text style={{ fontWeight: "bold", textAlign: "center", }}>{this.state.language.invoice_vat}</Text>
                     </View>
                     
                     <TouchableOpacity onPress={() => { this.setInvoiceVatDiscount(!this.state.vat.is_percentage); }} style={{flexDirection: "row", justifyContent: "flex-start", alignItems: "center"}}>
                         <Checkbox status={this.state.vat.is_percentage ? 'checked' : 'unchecked'} />
-                        <Text>Enable Percentage</Text>
+                        <Text>{this.state.language.enable_percentage}</Text>
                     </TouchableOpacity>
 
 
                     <TouchableOpacity onPress={() => { this.setInvoiceVatIncludingTotal(!this.state.vat.total_including_vat); }} style={{flexDirection: "row", justifyContent: "flex-start", alignItems: "center"}}>
                         <Checkbox status={this.state.vat.total_including_vat ? 'checked' : 'unchecked'} />
-                        <Text>Total Including Vat</Text>
+                        <Text>{this.state.language.total_include_vat}</Text>
                     </TouchableOpacity>
 
                     
@@ -1321,10 +1318,10 @@ class AddNewSalesInvoiceComponents extends Component {
 
                     <View style={{flexDirection: "row", gap: 10, marginTop: 20}}>
                         <Button onPress={this.closeInvoiceVatModal} mode="contained" style={{borderColor: this.state.default_color, borderWidth: 1, borderRadius: 0, backgroundColor: "transparent"}}>
-                            <Text style={{color: this.state.default_color}}>Cancel</Text>
+                            <Text style={{color: this.state.default_color}}>{this.state.language.cancel}</Text>
                         </Button>
                         <Button onPress={this.applyChangesVatOnInvoice} mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 0, flexGrow: 1}}>
-                            <Text style={{color: "#fff"}}>Apply Changes</Text>
+                            <Text style={{color: "#fff"}}>{this.state.language.apply_change}</Text>
                         </Button>
                     </View>
                  </View>
@@ -1340,12 +1337,12 @@ class AddNewSalesInvoiceComponents extends Component {
                  <View style={{...styles.modalContainer}}>
                     
                     <View style={{marginBottom: 15, width: "100%"}}>
-                        <Text style={{ fontWeight: "bold", textAlign: "center", }}>Invoice Tax</Text>
+                        <Text style={{ fontWeight: "bold", textAlign: "center", }}>{this.state.language.invoice_tax}</Text>
                     </View>
                     
                     <TouchableOpacity onPress={() => { this.setInvoiceTaxDiscount(!this.state.tax.is_percentage); }} style={{flexDirection: "row", justifyContent: "flex-start", alignItems: "center"}}>
                         <Checkbox status={this.state.tax.is_percentage ? 'checked' : 'unchecked'} />
-                        <Text>Enable Percentage</Text>
+                        <Text>{this.state.language.enable_percentage}</Text>
                     </TouchableOpacity>
 
                     <View style={{marginTop: 10, color: "#999"}}>       
@@ -1363,10 +1360,10 @@ class AddNewSalesInvoiceComponents extends Component {
 
                     <View style={{flexDirection: "row", gap: 10, marginTop: 20}}>
                         <Button onPress={this.closeInvoiceTaxModal} mode="contained" style={{borderColor: this.state.default_color, borderWidth: 1, borderRadius: 0, backgroundColor: "transparent"}}>
-                            <Text style={{color: this.state.default_color}}>Cancel</Text>
+                            <Text style={{color: this.state.default_color}}>{this.state.language.cancel}</Text>
                         </Button>
                         <Button onPress={this.applyChangesTaxOnInvoice} mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 0, flexGrow: 1}}>
-                            <Text style={{color: "#fff"}}>Apply Changes</Text>
+                            <Text style={{color: "#fff"}}>{this.state.language.apply_change}</Text>
                         </Button>
                     </View>
                  </View>
@@ -1382,12 +1379,12 @@ class AddNewSalesInvoiceComponents extends Component {
                  <View style={{...styles.modalContainer}}>
                     
                     <View style={{marginBottom: 15, width: "100%"}}>
-                        <Text style={{ fontWeight: "bold", textAlign: "center", }}>Discount on Invoice Total</Text>
+                        <Text style={{ fontWeight: "bold", textAlign: "center", }}>{this.state.language.discount_invoice}</Text>
                     </View>
                     
                     <TouchableOpacity onPress={() => { this.setInvoicePercentageDiscount(!this.state.discount.is_percentage); }} style={{flexDirection: "row", justifyContent: "flex-start", alignItems: "center"}}>
                         <Checkbox status={this.state.discount.is_percentage ? 'checked' : 'unchecked'} />
-                        <Text>Enable Percentage</Text>
+                        <Text>{this.state.language.enable_percentage}</Text>
                     </TouchableOpacity>
 
                     <View style={{marginTop: 10, color: "#999"}}>       
@@ -1405,10 +1402,10 @@ class AddNewSalesInvoiceComponents extends Component {
 
                     <View style={{flexDirection: "row", gap: 10, marginTop: 20}}>
                         <Button onPress={this.closeInvoiceDiscountModal} mode="contained" style={{borderColor: this.state.default_color, borderWidth: 1, borderRadius: 0, backgroundColor: "transparent"}}>
-                            <Text style={{color: this.state.default_color}}>Cancel</Text>
+                            <Text style={{color: this.state.default_color}}>{this.state.language.cancel}</Text>
                         </Button>
                         <Button onPress={this.applyChangesDiscountOnInvoice} mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 0, flexGrow: 1}}>
-                            <Text style={{color: "#fff"}}>Apply Changes</Text>
+                            <Text style={{color: "#fff"}}>{this.state.language.apply_change}</Text>
                         </Button>
                     </View>
                  </View>
@@ -1424,12 +1421,12 @@ class AddNewSalesInvoiceComponents extends Component {
                  <View style={{...styles.modalContainer, flex: 1}}>
                     <ScrollView style={{flex: 1}}>
                         <View>
-                            <Text style={{fontWeight:"bold", fontSize: 18}}>Add Customer</Text>
+                            <Text style={{fontWeight:"bold", fontSize: 18}}>{this.state.language.add_customer}</Text>
                         </View>
                         {
                              this.state.customers.length ?
                             <View style={{marginTop: 10, borderColor:"#eee", borderWidth: 1, padding: 10, borderRadius: 8}}>
-                                <TextInput onChangeText={(text) => this.filter_customers_in_search(text)}  style={{flex: 1, color:"#999"}} placeholder="Search for customer by name" />
+                                <TextInput onChangeText={(text) => this.filter_customers_in_search(text)}  style={{flex: 1, color:"#999"}} placeholder={this.state.language.search_customer} />
                             </View>: ""
                         }
                         
@@ -1475,7 +1472,7 @@ class AddNewSalesInvoiceComponents extends Component {
                         </View>
                     </ScrollView>
                     <Button onPress={this.setOpenCustomerModal} style={{backgroundColor: this.state.default_color, color: "#fff", borderRadius: 3}} mode="contained">
-                        <Text>Cancel</Text>
+                        <Text>{this.state.language.cancel}</Text>
                     </Button>
                 </View>
                 
@@ -1601,7 +1598,7 @@ class AddNewSalesInvoiceComponents extends Component {
                     <View>
                         <Text style={{textAlign: "center"}}> 
                             <Text style={{fontWeight:"bold"}}>{productName}</Text>
-                            {" "} Quantity
+                            {" "} {this.state.language.quantity}
                         </Text>
                     </View>
                     
@@ -1623,7 +1620,7 @@ class AddNewSalesInvoiceComponents extends Component {
                     </View>
 
                     <View style={{flex: 1, marginTop: 0}}>
-                        <Button onPress={this.storeQuantityToArray} mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 4, padding: 2}}>Close</Button>
+                        <Button onPress={this.storeQuantityToArray} mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 4, padding: 2}}>{this.state.language.close_}</Button>
                     </View>
 
                 </View>
@@ -1851,7 +1848,7 @@ class AddNewSalesInvoiceComponents extends Component {
         return (
             <Modal isVisible={isVisible} animationType="slide">
                 <View style={{...styles.modalContainer, flex: 1}}>
-                <Text>Option Modal</Text>
+                <Text>{this.state.language.option_modal}</Text>
                 </View>
             </Modal>
         );
@@ -1864,10 +1861,10 @@ class AddNewSalesInvoiceComponents extends Component {
             <Modal isVisible={isVisible} animationType="slide">
                 <View style={{...styles.modalContainer, flex: 1}}>
                 
-                    <Text style={{fontWeight:"bold", marginBottom: 20, justifyContent: "center", textAlign:"center", fontSize: 20}}>Custom {this.state.item_name} Options</Text>
+                    <Text style={{fontWeight:"bold", marginBottom: 20, justifyContent: "center", textAlign:"center", fontSize: 20}}>Custom {this.state.item_name} {this.state.language.options}</Text>
                     <ScrollView>
-                    <Text style={{fontWeight:"bold", marginBottom: 10}}>Default Prices</Text>
-                    <Text style={{marginBottom: 20, color: "#999"}}>Select your price by clicking on one of the options from the list below, according to the unit name.</Text>
+                    <Text style={{fontWeight:"bold", marginBottom: 10}}>{this.state.language.default_price}</Text>
+                    <Text style={{marginBottom: 20, color: "#999"}}>{this.state.language.selected_prce_mtl}</Text>
                     
                     {
                         this.state.selected_product_prices.map( (x, i) => { 
@@ -1888,12 +1885,12 @@ class AddNewSalesInvoiceComponents extends Component {
                     }
 
                     <View style={{marginTop: 20, color: "#999"}}>
-                        <Text style={{fontWeight:"bold"}}>Custom Price</Text>
-                        <Text style={{marginTop: 5, color: "#999"}}>The new price will only apply for this invoice according to the latest selected unit.</Text>
+                        <Text style={{fontWeight:"bold"}}>{this.state.language.custom_price}</Text>
+                        <Text style={{marginTop: 5, color: "#999"}}>{this.state.language.new_apply_price}</Text>
                         <View style={{borderWidth: 1, borderColor: '#eee', height: 35, marginTop: 8, padding: 8}}>
                             <TextInput style={{ flexGrow: 1, textAlign: "left"}} 
                                 keyboardType="numeric" // Use 'numeric' for better compatibility
-                                placeholder="write your new price here."  // Ensure value is a string
+                                placeholder={this.state.language.write_new_prce}  // Ensure value is a string
                                 value={this.state.customPrice.toString()} 
                                 onChangeText={text => this.validateInputNumeric(this.setCustomPrice, text)}
                             />
@@ -1904,14 +1901,14 @@ class AddNewSalesInvoiceComponents extends Component {
                          
                         <View style={{...styles.field_container}}>
                             <View style={{flexDirection: "row", height: 40, flex: 1, justifyContent: "space-between", alignItems: "center"}}>
-                                <Text style={styles.inputLabelTextSales}>Custom Discount</Text>
+                                <Text style={styles.inputLabelTextSales}>{this.state.language.custom_discount}</Text>
                                 
                                 <TouchableOpacity onPress={() => { this.setPercentageDiscount(!this.state.enabled_discount_percentage); }} style={{flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
                                     <Checkbox status={this.state.enabled_discount_percentage ? 'checked' : 'unchecked'} />
-                                    <Text style={{fontSize: 12}}>Percentage(%)</Text>                                
+                                    <Text style={{fontSize: 12}}>{this.state.language.percentage}</Text>                                
                                 </TouchableOpacity>
                             </View> 
-                            <Text style={{marginBottom: 20, color: "#999", flexGrow: 1}}>The discount will be applied to each individual unit, rather than to the total number of units purchased.</Text>
+                            <Text style={{marginBottom: 20, color: "#999", flexGrow: 1}}>{this.state.language.dscnt_applied}</Text>
                             <View style={styles.textInputNoMargins}>
                                 <TextInput value={this.state.discountValue.toString()} keyboardType="numeric" onChangeText={text => this.validateInputNumeric(this.setDiscountValue, text)} style={{flex: 2}} placeholder={this.state.language.discount_value} />
                                 {
@@ -1929,10 +1926,10 @@ class AddNewSalesInvoiceComponents extends Component {
                     </ScrollView>
                     <View style={{flexDirection: "row", gap: 10}}>
                         <Button onPress={this.close_price_modal} mode="contained" style={{borderColor: this.state.default_color, borderWidth: 1, borderRadius: 0, backgroundColor: "transparent"}}>
-                            <Text style={{color: this.state.default_color}}>Cancel</Text>
+                            <Text style={{color: this.state.default_color}}>{this.state.language.cancel}</Text>
                         </Button>
                         <Button onPress={this.applyPriceOptionsChange} mode="contained" style={{backgroundColor: this.state.default_color, borderRadius: 0, flexGrow: 1}}>
-                            <Text style={{color: "#fff"}}>Apply Changes</Text>
+                            <Text style={{color: "#fff"}}>{this.state.language.apply_change}</Text>
                         </Button>
                     </View>
                 </View>
@@ -1951,7 +1948,7 @@ class AddNewSalesInvoiceComponents extends Component {
                     <View>
                         <View style={{justifyContent:"space-between", flexDirection: "row", alignItems: "center"}}>
                             <Text style={{fontWeight: "bold", fontSize: 18}}>
-                                Products
+                                {this.state.language.product_s}
                             </Text> 
                             {/*<TouchableOpacity onPress={this.setMultipleItems} style={{flexDirection:"row", alignItems: "center"}}>
                                 <Checkbox status={this.state.multiple_items ? "checked": ""} />
@@ -1964,14 +1961,14 @@ class AddNewSalesInvoiceComponents extends Component {
                     </View>
 
                     <View style={{marginTop: 10, borderColor:"#eee", borderWidth: 1, borderRadius: 8, padding: 5}}>
-                        <TextInput onChangeText={(text) => this.filter_products_in_search(text)}  style={{color:"#999"}} placeholder="Search for products by name" />
+                        <TextInput onChangeText={(text) => this.filter_products_in_search(text)}  style={{color:"#999"}} placeholder={this.state.language.prd_search} />
                     </View> 
 
                     <ScrollView style={{padding: 0, gap: 5, marginTop: 15}}>
                         <View style={{flexGrow: 1, flex: 1}}>
                         {
                             ( ! this.state.products.length ) ?
-                            <View><Text style={{color: "#999"}}>You don't have products</Text></View>:
+                            <View><Text style={{color: "#999"}}>{this.state.language.y_d_p}</Text></View>:
                             this.state.products.map((productObject, index) => {
 
                                 // check if current row is highlighted
@@ -2013,7 +2010,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                         {
                                             ( selected_price != null ) ?
                                             <Text style={{ color: "#999", flexDirection: "row"}}>
-                                                {"EGP "}
+                                                {this.state.settings == null ? "$": this.state.settings.selected_currency.value + " "}
                                                 {selected_price.sales_price}
                                                 {".00"}
                                             </Text> : ""
@@ -2027,8 +2024,8 @@ class AddNewSalesInvoiceComponents extends Component {
                         
                     </ScrollView> 
                     <View style={{marginTop: 10, justifyContent: "center", gap: 10, flexDirection: "row"}}>
-                        <Button onPress={this.setOpenItemModal} mode="contained" style={{borderRadius: 0, flexGrow: 1, backgroundColor: this.state.default_color}}>Cancel</Button>
-                        <Button onPress={this.addSelectedItems} mode="contained" style={{borderRadius: 0, flexGrow: 1, backgroundColor: this.state.default_color}}>Add</Button>
+                        <Button onPress={this.setOpenItemModal} mode="contained" style={{borderRadius: 0, flexGrow: 1, backgroundColor: this.state.default_color}}>{this.state.language.cancel}</Button>
+                        <Button onPress={this.addSelectedItems} mode="contained" style={{borderRadius: 0, flexGrow: 1, backgroundColor: this.state.default_color}}>{this.state.language.add}</Button>
                     </View>
 
                 </View>
@@ -2289,8 +2286,7 @@ class AddNewSalesInvoiceComponents extends Component {
 
     setLanguage = async (lang ) => {
  
-        I18nManager.forceRTL(lang.is_rtl);
-        
+        I18nManager.forceRTL(lang.is_rtl); 
         this.setState({
             language:lang
         });
@@ -2690,7 +2686,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                
                                 
                                 <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
-                                    <Text style={{fontWeight: "bold"}}>Order Status</Text>
+                                    <Text style={{fontWeight: "bold"}}>{this.state.language.order_status}</Text>
                                     <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
                                         <this.AllInvoiceStatusSelector/>
                                     </View> 
@@ -2699,7 +2695,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                 {
                                     this.state.settings != null && this.state.settings.sales_options.enable_order_type ?
                                         <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
-                                            <Text style={{fontWeight: "bold"}}>Order Type</Text>
+                                            <Text style={{fontWeight: "bold"}}>{this.state.language.order_type}</Text>
                                             <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
                                                 <this.AllOrdersTypesSelector/>
                                             </View> 
@@ -2709,7 +2705,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                 
 
                                 <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
-                                    <Text style={{fontWeight: "bold"}}>Branch</Text>
+                                    <Text style={{fontWeight: "bold"}}>{this.state.language.branch}</Text>
                                     <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
                                         <this.AllBranchesSelector/>
                                     </View> 
@@ -2718,7 +2714,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                 {
                                     this.state.settings != null && this.state.settings.sales_options.enable_payment_status ?
                                         <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
-                                            <Text style={{fontWeight: "bold"}}>Payment Status</Text>
+                                            <Text style={{fontWeight: "bold"}}>{this.state.language.payment_status}</Text>
                                             <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
                                                 <this.AllPaymentStatusSelector/>
                                             </View> 
@@ -2732,7 +2728,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                 {
                                     this.state.settings != null && this.state.settings.sales_options.enable_payment_method ?
                                         <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
-                                            <Text style={{fontWeight: "bold"}}>Payment Method</Text>
+                                            <Text style={{fontWeight: "bold"}}>{this.state.language.payment_method}</Text>
                                             <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
                                                 <this.AllPaymentMethodSelector/>
                                             </View> 
@@ -2743,14 +2739,14 @@ class AddNewSalesInvoiceComponents extends Component {
                                 <View>
                                     <View style={{flexDirection: "row", gap: 10, marginTop: 20, alignItems: "center"}}> 
                                         <Text style={{fontWeight: "bold"}}>
-                                            Items
+                                            {this.state.language.items}
                                         </Text>
                                         <TouchableOpacity onPress={this.add_new_item} style={{backgroundColor: this.state.default_color, marginLeft:"auto", flexDirection: "row", alignItems: "center", paddingTop: 5,paddingBottom: 5,paddingLeft: 10,paddingRight: 15,  borderRadius: 5, height: 35,}}>
                                             <Image
                                                 style={{width: 20, height: 20, marginRight: 3}}
                                                 source={require('./../../assets/icons/add-new-prdouct.png')}
                                             />
-                                            <Text style={{color: "#fff"}}>Add New Item</Text>
+                                            <Text style={{color: "#fff"}}>{this.state.language.add_new_item}</Text>
                                         </TouchableOpacity>
                                     </View>
                                     
@@ -2767,22 +2763,22 @@ class AddNewSalesInvoiceComponents extends Component {
                                             <View style={{flex: 1, flexDirection: "row", backgroundColor: this.state.default_color, padding: 5, gap: 10, borderRadius: 0 , paddingBottom:5, paddingTop:5}}>
                                                 <View style={{flex: 3}}>
                                                     <Text style={{color: "#fff", textAlign: "center"}}>
-                                                        Items
+                                                        {this.state.language.items}
                                                     </Text>
                                                 </View>
                                                 <View style={{flex: 1}}>
                                                     <Text style={{color: "#fff", textAlign: "center"}}>
-                                                        QTY
+                                                    {this.state.language.qty}
                                                     </Text>
                                                 </View>
                                                 <View style={{flex: 1}}>
                                                     <Text style={{color: "#fff", textAlign: "center"}}>
-                                                        Price
+                                                    {this.state.language.price}
                                                     </Text>
                                                 </View> 
                                                 <View style={{flex: 1}}>
                                                     <Text style={{color: "#fff", textAlign: "center"}}>
-                                                        Total
+                                                    {this.state.language.total}  
                                                     </Text>
                                                 </View>
                                             </View>
@@ -2791,7 +2787,9 @@ class AddNewSalesInvoiceComponents extends Component {
                                         {
                                             ( ! this.state.invoices_details.length ) ?
                                             <View style={{padding: 10, justifyContent: "center", alignItems: "center"}}>
-                                                <Text style={{color: "#999", textAlign: "center"}}>There are no items on this invoice. Click on the "Add New Item"</Text>
+                                                <Text style={{color: "#999", textAlign: "center"}}>
+                                                    {this.state.language.there_is_no_item}
+                                                </Text>
                                             </View>:
                                             this.state.invoices_details.map( (item, index) => {
                                                  
@@ -2852,11 +2850,11 @@ class AddNewSalesInvoiceComponents extends Component {
                                 <View style={{borderWidth: 1,borderStyle: "dashed", borderColor: "#dfdfdf", padding: 5, backgroundColor: "#fff", marginTop: 25}}>
                                     
                                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
-                                        <Text>Subtotal</Text>
+                                        <Text>{this.state.language.subtotal}</Text>
                                         <Text style={{fontWeight: "bold"}}>${this.state.subtotal == "" ? "0.00" : this.state.subtotal}</Text>
                                     </View>
                                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
-                                        <Text>Discount</Text>
+                                        <Text>{this.state.language.discount}</Text>
                                         <TouchableOpacity onPress={this.setOpenDiscountInvoiceModal}>
                                             <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.discount.value == ""? "0.00": this.state.discount.value }</Text>
                                         </TouchableOpacity> 
@@ -2866,7 +2864,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                     {
                                         this.state.settings != null && this.state.settings.sales_options.enable_tax ?
                                             <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
-                                                <Text>Tax</Text>
+                                                <Text>{this.state.language.tax}</Text>
                                                 <TouchableOpacity onPress={this.setOpenTaxInvoiceModal}>
                                                     <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.tax.value ==""? "0.00": this.state.tax.value}</Text>
                                                 </TouchableOpacity> 
@@ -2878,7 +2876,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                     {
                                         this.state.settings != null && this.state.settings.sales_options.enable_vat ?
                                             <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomColor: "#dfdfdf", borderStyle: "dashed", borderBottomWidth: 1, padding: 10}}>
-                                                <Text>Vat</Text>
+                                                <Text>{this.state.language.vat}</Text>
                                                 <TouchableOpacity onPress={this.setOpenVatInvoiceModal}>
                                                     <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.vat.value == "" ?"0.00": this.state.vat.value}</Text>
                                                 </TouchableOpacity> 
@@ -2890,7 +2888,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                     {
                                         this.state.settings != null && this.state.settings.sales_options.enable_shipping_cost ?
                                             <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 10}}>
-                                                <Text>Shipping or Delivery Cost</Text>
+                                                <Text>{this.state.language.delivery_cost}</Text>
                                                 <TouchableOpacity onPress={this.setOpenShippingInvoiceModal}>
                                                     <Text style={{fontWeight: "bold", backgroundColor: this.state.default_color, padding:5, color: "#fff", borderRadius:3}}>${this.state.shipping_or_delivery_cost == ""? "0.00": this.state.shipping_or_delivery_cost}</Text>
                                                 </TouchableOpacity> 
@@ -2905,7 +2903,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                 <View style={{borderWidth: 1,borderStyle: "dashed", borderColor: "#dfdfdf", padding: 5, backgroundColor: "#f9f9f9", marginTop: 25}}>
                                     
                                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 10}}>
-                                        <Text style={{fontWeight: "bold"}}>Total</Text> 
+                                        <Text style={{fontWeight: "bold"}}>{this.state.language.total}</Text> 
                                         <Text style={{fontWeight: "bold", fontSize: 18, color:this.state.default_color}}>${this.state.total == "" ?"0.00": this.state.total}</Text>
                                     </View> 
 
@@ -2916,7 +2914,7 @@ class AddNewSalesInvoiceComponents extends Component {
                                 {
                                     this.state.settings != null && this.state.settings.sales_options.enable_tracking_number ?
                                         <View style={{ gap: 10, marginTop: 30, flex: 1, flexDirection: "column", overflow: "hidden"}}> 
-                                            <Text style={{fontWeight: "bold"}}>Order Tracking Number</Text>
+                                            <Text style={{fontWeight: "bold"}}>{this.state.language.tracking_number_order}</Text>
                                             <View style={{...styles.textInputNoMarginsChanged, borderColor:'#dfdfdf' }}>
                                                 <TextInput value={this.state.tracking_number} onChangeText={text => this.setChangedValue(text, this.setOrderTrackingNumber)} style={{flex: 1}} placeholder={this.state.language.tracking_number} />
                                             </View>

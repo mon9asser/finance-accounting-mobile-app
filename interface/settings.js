@@ -77,10 +77,6 @@ class AppSettingsComponents extends Component {
                 {
                     value: "en",
                     label: "English"
-                },
-                {
-                    value: "ar",
-                    label: "Arabic"
                 }
             ],
             print_reports: [

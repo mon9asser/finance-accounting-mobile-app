@@ -33,6 +33,7 @@ import { EditCustomerComponents} from "./interface/customers/edit-customer.js";
 import { CustomersComponents } from "./interface/customers/all-customers.js";
 
 import {AddNewSalesInvoiceComponents} from "./interface/sales/add-new-sales.js";
+import { SalesInvoicesComponents } from "./interface/sales/all-sales.js";
 
 import {HomeComponents} from './interface/home.js';
 import {LoginComponents} from './interface/user/login.js';
@@ -295,7 +296,7 @@ const App = () => {
                 <Stack.Screen name="edit-customer" options={{headerTitle: language.edit_customer}} component={EditCustomerComponents} initialParams={{ langs: language }}/>
 
                 {/* Sales Invoices Screens */}
-                <Stack.Screen name="SalesInvoices" options={{headerTitle: language.sele_s}} component={CustomersComponents} initialParams={{ langs: language }}/>
+                <Stack.Screen name="SalesInvoices" options={{headerTitle: language.sales_invoice}} component={SalesInvoicesComponents} initialParams={{ langs: language }}/>
                 <Stack.Screen name="add-new-sales-invoice" options={{headerTitle: language.add_new_sales}} component={AddNewSalesInvoiceComponents} initialParams={{ langs: language }}/>
                 <Stack.Screen name="edit-sales-invoice" options={{headerTitle: language.edit_sales}} component={EditCustomerComponents} initialParams={{ langs: language }}/>
 
