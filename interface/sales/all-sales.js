@@ -131,10 +131,10 @@ class SalesInvoicesComponents extends PureComponent {
     }
 
     performDeletionAction = async (ids) => {
-
+        console.log(ids);
         // send request 
         var reqs = await SalesInvoiceInstance.delete_records(ids)
-        
+        console.log(reqs.is_error);
         if( reqs.is_error ) {
             Alert.alert(reqs.message);
             return;
@@ -143,7 +143,7 @@ class SalesInvoicesComponents extends PureComponent {
         if( reqs.login_redirect ) {
             Alert.alert(reqs.message);
             this.props.navigation.navigate("Login", {
-                redirect_to: "Products"
+                redirect_to: "Sales"
             });
             return;
         }
@@ -399,7 +399,7 @@ class SalesInvoicesComponents extends PureComponent {
 
         this.props.navigation.goBack(null);
 
-        this.props.navigation.navigate("edit-product", {
+        this.props.navigation.navigate("edit-sales", {
             item: item.item 
         });
 
@@ -435,6 +435,10 @@ class SalesInvoicesComponents extends PureComponent {
     }
 
     formatTimestamp = (timestamp) => {
+        if( timestamp == undefined ) {
+            return;
+        }  
+
         const differenceInSeconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
         const differenceInMinutes = Math.floor(differenceInSeconds / 60);
         const differenceInHours = Math.floor(differenceInMinutes / 60);
@@ -467,7 +471,7 @@ class SalesInvoicesComponents extends PureComponent {
     
     editThisItem = (item, prc_list) => { 
         this.props.navigation.goBack(null);
-        this.props.navigation.navigate("edit-product", {
+        this.props.navigation.navigate("edit-sales", {
             prices: prc_list,
             item: item 
         });
@@ -547,7 +551,7 @@ class SalesInvoicesComponents extends PureComponent {
                         </View>
                         <View style={{flex: 1, flexDirection:'row', justifyContent: 'space-between'}}>
                             <Text style={{color:"grey", marginTop: 5}}>
-                            {this.state.language.by}: {__name}
+                            {__name == "" ? "" :this.state.language.by + " :"} {__name}
                             </Text>
                             
                         </View>
@@ -633,9 +637,14 @@ class SalesInvoicesComponents extends PureComponent {
             return; 
         }
 
+        if(text.indexOf("#") != -1 ) {
+            text = text.replace(/#/g, "");
+        }
+ 
+
         var searched_items = all.filter( item => {
             
-            var index1 = item.product_name.indexOf(text); 
+            var index1 = item.invoice_number.indexOf(text); 
 
             if(index1 !== -1 ) {
                 return item; 
@@ -848,7 +857,7 @@ class SalesInvoicesComponents extends PureComponent {
 
                 <TouchableOpacity onPress={ this.select_all_records } style={{flexDirection: "row", alignItems: "center",  marginBottom: 10, marginLeft:-5}}>
                     <Checkbox status={this.state.checkbox_checked ? 'checked' : 'unchecked'} />
-                    <Text style={{color: "#999"}}>{this.state.language.select_all_products}</Text>                                
+                    <Text style={{color: "#999"}}>{this.state.language.select_all_sales}</Text>                                
                 </TouchableOpacity>
                 
                  
@@ -924,7 +933,7 @@ class SalesInvoicesComponents extends PureComponent {
                 { this.state.is_last_page ? <View style={{justifyContent: "center", alignItems: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.no_more_results}</Text></View> : <ActivityIndicator size={"small"} color={this.state.default_color} /> }
 
                 <View style={{flex: 1, marginTop: 15, borderTopColor: "#eee", borderTopWidth: 2, height: 40, alignItems:"center", flexDirection: "row", justifyContent: "space-between"}}>
-                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.all_data.flat().length} {this.state.all_data.flat().length > 1? this.state.language.products: this.state.language.product}</Text>
+                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.all_data.flat().length} {this.state.all_data.flat().length > 1? this.state.language.sale_s: this.state.language.product}</Text>
                     <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}> {this.state.all_data.length} {this.state.all_data.length > 1? this.state.language.screens: this.state.language.screen}</Text>
                 </View>
 

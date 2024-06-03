@@ -754,10 +754,11 @@ class AppSettingsComponents extends Component {
                     
                     <View style={{...styles.field_container}}>
                         <Text style={{fontWeight: "bold", marginBottom: 10}}>Sales Invoice Options</Text>
-                        <TouchableOpacity onPress={() => this.checkedItem( "enable_order_type" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+                        
+                        {/*<TouchableOpacity onPress={() => this.checkedItem( "enable_order_type" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
                             <Text style={{}}>{this.state.language.enable_order_type}</Text>
                             <Checkbox status={this.state.sales_options.enable_order_type? "checked": ""} />
-                        </TouchableOpacity> 
+                            </TouchableOpacity>*/} 
 
                         <TouchableOpacity onPress={() => this.checkedItem( "enable_payment_status" )} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
                             <Text style={{}}>{this.state.language.enable_payment_status}</Text>

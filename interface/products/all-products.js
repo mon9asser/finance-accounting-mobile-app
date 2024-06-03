@@ -417,6 +417,9 @@ class ProductsComponents extends PureComponent {
     }
 
     formatTimestamp = (timestamp) => {
+        if( timestamp == undefined ) {
+            return;
+        }  
         const differenceInSeconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
         const differenceInMinutes = Math.floor(differenceInSeconds / 60);
         const differenceInHours = Math.floor(differenceInMinutes / 60);

@@ -344,6 +344,7 @@ class A_P_I_S {
         
         if( ! config.disable_remote_server ) { 
             request = await this.axiosRequest(axiosOptions);
+            return request;
         };
         
         
@@ -576,6 +577,7 @@ class A_P_I_S {
 
         if( ! config.disable_remote_server ) { 
             request = await this.axiosRequest(axiosOptions);
+            return request;
         };
 
         var is_updated_remotely = false; 
@@ -733,7 +735,7 @@ class A_P_I_S {
         if( ! config.disable_remote_server ) { 
             
             request = await this.axiosRequest(axiosOptions);
-            console.log(request);            
+            return request;   
 
         }; 
 
@@ -1117,6 +1119,8 @@ class A_P_I_S {
 
         if( ! config.disable_remote_server ) { 
             request = await this.axiosRequest(axiosOptions);
+
+            return request;
         };
         
          
@@ -1333,6 +1337,7 @@ class A_P_I_S {
     
             if( ! config.disable_remote_server ) { 
                 request = await this.axiosRequest(axiosOptions);
+                return request;
             };
 
             

@@ -2692,17 +2692,14 @@ class AddNewSalesInvoiceComponents extends Component {
                                     </View> 
                                 </View>
 
-                                {
-                                    this.state.settings != null && this.state.settings.sales_options.enable_order_type ?
-                                        <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
-                                            <Text style={{fontWeight: "bold"}}>{this.state.language.order_type}</Text>
-                                            <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
-                                                <this.AllOrdersTypesSelector/>
-                                            </View> 
-                                        </View>
-                                    :""
-                                }
+                               
                                 
+                                <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
+                                    <Text style={{fontWeight: "bold"}}>{this.state.language.order_type}</Text>
+                                    <View style={{ flexGrow: 1, borderRadius:15, maxWidth: 230}}>
+                                        <this.AllOrdersTypesSelector/>
+                                    </View> 
+                                </View>
 
                                 <View style={{ gap: 10, marginTop: 20, flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", overflow: "hidden"}}> 
                                     <Text style={{fontWeight: "bold"}}>{this.state.language.branch}</Text>
