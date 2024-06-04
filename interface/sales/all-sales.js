@@ -399,7 +399,7 @@ class SalesInvoicesComponents extends PureComponent {
 
         this.props.navigation.goBack(null);
 
-        this.props.navigation.navigate("edit-sales", {
+        this.props.navigation.navigate("edit-sales-invoice", {
             item: item.item 
         });
 
@@ -471,8 +471,7 @@ class SalesInvoicesComponents extends PureComponent {
     
     editThisItem = (item, prc_list) => { 
         this.props.navigation.goBack(null);
-        this.props.navigation.navigate("edit-sales", {
-            prices: prc_list,
+        this.props.navigation.navigate("edit-sales-invoice", { 
             item: item 
         });
     }

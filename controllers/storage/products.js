@@ -113,6 +113,15 @@ class Products extends A_P_I_S {
 
     }
     
+    get_products_per_doc = async ( local_id ) => {
+        
+        // invoice.local_id
+        var invoice_items = this.get_records([local_id]);
+
+        return invoice_items;
+
+    }
+
     /**
      * paging = { page, size }
      * async: case true it will get data from remote and store it in locally
@@ -136,7 +145,9 @@ class Products extends A_P_I_S {
        // await this.bulkGetAsync(this.Schema, async);
 
         var async_data = await this.bulkGetAsync(this.Schema, async);
+        
         var array_data = async_data.data; 
+        
         if( desc ) {
             // updated_date ( Desc Asc )
             // created_date ( Desc Asc )
@@ -153,7 +164,8 @@ class Products extends A_P_I_S {
             });
               
         }
-
+        
+        
         //return _.chunk(array_data, 4 );
         if(param_id.length) {
             array_data = array_data.filter( x => {
@@ -163,13 +175,13 @@ class Products extends A_P_I_S {
                 }
             });
         }
-         
+        
         if( paging.size !== undefined &&  paging.page !== undefined ) {
 
             if( paging.size < 1 ) {
                 paging.size = 1;
             }
-
+           
             paging.page = paging.page - 1;
             
             if(paging.page < 0 ) {
@@ -178,13 +190,13 @@ class Products extends A_P_I_S {
              
             var new_data = _.chunk(array_data, paging.size);
              
-
+            
             var _return = (new_data[paging.page] == undefined) ?new_data[new_data.length - 1]: new_data[paging.page];
-             
+            
             if( _return == undefined ) {
                 _return = [];
             }
-
+            
             return {
                 paging: {
                     page_number: paging.page + 1,
