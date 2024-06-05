@@ -221,7 +221,74 @@ class Document_Details extends A_P_I_S {
         }
     }
 
-     
+    get_products_per_doc = async ( local_id ) => {
+        
+        // invoice.local_id
+        var invoice_items = this.get_record_object(local_id);
+
+        return invoice_items;
+
+    }
+
+
+
+    get_record_object = async( local_id ) => {
+ 
+        
+        // getting settings and language
+        var settings;
+
+        try{
+            settings = await get_setting(); 
+        } catch(error){}
+        
+        var language =  get_lang(settings.language);
+        
+        // get data from remote
+       // await this.bulkGetAsync(this.Schema, async);
+
+        var async_data = await this.bulkGetAsync(this.Schema);
+        
+        if(async_data.is_error) {
+            return {
+                login_redirect: false, 
+                is_error: true, 
+                data: array_data,
+                message: language.something_error
+            }
+        }
+
+        var array_data = async_data.data; 
+        if( ! array_data.length ) {
+            return {
+                login_redirect: false, 
+                is_error: true, 
+                data: [],
+                message: language.no_records_found
+            }
+        }
+
+        var get_rows = array_data.filter( x => {  
+            return x.doc_id == local_id;
+        });
+         
+        if( get_rows.length) {
+            return { 
+                login_redirect: false, 
+                is_error: false, 
+                data: get_rows,
+                message: ""
+            }
+        } else {
+            return {
+                login_redirect: false, 
+                is_error: true, 
+                data: [],
+                message: language.no_records_found
+            }
+        }
+    }
+
     get_last_record_number = async (doc_type) => {
 
          // getting settings and language

@@ -469,7 +469,7 @@ class SalesInvoicesComponents extends PureComponent {
 
     }
     
-    editThisItem = (item, prc_list) => { 
+    editThisItem = (item, prc_list) => {
         this.props.navigation.goBack(null);
         this.props.navigation.navigate("edit-sales-invoice", { 
             item: item 

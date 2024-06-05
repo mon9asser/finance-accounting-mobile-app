@@ -1014,15 +1014,17 @@ class A_P_I_S {
 
         var dindex = old_data_document.findIndex( x => {
             
-            var _k = Object.keys(where_keys);
+            
+            var _k = Object.keys(where_keys); 
+             
             if(_k.length) {
                 _k = _k[0];
-            }
-
-            return x[_k] == where_keys[_k];
+            } 
+            
+            return x.local_id == where_keys[_k];
 
         });
-
+       
         if( dindex == -1 ) {
             old_data_document.push(data_object);
         } else {
@@ -1651,6 +1653,7 @@ class A_P_I_S {
         
         if( ! config.disable_remote_server ) { 
             request = await this.axiosRequest(__object);
+            return request;
         };
         
         if( ! config.disable_remote_server && request.is_error ) {

@@ -2304,9 +2304,33 @@ class EditSalesInvoice extends Component {
             var invoice = this.props.route.params.item;
             var invoice_items = []; 
             
-            var data = await ProductInstance.get_products_per_doc(invoice.local_id);
+            var res = await DocDetailsInstance.get_products_per_doc(invoice.local_id);
+            if(res.is_error) {
+                return; 
+            }
 
-            console.log(data);
+            invoice_items = res.data;
+            console.log(invoice);
+            this.setState({
+
+                invoices_details: invoice_items,
+                doc_id: invoice.local_id,
+                doc_number: invoice.invoice_number,
+                selected_invoice_status: invoice.invoice_status,
+                selected_payment_method: invoice.payment_method,
+                selected_order_type:invoice.order_type,
+                selected_customer:  invoice.customer,
+                selected_branch: invoice.branch,
+                selected_payment_status: invoice.payment_status,
+                date: invoice.date,
+                total: invoice.total,
+                subtotal: invoice.subtotal,
+                discount: invoice.discount,
+                tax: invoice.tax,
+                vat: invoice.vat,
+                shipping_or_delivery_cost:invoice.shipping_or_delivery_cost,
+                tracking_number:invoice.tracking_number,
+            })
             
         }
         
@@ -2451,7 +2475,7 @@ class EditSalesInvoice extends Component {
         this.screen_options(); 
         
         // create invoice number 
-        await this.generateDocNumber();
+        //await this.generateDocNumber();
         
         // getting all prices 
         await this.get_all_prices();
@@ -2498,30 +2522,7 @@ class EditSalesInvoice extends Component {
 
         if( useLoading )
             this.setPressBtn(true);
-
-        // generate invoice number by this.state.last_recorded object if it is not null
-        if( this.state.last_recorded == null ) {
-            Alert.alert(this.state.language.error, this.state.language.something_error);
-            return;
-        } 
-        var { number } = this.state.last_recorded;
-        var { zero_left } = this.state.last_recorded;
-        var { type } = this.state.last_recorded;
-
-        var response = await RecordedInstance.create_update({
-            number, zero_left, type
-        });
- 
-         
-        if( response.is_error && useLoading) {
-            
-            this.setPressBtn(false);
-            this.setNotificationBox("flex")
-            this.setNotificationCssClass(styles.error_message);
-            this.setNotificationCssTextClass(styles.error_text)
-            this.setNotificationMessage("Cannot save invoice, something went wrong"); 
-            return;
-        }
+        
         
         // store bulk invoice details
         if(!this.state.invoices_details.length && useLoading ) {
@@ -2550,7 +2551,7 @@ class EditSalesInvoice extends Component {
             vat: this.state.vat,  
             tracking_number: this.state.tracking_number,
             shipping_or_delivery_cost: this.state.shipping_or_delivery_cost,
-            param_id: this.state.doc_id
+            param_id: this.state.doc_id 
         };
 
         // store invoice data  updateAsync => issue here

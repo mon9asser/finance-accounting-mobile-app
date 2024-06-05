@@ -130,8 +130,7 @@ const en = {
         reset: "Reset",
         email: "Email", 
         password: "Password",
-        confirm_password: "Confirm Password",
-
+        confirm_password: "Confirm Password", 
         connection_status: "You are currently offline. Please check your wireless or internet connection.",
         register: "Sign Up",
         i_agree_to: "I agree to",
