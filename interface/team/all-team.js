@@ -6,7 +6,6 @@ import NetInfo from '@react-native-community/netinfo';
 import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';  
 import _ from "lodash";
-import formatter from 'number-formatter';
 
 // Distruct 
 import { StatusBar } from 'expo-status-bar';
@@ -26,15 +25,13 @@ import {config} from "../../settings/config.js" ;
 import {styles} from "../../controllers/styles.js"; 
 import {get_setting, add_last_session_form, get_last_session_form, delete_session_form} from "../../controllers/cores/settings.js";
 import {get_lang} from '../../controllers/languages.js'; 
-import { OptionInstance } from "../../controllers/options.js";
 
 // Controller  
-import { SalesInvoiceInstance } from "../../controllers/storage/sales.js";
-import { PriceInstance  } from "../../controllers/storage/prices.js";
+import { CustomerInstance } from "../../controllers/storage/customers.js"; 
 import { usr } from "../../controllers/storage/user.js";
 import { conf } from "../../server/settings/config.js";
 
-class SalesInvoicesComponents extends PureComponent {
+class TeamComponents extends PureComponent {
 
     constructor( props ){
             
@@ -42,10 +39,10 @@ class SalesInvoicesComponents extends PureComponent {
 
         
         this.state = {
-            language: {},               //--  
+            language: {},                
             isConnected: true, 
 
-            default_color: "#EF6C00",   
+            default_color: "#c23616",   
  
             select_all: false,   
 
@@ -90,9 +87,7 @@ class SalesInvoicesComponents extends PureComponent {
             refreshing: false, 
             data_status: this.props.route.params.langs.no_records_found,
             is_search_mode: false, 
-            prices: [],
-
-            settings: null
+            prices: []
         }
 
         this.internetState = null;
@@ -131,10 +126,10 @@ class SalesInvoicesComponents extends PureComponent {
     }
 
     performDeletionAction = async (ids) => {
-        console.log(ids);
+
         // send request 
-        var reqs = await SalesInvoiceInstance.delete_records(ids)
-        console.log(reqs.is_error);
+        var reqs = await CustomerInstance.delete_records(ids)
+        
         if( reqs.is_error ) {
             Alert.alert(reqs.message);
             return;
@@ -143,7 +138,7 @@ class SalesInvoicesComponents extends PureComponent {
         if( reqs.login_redirect ) {
             Alert.alert(reqs.message);
             this.props.navigation.navigate("Login", {
-                redirect_to: "Sales"
+                redirect_to: "Customers"
             });
             return;
         }
@@ -197,14 +192,14 @@ class SalesInvoicesComponents extends PureComponent {
     }
 
     screen_options = () => {
-       
+        
         // Screen Options 
         this.props.navigation.setOptions({
 
             headerStyle: {backgroundColor: this.state.default_color}, 
             headerTitleStyle: { color: "#fff" },
             headerTintColor: '#fff',
-            headerTitle: this.state.language.sales_invoice, 
+            headerTitle: this.state.language.title, 
             // headerLeft: () => this.headerLeftComponent(), 
             headerRight: () => this.headerRightComponent()
             
@@ -212,30 +207,7 @@ class SalesInvoicesComponents extends PureComponent {
 
     }
 
-    load_all_prices = async() => {
-        
-        var prc = await PriceInstance.get_records();
-
-        if( prc.is_error || ! prc.data.length ) return ;
-        this.setState({
-            prices: prc.data
-        });
- 
-    }
-
-    loadCompanySettings = async () => {
-        
-        var request = await OptionInstance.get_records();
-        if(request.is_error) {
-            return; 
-        }
-         
-        this.setState({
-            settings: ( request.data.length )? request.data[0]: null
-        });
-
-        
-    }
+    
 
     componentDidMount = async () => { 
         /*
@@ -244,24 +216,22 @@ class SalesInvoicesComponents extends PureComponent {
         alert("https://www.npmjs.com/package/react-native-date-picker")
         */
 
-        // setup language
-        await this.setup_params();
-
         // Apply screen and header options 
         this.screen_options();  
 
         // Load All data async 
-        await this.Get_All_Data();  
+        await this.Get_All_Data(); 
+
+        // setup language
+        await this.setup_params();
 
         // internet connection status
         this.internetConnectionStatus(); 
-        
-        // Load settings of app 
-        await this.loadCompanySettings();
+ 
         
          /*
-        await SalesInvoiceInstance.Schema.instance.save({
-            key: SalesInvoiceInstance.Schema.key,
+        await CustomerInstance.Schema.instance.save({
+            key: CustomerInstance.Schema.key,
             data: []
         })*/
 
@@ -287,7 +257,7 @@ class SalesInvoicesComponents extends PureComponent {
         this.setLoading(true);
 
         // send request to get the data
-        var reqs = await SalesInvoiceInstance.get_records();
+        var reqs = await CustomerInstance.get_records();
          
 
         // check for error and see error message
@@ -395,11 +365,13 @@ class SalesInvoicesComponents extends PureComponent {
          
     }
 
+   
+
     edit_this_item = (item) => {
 
         this.props.navigation.goBack(null);
 
-        this.props.navigation.navigate("edit-sales-invoice", {
+        this.props.navigation.navigate("edit-customer", {
             item: item.item 
         });
 
@@ -435,10 +407,11 @@ class SalesInvoicesComponents extends PureComponent {
     }
 
     formatTimestamp = (timestamp) => {
+
         if( timestamp == undefined ) {
             return;
         }  
-
+        
         const differenceInSeconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
         const differenceInMinutes = Math.floor(differenceInSeconds / 60);
         const differenceInHours = Math.floor(differenceInMinutes / 60);
@@ -469,16 +442,16 @@ class SalesInvoicesComponents extends PureComponent {
 
     }
     
-    editThisItem = (item, prc_list) => {
+    editThisItem = (item ) => { 
         this.props.navigation.goBack(null);
-        this.props.navigation.navigate("edit-sales-invoice", { 
-            item: item 
+        this.props.navigation.navigate("edit-customer", {
+            item: item
         });
     }
 
     Item_Data = ({item, index}) => {
          
-        var img_placeholder = require("./../../assets/icons/product-placeholder.png"); 
+        var img_placeholder = require("./../../assets/icons/customer-placeholder.png"); 
         var img_local_storage = item.file == undefined || item.file.thumbnail_url == undefined ? "": item.file.thumbnail_url;
         
          
@@ -496,24 +469,7 @@ class SalesInvoicesComponents extends PureComponent {
              
         }
          
-        // product price
-        var prices = this.state.prices;
-        var prc_list = [];
-        var price_object = {sale: 0, purchase: 0 };
-        if( prices.length) {
-            
-            prc_list = prices.filter( x => x.product_local_id == item.local_id );
-            var primary_prc = prc_list.filter( x => x.is_default_price == true );
-
-            if( primary_prc.length ) {
-                price_object.sale = primary_prc[0].sales_price;
-                price_object.purchase = primary_prc[0].purchase_price;
-            } else if (prc_list.length) {
-                price_object.sale = prc_list[0].sales_price;
-                price_object.purchase = prc_list[0].purchase_price;
-            }
-            
-        }
+        // product price 
         
         var __name = "";
         
@@ -527,22 +483,23 @@ class SalesInvoicesComponents extends PureComponent {
         return (
             <View key={item.local_id} style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15 }}>
                 <TouchableOpacity onPress={() => this.select_this_row(item.local_id)}  style={{borderWidth: 1, gap: 15, marginBottom: 20, padding: 15, flexDirection: "row", borderColor:( this.is_highlighted(item.local_id)? "red" : "#eee"), backgroundColor: ( this.is_highlighted(item.local_id)? "#ffe9e9" : "#fff"), borderRadius: 10}}>
-                     
+                    <View> 
+                        <Image
+                            source={image}
+                            style={{width: 80, height: 80, objectFit: 'cover', borderRadius: 80, borderWidth: 5, borderColor: "#eee"}}
+                            resizeMode="cover"
+                            PlaceholderContent={<ActivityIndicator color="#fff" size="small"/>} 
+                            onError={() => this.gettingImage(item, setImage, img_placeholder)}
+                        />
+                    </View>
                     <View style={{flexDirection: 'column', justifyContent: 'center',  flex: 1}}>
                         <View style={{flex: 1}}>
-                            <View style={{flex: 1, flexDirection: "row", justifyContent: "space-between"}}>
-                                <Text style={{fontSize: 16, color: "#444", fontWeight: "bold"}}>
-                                    {this.state.language.invoice_number}
-                                    {": "}<Text style={{color:"red"}}>{"#" + item.invoice_number}</Text>
-                                </Text>
-                                <Text style={{fontSize: 14, color: this.state.default_color, fontWeight: "bold"}}>
-                                    {item.order_type.label}
-                                </Text>
-                            </View>
-
+                            <Text style={{fontSize: 16, color: "#444", fontWeight: "bold"}}>
+                                {item.customer_name}
+                            </Text>
                             <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
                                 <Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>
-                                    {this.state.language.status}: <Text style={{color: "tomato"}}>{item.payment_status.label}</Text>
+                                {item.phone_number}
                                 </Text>
 
                                 {this.formatTimestamp(item.updated_date)}
@@ -551,40 +508,22 @@ class SalesInvoicesComponents extends PureComponent {
                         </View>
                         <View style={{flex: 1, flexDirection:'row', justifyContent: 'space-between'}}>
                             <Text style={{color:"grey", marginTop: 5}}>
-                            {__name == "" ? "" :this.state.language.by + " :"} {__name}
+                            {this.state.language.by}: {__name}
                             </Text>
-                            
-                        </View>
-                        <View style={{flexDirection: "row", gap: 10, marginTop: 15, justifyContent: "space-between"}}>
-                            <Text style={{fontSize: 20, fontWeight: "bold"}}>
-                                {
-                                    this.state.settings == null ? "$": this.state.settings.selected_currency.value
-                                }
-                                {
-                                    item.total == ""? "0.00": formatter('#,##0.00', item.total) 
-                                }
-                                </Text>
                             <View style={{flexDirection: "row", gap: 10}}>
-                                <TouchableOpacity onPress={() => this.editThisItem(item, prc_list)}>
+                                <TouchableOpacity onPress={() => this.editThisItem(item )}>
                                     <Text style={{color: "#0B4BAA", fontWeight: "bold", marginTop: 5}}>
-                                        {this.state.language.view}
+                                        {this.state.language.edit}
                                     </Text> 
                                 </TouchableOpacity>
-                                {/*
-                                <TouchableOpacity onPress={() => this.editThisItem(item.id)}>
+                                <TouchableOpacity>
                                     <Text style={{color: "#0B4BAA", fontWeight: "bold", marginTop: 5}}>
                                     {this.state.language.view}
                                     </Text> 
                                 </TouchableOpacity>
-                                
-                                <TouchableOpacity onPress={() => this.editThisItem(item.id)}>
-                                    <Text style={{color: "#0B4BAA", fontWeight: "bold", marginTop: 5}}>
-                                    {this.state.language.print}
-                                    </Text> 
-                                </TouchableOpacity>
-                                */}
                             </View>
                         </View>
+                        
                     </View>
                 </TouchableOpacity> 
            </View>
@@ -596,7 +535,7 @@ class SalesInvoicesComponents extends PureComponent {
         
         if( item_id == undefined ) {
             return false;
-        }
+        } 
 
         var selected = this.state.selected_ids;
  
@@ -637,19 +576,15 @@ class SalesInvoicesComponents extends PureComponent {
                 searched_data: []
             }); 
             
-            return; 
+            return;
         }
-
-        if(text.indexOf("#") != -1 ) {
-            text = text.replace(/#/g, "");
-        }
- 
 
         var searched_items = all.filter( item => {
             
-            var index1 = item.invoice_number.indexOf(text); 
+            var index1 = item.customer_name.indexOf(text); 
+            var index2 = item.phone_number.indexOf(text);   
 
-            if(index1 !== -1 ) {
+            if(index1 !== -1 || index2 !== -1   ) {
                 return item; 
             }
 
@@ -803,9 +738,9 @@ class SalesInvoicesComponents extends PureComponent {
                         marginTop: 20 
                     }}>
                         <View style={{height: 85, borderBottomColor: "#ddd", borderBottomWidth: 1, paddingBottom: 15}}>
-                            <Text style={{color: "#999"}}>{this.state.language.search_name_phone_city}</Text>
+                            <Text style={{color: "#999"}}>{this.state.language.search_customer_name_phone_city}</Text>
                             <View style={{  borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 8}}>
-                                <TextInput onChangeText={text => this.filter_by_texts(text)} placeholder={this.state.language.search_name_phone_city} style={{...styles.input_field}} />
+                                <TextInput onChangeText={text => this.filter_by_texts(text)} placeholder={this.state.language.search_customer_name_phone_city} style={{...styles.input_field}} />
                             </View>
                         </View>
 
@@ -822,10 +757,9 @@ class SalesInvoicesComponents extends PureComponent {
                                         mode={'date'}
                                         display="default"
                                         onChange={this.change_date_from_value}
-                                    />
-                                )}
-                                
-                                
+                                    /> 
+                                )} 
+
                             </View>
 
                             <View style={{marginTop: 5, height: 50}}>
@@ -860,7 +794,7 @@ class SalesInvoicesComponents extends PureComponent {
 
                 <TouchableOpacity onPress={ this.select_all_records } style={{flexDirection: "row", alignItems: "center",  marginBottom: 10, marginLeft:-5}}>
                     <Checkbox status={this.state.checkbox_checked ? 'checked' : 'unchecked'} />
-                    <Text style={{color: "#999"}}>{this.state.language.select_all_sales}</Text>                                
+                    <Text style={{color: "#999"}}>{this.state.language.select_all_customers}</Text>                                
                 </TouchableOpacity>
                 
                  
@@ -874,7 +808,7 @@ class SalesInvoicesComponents extends PureComponent {
 
     add_new = () => {
         this.props.navigation.goBack(null);
-        this.props.navigation.navigate("add-new-product");
+        this.props.navigation.navigate("add-new-customer");
     }
 
     setRefreshing = (value) => {
@@ -935,8 +869,8 @@ class SalesInvoicesComponents extends PureComponent {
                 
                 { this.state.is_last_page ? <View style={{justifyContent: "center", alignItems: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.no_more_results}</Text></View> : <ActivityIndicator size={"small"} color={this.state.default_color} /> }
 
-                <View style={{flex: 1, marginTop: 15, borderTopColor: "#eee", borderTopWidth: 2, height: 40, alignItems:"center", flexDirection: "row", justifyContent: "space-between"}}>
-                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.all_data.flat().length} {this.state.all_data.flat().length > 1? this.state.language.sale_s: this.state.language.product}</Text>
+                <View style={{flex: 1, marginTop: 15, borderTopColor: "#eee", borderTopWidth: 2, height: 40, alignItems:"center", flexDirection: "row", justifyContent: "space-between"}}> 
+                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.all_data.flat().length} {this.state.all_data.flat().length > 1? this.state.language.customers: this.state.language.customer}</Text>
                     <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}> {this.state.all_data.length} {this.state.all_data.length > 1? this.state.language.screens: this.state.language.screen}</Text>
                 </View>
 
@@ -1002,4 +936,4 @@ class SalesInvoicesComponents extends PureComponent {
 
 }
 
-export {SalesInvoicesComponents}
+export {TeamComponents}

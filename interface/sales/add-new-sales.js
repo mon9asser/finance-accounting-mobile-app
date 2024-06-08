@@ -1813,7 +1813,13 @@ class AddNewSalesInvoiceComponents extends Component {
 
     share_this_document = async() => { 
         
+        if(config.disable_remote_server) {
+            Alert.alert("Upgrade", "You have to upgrade your account to share and print documents!")
+            return;
+        }
+
         this.setShareBtnPressed(true);
+ 
 
         //setPrintBtnPressed
         await this.saveData(false);
@@ -1829,6 +1835,12 @@ class AddNewSalesInvoiceComponents extends Component {
 
     print_this_document = async() => { 
         
+        if(config.disable_remote_server) {
+            Alert.alert("Upgrade", "You have to upgrade your account to share and print documents!")
+            return;
+        }
+
+
         this.setPrintBtnPressed(true);
          
         //setPrintBtnPressed

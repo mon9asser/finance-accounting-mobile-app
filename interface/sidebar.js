@@ -223,7 +223,7 @@ class AppSidebarComponents extends Component {
                                 />
 
                                 <Text style={{...styles.bold}}>
-                                {this.state.language.settings}
+                                    {this.state.language.settings}
                                 </Text>
 
                             </TouchableOpacity>

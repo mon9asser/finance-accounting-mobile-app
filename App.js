@@ -44,10 +44,14 @@ import { ChangePasswordComponents } from "./interface/user/password-change.js";
  
 import {DashboardComponents} from './interface/dashboard.js';
 import { AppSettingsComponents } from './interface/settings.js';
+import { TeamComponents } from './interface/team/all-team.js'; 
+
 import { AppNotificationsComponents } from './interface/notifications.js';
 
 import {AppSidebarComponents}  from './interface/sidebar.js';
 import { SubscriptionComponents } from './interface/subscription.js';
+
+
 
 import { TestComponent } from "./interface/test.js";
 
@@ -110,14 +114,14 @@ var CustomDrawerContent = (props) => {
                     />
 
                     <Text style={{...styles.bold}}>
-                    {language.supscription}
+                        {language.supscription}
                     </Text>
 
                 </TouchableOpacity>
             </View> 
             
             <View style={{...styles.sidebar_nav_item}}>
-                <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
+                <TouchableOpacity onPress={() => props.navigation.navigate("WorkTeam")} style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
                     <Image
                         source={require('./assets/icons/users.png')}
@@ -134,7 +138,7 @@ var CustomDrawerContent = (props) => {
                     </Text>
 
                 </TouchableOpacity>
-            </View>
+            </View> 
 
             <View style={{...styles.sidebar_nav_item}}>
                 <TouchableOpacity onPress={() => props.navigation.navigate("Settings")} style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
@@ -304,6 +308,7 @@ const App = () => {
                 <Stack.Screen name="Login" component={LoginComponents}/>
                 <Stack.Screen name="Register" component={RegisterComponents} />
                 <Stack.Screen name="Settings" component={AppSettingsComponents} initialParams={{ langs: language }} />
+                <Stack.Screen name="WorkTeam" component={TeamComponents} initialParams={{ langs: language }} />
                 
             </Stack.Navigator> 
           </NavigationContainer> 
