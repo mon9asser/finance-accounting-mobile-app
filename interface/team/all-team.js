@@ -31,6 +31,8 @@ import { CustomerInstance } from "../../controllers/storage/customers.js";
 import { usr } from "../../controllers/storage/user.js";
 import { conf } from "../../server/settings/config.js";
 
+import { TeamInstance } from "../../controllers/storage/team.js";
+
 class TeamComponents extends PureComponent {
 
     constructor( props ){

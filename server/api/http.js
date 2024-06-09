@@ -11,8 +11,10 @@ const {get_schema_object} = require("../applications/schema.js");
 const path = require('path');
 const fs = require('fs'); 
 const sharp = require('sharp');
+
 var apiRouters = express.Router(); 
   
+let { User, Application } = require("./../applications/confguration.js");
 
 async function performBulkUpsert(data_object, db_connection, param_id) {
 
@@ -1267,6 +1269,144 @@ apiRouters.post("/update_insert_delete_by_keys", verify_user_tokens_and_keys, as
      }
 });
   
+
+apiRouters.post("/create_member", verify_user_tokens_and_keys, async (req, res) => {
+    sdsd
+    return res.send(req.body)
+
+    var current_language = req.body.language? req.body.language: "en";
+    var localize = language[current_language];
+
+    var objx = {
+        is_error: true,
+        data: localize.access_denied,
+        success: false
+    };
+
+    // Data Validation  
+    var name = req.body.name;
+    var email = to_lowercase(req.body.email); 
+    var password= req.body.password;
+    var company_name = to_lowercase(req.body.company_name); 
+
+    // additional parameters needed 
+    var app_name = to_lowercase(req.body.app_name);
+    var platform = req.body.platform;
+    var version = req.body.version;
+
+ 
+    //- Validate inputs 
+    if( name == '' || name == undefined || email == '' || email == undefined || password == '' || password == undefined ) {
+        objx.data = localize.provide_fields;
+
+        return res.send(objx); 
+       
+    }
+
+
+    //- Validate inputs 
+    if( app_name == '' || app_name == undefined || platform == '' || platform == undefined || version == '' || version == undefined ) {
+        objx.data = localize.additional_fields;
+
+        return res.send(objx); 
+       
+    }
+
+    var validate = validateEmail(email); 
+    if( !validate ) {
+        objx.is_error = true; 
+        objx.success = false; 
+        objx.data = localize.invalid_email;
+        return res.send(objx); 
+    }
+    
+    var emailExists = await User.findOne({email: email, app_name: app_name  });
+    if( emailExists !== null ) {
+         
+        objx.is_error = true; 
+        objx.success = false; 
+        objx.data = localize.email_exists;
+        return res.send(objx); 
+    }
+    
+    // Sanitizsation 
+    var userObject = {
+        name: sanitizer.sanitize(name), 
+        password: sanitizer.sanitize(password),
+        email: sanitizer.sanitize(email),
+        company_name: sanitizer.sanitize(company_name),
+        register_date: currentTimeStampInSeconds(),
+        last_login: currentTimeStampInSeconds(),
+        platform: {
+            platform, version
+        }
+    }
+ 
+
+    // generate db name 
+    var db_slug = "_" +  random(10, 19145488514777751452) + "_" +  charachters();
+    var database = company_name.replaceAll(/\s/g,'');
+    if( database !== '' ) {
+        database += db_slug;
+    } else {
+        database = email.substring(0, email.indexOf("@")) + db_slug;
+    }
+
+
+    // prepare application
+    var app_row = {
+        database_name: database ,
+        company_name: company_name
+    }
+   
+    // check if database already exists 
+    var databaseExists = await Application.findOne({database_name: database});
+    if( databaseExists !== null ) {
+        objx.data = localize.company_exists;
+        return objx; 
+    }
+
+    // Create Application
+    var _app = await Application.create(app_row);
+    
+    if( ! _app ) {
+        objx.is_error= true;
+        objx.data = localize.something_wrong;
+        objx.success= false;
+
+        return res.send(objx);
+     }
+
+    // assign id to user object
+    userObject.application_id = _app._id
+    userObject.password = await bcrypt.hash(userObject.password, 10); 
+    try {
+        
+        var build = _app._id + '-' + email + '-' + database + userObject.last_login;
+        userObject.token = jwt.sign({token: build}, 'nexy-daily-sales-#1#$%*31&528451^1%^');
+        
+    } catch (error) { }
+
+    // Create User 
+    var _user = await User.create(userObject);
+    if( ! _user ) {
+       objx.is_error= true;
+       objx.data = localize.something_wrong;
+       objx.success= false;
+    }
+
+    var usr = {
+        user: _user,
+        application: _app
+    }
+
+    objx.data = usr;
+    objx.success = true;
+    objx.is_error = false; 
+
+    return res.send(objx);
+
+});
 
 
 apiRouters.get("/", (req, res) => {
