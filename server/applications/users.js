@@ -10,7 +10,6 @@ let { User, Application } = require("./confguration");
 const { conf } = require("./../settings/config")
 const currentTimeStampInSeconds = () => Math.floor(Date.now() / 1000);
 
-
 const random = (min, max)  => {  
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
@@ -23,7 +22,7 @@ const charachters = () => {
 const validateEmail = (email) => {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
-}
+} 
 
 // => Localized  !
 const sendPassingCodeToEmail = (userObject, lang, callback) => {
@@ -290,6 +289,7 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
     var current_language = req.body.language? req.body.language: "en";
     var localize = language[current_language];
 
+    
     var objx = {
         is_error: true,
         data: localize.access_denied,
@@ -299,8 +299,8 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
     // Data Validation   
     var email = to_lowercase(req.body.email); 
     var password= req.body.password; 
-    var app_name = to_lowercase(req.body.app_name);
-    
+    var app_name = req.body.app_name == undefined ? "": to_lowercase(req.body.app_name);
+   
     //- Validate inputs 
     if( email == '' || email == undefined || password == '' || password == undefined || app_name == '' || app_name == undefined ) {
         objx.data = localize.provide_fields;
@@ -318,7 +318,7 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
     }
     
     var useremail = await User.findOne({email: email, app_name: app_name});
-
+    
     if( useremail === null ) { 
         objx.is_error = true; 
         objx.success = false; 
@@ -333,8 +333,7 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
         var compare = await bcrypt.compare(password, useremail.password);
         
         if( compare == false ) {
-            objx.data = localize.incorrect_data;
-            console.log(objx);
+            objx.data = localize.incorrect_data; 
             return res.send(objx);
         }
 
@@ -344,12 +343,15 @@ ApplicationRouter.post("/application/login", verify_api_keys, async (req, res) =
         return res.send(objx);
     }
 
+    
     // store last login date
     useremail.last_login = currentTimeStampInSeconds();
     await useremail.save();
 
     var database = await Application.findOne({_id: useremail.application_id});
      
+    
+    
     if( database === null ) { 
         objx.is_error = true; 
         objx.success = false; 

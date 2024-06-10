@@ -21,6 +21,7 @@ class Team extends A_P_I_S {
 
     async add_update_new_team_member({ name, email, password, user_id } = null ) {
 
+        
 
         /**
          * app_name
@@ -34,14 +35,24 @@ class Team extends A_P_I_S {
             settings = await get_setting();
             session = await usr.get_session();
         } catch (error) {
+            
             return {
                 login_redirect: false, 
                 is_error: true, 
-                data: error,
+                data: [], 
                 message: `Something went wrong`
             };
         }
-        
+
+
+        if( session == null ) {
+            return {
+                login_redirect: true, 
+                is_error: true, 
+                data: [],  
+                message: `login expired, please login again` //user_session_expired
+            }; 
+        } 
 
         var data_object = {
             name: name == undefined? "":name,
@@ -51,9 +62,10 @@ class Team extends A_P_I_S {
             access_level_id: -1,
             rule_id: -1,
             app_name: session.company_name,
-            is_owner: false,
+            is_owner: false, 
             application_id: session.application_id
-        };
+        };  
+        
         
         if( user_id == undefined ) {
             user_id = "";
@@ -67,10 +79,9 @@ class Team extends A_P_I_S {
             }, 
             method: "post",  
             model_name: ""  
-        })
-        
+        });
 
-        console.log(request); 
+        return request;
 
     }
 
@@ -80,14 +91,15 @@ class Team extends A_P_I_S {
 var TeamInstance = new Team(); 
   
 
-
-(async () => {
-    var wai = await TeamInstance.add_update_new_team_member({
-        name: "Adel Bahy",
-        password: "666",
-        email: "adel@email.com" 
+(async() => {  
+    
+    var rs = await TeamInstance.add_update_new_team_member({
+        name: "Fahd",
+        email: "fahd@gmail.com",
+        password: "666"
     });
-    console.log(wai); 
-})();
+    console.log(rs);
 
+})();
+ 
 export { Team, TeamInstance };
