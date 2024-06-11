@@ -45,6 +45,7 @@ import { ChangePasswordComponents } from "./interface/user/password-change.js";
 import {DashboardComponents} from './interface/dashboard.js';
 import { AppSettingsComponents } from './interface/settings.js';
 import { TeamComponents } from './interface/team/all-team.js'; 
+import { AddNewTeamMemberComponents} from './interface/team/add-user.js'; 
 
 import { AppNotificationsComponents } from './interface/notifications.js';
 
@@ -308,7 +309,9 @@ const App = () => {
                 <Stack.Screen name="Login" component={LoginComponents}/>
                 <Stack.Screen name="Register" component={RegisterComponents} />
                 <Stack.Screen name="Settings" component={AppSettingsComponents} initialParams={{ langs: language }} />
-                <Stack.Screen name="WorkTeam" component={TeamComponents} initialParams={{ langs: language }} />
+                
+               <Stack.Screen name="WorkTeam" component={TeamComponents} initialParams={{ langs: language }} />
+               <Stack.Screen name="add-new-team-member" component={AddNewTeamMemberComponents} initialParams={{ langs: language }} />
                 
             </Stack.Navigator> 
           </NavigationContainer> 

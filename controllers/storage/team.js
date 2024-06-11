@@ -90,16 +90,6 @@ class Team extends A_P_I_S {
  
 var TeamInstance = new Team(); 
   
-
-(async() => {  
-    
-    var rs = await TeamInstance.add_update_new_team_member({
-        name: "Fahd",
-        email: "fahd@gmail.com",
-        password: "666"
-    });
-    console.log(rs);
-
-})();
+ 
  
 export { Team, TeamInstance };

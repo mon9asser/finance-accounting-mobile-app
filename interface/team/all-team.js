@@ -44,7 +44,7 @@ class TeamComponents extends PureComponent {
             language: {},                
             isConnected: true, 
 
-            default_color: "#c23616",   
+            default_color: "#222",   
  
             select_all: false,   
 
@@ -810,7 +810,7 @@ class TeamComponents extends PureComponent {
 
     add_new = () => {
         this.props.navigation.goBack(null);
-        this.props.navigation.navigate("add-new-customer");
+        this.props.navigation.navigate("add-new-team-member");
     }
 
     setRefreshing = (value) => {

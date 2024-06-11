@@ -143,6 +143,7 @@ const en = {
         register_subtitle: "By creating a free account",
         complete_application:"Please wait while we complete your application; this process may take some time",
         passwords_dont_match:"The passwords do not match",
+        team_member_name_required: "Your teammember name and email are required!",
         check_agree_checkbox:"Please check 'I agree to terms and conditions'",
         do_have_an_account: "Already have an account?",
         do_not_have_an_account: "You don't have an account?", 
@@ -178,7 +179,7 @@ const en = {
         delete_account: "Delete my account.",
         logout: "Logout",
         internet_msg_box: "Oops! It Looks Like You're Offline.",
-
+        user_name: "Name",
         api_error: "API Errors: please check with your service provider.",
         user_session_expired: "Your session has expired; please log in again.",
         saved_success: "The data has been saved successfully.",
