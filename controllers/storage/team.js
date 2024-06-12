@@ -72,7 +72,7 @@ class Team extends A_P_I_S {
         }
 
         var request = await this.axiosRequest({
-            api: "api/create_member", 
+            api: user_id != undefined ?"api/update_member": "api/create_member", 
             dataObject: {
                 data_object: data_object,
                 user_id: user_id
@@ -85,11 +85,115 @@ class Team extends A_P_I_S {
 
     }
 
+    async get_all_my_work_team (){
 
+       
+        try {
+
+            var user, settings ;
+            try {
+                settings = await get_setting();
+                user = await usr.get_session();
+            } catch (error) {
+    
+                return {
+                    is_error: true, 
+                    data: [], 
+                    message: 'Unable to fetch users',
+                    login_redirect: false 
+                };
+            }
+    
+            if( user == null ) {
+                return {
+                    is_error: true, 
+                    data: [], 
+                    message: 'Session expired, please login again!',
+                    login_redirect: true 
+                };
+            } 
+
+            const response = await this.axiosRequest({
+                api: 'api/work_team',  
+                dataObject: { 
+                    data_object: {
+                        // user.application_id
+                        application_id: user.application_id 
+                    } 
+                },
+                method: 'post',  
+                model_name: ''  
+            });
+ 
+    
+            return response;
+        } catch (error) {
+            return {
+                is_error: true, 
+                data: error, 
+                message: 'Unable to fetch users',
+                login_redirect: false 
+            };
+        }
+    }
+
+
+    async delete_records(ids) {
+        try {
+            let user, settings;
+
+            try {
+                settings = await get_setting();
+                user = await usr.get_session();
+            } catch (error) {
+                return {
+                    is_error: true,
+                    data: [],
+                    message: 'Unable to delete records',
+                    login_redirect: false
+                };
+            }
+
+            if (user == null) {
+                return {
+                    is_error: true,
+                    data: [],
+                    message: 'Session expired, please login again!',
+                    login_redirect: true
+                };
+            }
+
+            if (!Array.isArray(ids) || ids.length === 0) {
+                return {
+                    is_error: true,
+                    data: [],
+                    message: 'No IDs provided or IDs array is empty',
+                    login_redirect: false
+                };
+            }
+
+            const response = await this.axiosRequest({
+                api: 'api/delete_users_by_ids',
+                dataObject: {
+                    data_array: ids
+                },
+                method: 'post',
+                model_name: ''
+            });
+
+            return response;
+        } catch (error) {
+            return {
+                is_error: true,
+                data: error,
+                message: 'Unable to delete records',
+                login_redirect: false
+            };
+        }
+    }
 }
  
 var TeamInstance = new Team(); 
-  
- 
+   
  
 export { Team, TeamInstance };

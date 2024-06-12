@@ -26,12 +26,12 @@ import {styles} from "../../controllers/styles.js";
 import {get_setting, add_last_session_form, get_last_session_form, delete_session_form} from "../../controllers/cores/settings.js";
 import {get_lang} from '../../controllers/languages.js'; 
 
-// Controller  
-import { CustomerInstance } from "../../controllers/storage/customers.js"; 
-import { usr } from "../../controllers/storage/user.js";
-import { conf } from "../../server/settings/config.js";
-
+// Controller   
 import { TeamInstance } from "../../controllers/storage/team.js";
+import {SalesInvoiceInstance} from "../../controllers/storage/sales.js";
+
+import { usr } from "../../controllers/storage/user.js";
+import { conf } from "../../server/settings/config.js"; 
 
 class TeamComponents extends PureComponent {
 
@@ -89,7 +89,9 @@ class TeamComponents extends PureComponent {
             refreshing: false, 
             data_status: this.props.route.params.langs.no_records_found,
             is_search_mode: false, 
-            prices: []
+            prices: [],
+
+            sales_documents: []
         }
 
         this.internetState = null;
@@ -130,8 +132,8 @@ class TeamComponents extends PureComponent {
     performDeletionAction = async (ids) => {
 
         // send request 
-        var reqs = await CustomerInstance.delete_records(ids)
-        
+        var reqs = await TeamInstance.delete_records(ids)
+        console.log(reqs);
         if( reqs.is_error ) {
             Alert.alert(reqs.message);
             return;
@@ -140,7 +142,7 @@ class TeamComponents extends PureComponent {
         if( reqs.login_redirect ) {
             Alert.alert(reqs.message);
             this.props.navigation.navigate("Login", {
-                redirect_to: "Customers"
+                redirect_to: "WorkTeam"
             });
             return;
         }
@@ -200,8 +202,7 @@ class TeamComponents extends PureComponent {
 
             headerStyle: {backgroundColor: this.state.default_color}, 
             headerTitleStyle: { color: "#fff" },
-            headerTintColor: '#fff',
-            headerTitle: this.state.language.title, 
+            headerTintColor: '#fff', 
             // headerLeft: () => this.headerLeftComponent(), 
             headerRight: () => this.headerRightComponent()
             
@@ -230,12 +231,42 @@ class TeamComponents extends PureComponent {
         // internet connection status
         this.internetConnectionStatus(); 
  
-        
+        var salesReq = await SalesInvoiceInstance.get_records();
+        if(!salesReq.is_error && salesReq.data.length ) {
+            this.setState({
+                sales_documents: salesReq.data
+            })
+        }
+
          /*
         await CustomerInstance.Schema.instance.save({
             key: CustomerInstance.Schema.key,
             data: []
         })*/
+ 
+
+    }
+
+    get_sales_objects_of_user = ( user_id ) => {
+        
+        var objecx = {
+            sales_counts: 0, 
+            sales_update_counts: 0, 
+            sales: 0
+        };
+
+        if( ! this.state.sales_documents.length ) {
+            return objecx;
+        }
+
+        var created = this.state.sales_documents.filter( x => x.created_by.id == user_id)
+        var updated = this.state.sales_documents.filter( x => x.updated_by.id == user_id)
+
+        objecx.sales_counts = created.length;
+        objecx.sales_update_counts = updated.length;
+        objecx.sales = created.reduce((accum,item) => accum + parseFloat(item.total), 0);
+
+        return objecx; 
 
     }
 
@@ -259,8 +290,7 @@ class TeamComponents extends PureComponent {
         this.setLoading(true);
 
         // send request to get the data
-        var reqs = await CustomerInstance.get_records();
-         
+        var reqs = await TeamInstance.get_all_my_work_team(); 
 
         // check for error and see error message
         if( reqs.is_error ) {
@@ -373,7 +403,7 @@ class TeamComponents extends PureComponent {
 
         this.props.navigation.goBack(null);
 
-        this.props.navigation.navigate("edit-customer", {
+        this.props.navigation.navigate("edit-team-member", {
             item: item.item 
         });
 
@@ -446,7 +476,7 @@ class TeamComponents extends PureComponent {
     
     editThisItem = (item ) => { 
         this.props.navigation.goBack(null);
-        this.props.navigation.navigate("edit-customer", {
+        this.props.navigation.navigate("edit-team-member", {
             item: item
         });
     }
@@ -482,47 +512,35 @@ class TeamComponents extends PureComponent {
             __name = item.updated_by.name.indexOf(" ") != -1 ? item.updated_by.name.split(" ")[0]: item.updated_by.name;
         } 
          
+
+        var user_acts = this.get_sales_objects_of_user(item._id);
+         
         return (
-            <View key={item.local_id} style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15 }}>
-                <TouchableOpacity onPress={() => this.select_this_row(item.local_id)}  style={{borderWidth: 1, gap: 15, marginBottom: 20, padding: 15, flexDirection: "row", borderColor:( this.is_highlighted(item.local_id)? "red" : "#eee"), backgroundColor: ( this.is_highlighted(item.local_id)? "#ffe9e9" : "#fff"), borderRadius: 10}}>
-                    <View> 
-                        <Image
-                            source={image}
-                            style={{width: 80, height: 80, objectFit: 'cover', borderRadius: 80, borderWidth: 5, borderColor: "#eee"}}
-                            resizeMode="cover"
-                            PlaceholderContent={<ActivityIndicator color="#fff" size="small"/>} 
-                            onError={() => this.gettingImage(item, setImage, img_placeholder)}
-                        />
-                    </View>
+            <View key={item._id} style={{ ...styles.container_top, ...styles.direction_col, ...styles.gap_15 }}>
+                <TouchableOpacity onPress={() => this.select_this_row(item._id)}  style={{borderWidth: 1, gap: 15, marginBottom: 20, padding: 15, flexDirection: "row", borderColor:( this.is_highlighted(item._id)? "red" : "#eee"), backgroundColor: ( this.is_highlighted(item._id)? "#ffe9e9" : "#fff"), borderRadius: 10}}>
+                     
                     <View style={{flexDirection: 'column', justifyContent: 'center',  flex: 1}}>
                         <View style={{flex: 1}}>
                             <Text style={{fontSize: 16, color: "#444", fontWeight: "bold"}}>
-                                {item.customer_name}
+                                {item.name}
                             </Text>
                             <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
                                 <Text style={{color: "grey", fontWeight: "400", marginTop: 5}}>
-                                {item.phone_number}
-                                </Text>
-
-                                {this.formatTimestamp(item.updated_date)}
+                                {item.email}
+                                </Text> 
                                
                             </View>
                         </View>
                         <View style={{flex: 1, flexDirection:'row', justifyContent: 'space-between'}}>
                             <Text style={{color:"grey", marginTop: 5}}>
-                            {this.state.language.by}: {__name}
+                            {user_acts.sales_counts} Invoices / Sales: {user_acts.sales}
                             </Text>
                             <View style={{flexDirection: "row", gap: 10}}>
                                 <TouchableOpacity onPress={() => this.editThisItem(item )}>
                                     <Text style={{color: "#0B4BAA", fontWeight: "bold", marginTop: 5}}>
                                         {this.state.language.edit}
                                     </Text> 
-                                </TouchableOpacity>
-                                <TouchableOpacity>
-                                    <Text style={{color: "#0B4BAA", fontWeight: "bold", marginTop: 5}}>
-                                    {this.state.language.view}
-                                    </Text> 
-                                </TouchableOpacity>
+                                </TouchableOpacity> 
                             </View>
                         </View>
                         
@@ -723,83 +741,10 @@ class TeamComponents extends PureComponent {
                 
                 {this.state.isConnected? "" : this.AnimatedBoxforInternetWarning()} 
 
-                <View style={{backgroundColor:"#f9f9f9", padding: 20, borderWidth: 1, borderColor:"#eee", borderRadius: 10}}>
-
-                    <TouchableOpacity style={{flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center"}} onPress={this.toggleExpansion}>
-                        <Text style={{fontWeight:"bold"}}>{this.state.language.filters}</Text>
-                        <Image 
-                            source={require("./../../assets/icons/filters.png")}
-                            style={{width: 22, height: 22}} 
-                        /> 
-                    </TouchableOpacity> 
-
-                    <Animated.View style={{ 
-                        overflow: 'hidden',
-                        display: this.state.isFlexed,
-                        height: this.animationHeight, // Bind the animated height value
-                        marginTop: 20 
-                    }}>
-                        <View style={{height: 85, borderBottomColor: "#ddd", borderBottomWidth: 1, paddingBottom: 15}}>
-                            <Text style={{color: "#999"}}>{this.state.language.search_customer_name_phone_city}</Text>
-                            <View style={{  borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 8}}>
-                                <TextInput onChangeText={text => this.filter_by_texts(text)} placeholder={this.state.language.search_customer_name_phone_city} style={{...styles.input_field}} />
-                            </View>
-                        </View>
-
-                        <View style={{marginTop: 20}}>
-                            <Text style={{color: "#999"}}>{this.state.language.search_by_date}</Text>
-                            <View style={{marginTop: 5, height: 50}}> 
-                                <TouchableHighlight onPress={() => this.open_date_from_picker_model(true)} underlayColor={"#fff"} style={{ borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 8}}>
-                                    <TextInput readOnly={true} placeholder={"From date"} style={{...styles.input_field}} value={this.formatDate(this.state.date_from)} />
-                                </TouchableHighlight>  
-
-                                { this.state.open_date_from_modal && (
-                                    <DateTimePicker
-                                        value={this.state.date_from}
-                                        mode={'date'}
-                                        display="default"
-                                        onChange={this.change_date_from_value}
-                                    /> 
-                                )} 
-
-                            </View>
-
-                            <View style={{marginTop: 5, height: 50}}>
-                                <TouchableHighlight onPress={() => this.open_date_to_picker_model(true)} underlayColor={"#fff"} style={{ borderColor:'#eee',  ...styles.search_inputs,justifyContent: "space-between", alignItems: "center", marginTop: 5}}>
-                                    <TextInput readOnly={true} placeholder={"To date"} style={{...styles.input_field}} value={this.formatDate(this.state.date_to)}/>
-                                </TouchableHighlight> 
-
-                                { this.state.open_date_to_modal && (
-                                    <DateTimePicker
-                                        value={this.state.date_to}
-                                        mode={'date'}
-                                        display="default"
-                                        onChange={this.change_date_to_value}
-                                    />
-                                )}
-                            </View> 
-                        </View> 
-
-                        <View style={{flexDirection: "row", height: 60, gap: 10}}>
-                            <TouchableHighlight onPress={() => this.setSearchMode(false)} style={{borderColor: this.state.default_color, borderWidth: 1, marginTop: 15, borderRadius: 8, backgroundColor: "#fff", flex: 1, justifyContent: 'center', alignItems: "center" }}>
-                                <Text style={{color: this.state.default_color}}>{this.state.language.cancel}</Text>
-                            </TouchableHighlight>
-                            <TouchableHighlight onPress={this.searchOnDataByDate} style={{borderColor: this.state.default_color, borderWidth: 1, marginTop: 15, borderRadius: 8, backgroundColor: "#fff", flex: 1, justifyContent: 'center', alignItems: "center" }}>
-                                <Text style={{color: this.state.default_color}}>{this.state.language.search_by_date}</Text>
-                            </TouchableHighlight>
-                        </View>
-                    </Animated.View>
-
-                </View>
-
-                
-
                 <TouchableOpacity onPress={ this.select_all_records } style={{flexDirection: "row", alignItems: "center",  marginBottom: 10, marginLeft:-5}}>
                     <Checkbox status={this.state.checkbox_checked ? 'checked' : 'unchecked'} />
-                    <Text style={{color: "#999"}}>{this.state.language.select_all_customers}</Text>                                
-                </TouchableOpacity>
-                
-                 
+                    <Text style={{color: "#999"}}>{this.state.language.select_all_team}</Text>                                
+                </TouchableOpacity> 
                 
             </View>
 
@@ -833,7 +778,7 @@ class TeamComponents extends PureComponent {
          
         var ids = [];
         if( this.state.checkbox_checked ) {
-            ids = this.state.all_data.flat().map(item => ( item.local_id !== undefined)? item.local_id: null ).filter(x => x !== null );
+            ids = this.state.all_data.flat().map(item => ( item._id !== undefined)? item._id: null ).filter(x => x !== null );
         
         } else {
             ids = this.state.selected_ids; 
@@ -857,8 +802,7 @@ class TeamComponents extends PureComponent {
             alert(this.state.language.select_rows_to_delete);
             return;
         }
-
-
+        
         // show confirm message 
         this.deleteConfirmMessage(ids); 
 
@@ -872,7 +816,7 @@ class TeamComponents extends PureComponent {
                 { this.state.is_last_page ? <View style={{justifyContent: "center", alignItems: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.no_more_results}</Text></View> : <ActivityIndicator size={"small"} color={this.state.default_color} /> }
 
                 <View style={{flex: 1, marginTop: 15, borderTopColor: "#eee", borderTopWidth: 2, height: 40, alignItems:"center", flexDirection: "row", justifyContent: "space-between"}}> 
-                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.all_data.flat().length} {this.state.all_data.flat().length > 1? this.state.language.customers: this.state.language.customer}</Text>
+                    <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.all_data.flat().length} {this.state.all_data.flat().length > 1? this.state.language.team: this.state.language.customer}</Text>
                     <Text style={{color: "#999", textAlign:"center", lineHeight: 22}}> {this.state.all_data.length} {this.state.all_data.length > 1? this.state.language.screens: this.state.language.screen}</Text>
                 </View>
 
@@ -895,7 +839,7 @@ class TeamComponents extends PureComponent {
                                 // data={this.state.searched_data.length? this.state.searched_data: this.state.loaded_data}
                                 data={this.state.is_search_mode? this.state.searched_data: this.state.loaded_data}
                                 renderItem={({item, index}) => <this.Item_Data item={item} index={index} />}
-                                keyExtractor={(item, index) => item.local_id.toString()}
+                                keyExtractor={(item, index) => item._id.toString()}
                                 onEndReached={() => this.Load_More()} 
                                 onEndReachedThreshold={0.2} 
                                 refreshControl={
@@ -905,7 +849,7 @@ class TeamComponents extends PureComponent {
                                         onRefresh={this.onRefresh}
                                         colors={[this.state.default_color]}
                                     />
-                                }
+                                } 
                                 ListHeaderComponent={ <this.HeaderComponent /> }
                                 ListFooterComponent={ <this.FooterComponent /> }
                             /> :<View style={{width: "100%",  alignContent: "center", alignItems: "center", padding: 10, borderRadius: 3, flex: 1, justifyContent: "center"}}><Text style={{color: "#999", textAlign:"center", lineHeight: 22}}>{this.state.data_status}</Text></View>

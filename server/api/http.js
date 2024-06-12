@@ -1288,6 +1288,183 @@ apiRouters.post("/update_insert_delete_by_keys", verify_user_tokens_and_keys, as
 });
   
 
+apiRouters.post("/delete_users_by_ids", verify_user_tokens_and_keys, async (req, res) => {
+    var current_language = req.body.language ? req.body.language : "en";
+    var localize = language[current_language];
+
+    var objx = {
+        is_error: true,
+        data: localize.access_denied,
+        success: false
+    };
+
+    var user_id_array = req.body.data_array;
+
+    // Validate input
+    if (!Array.isArray(user_id_array) || user_id_array.length === 0) {
+        objx.data = localize.provide_fields;
+        return res.send(objx);
+    }
+
+    try {
+        const sanitizedIds = user_id_array.map(id => sanitizer.sanitize(id));
+        const result = await User.deleteMany({ _id: { $in: sanitizedIds } });
+
+        if (result.deletedCount === 0) {
+            objx.data = localize.no_records_found;
+            objx.is_error = true;
+            return res.send(objx);
+        }
+
+        objx.data = `${result.deletedCount} record(s) successfully deleted`;
+        objx.success = true;
+        objx.is_error = false;
+    } catch (error) {
+        objx.data = localize.something_wrong;
+        objx.is_error = true;
+    }
+
+    return res.send(objx);
+});
+
+
+apiRouters.post("/work_team", verify_user_tokens_and_keys, async (req, res) => {
+    var current_language = req.body.language ? req.body.language : "en";
+    var localize = language[current_language];
+
+    var objx = {
+        is_error: true,
+        data: localize.access_denied,
+        success: false
+    };
+
+    var application_id = req.body.data_object.application_id;
+
+    // Validate input
+    if (application_id == '' || application_id == undefined) {
+        objx.data = localize.provide_fields;
+        return res.send(objx);
+    }
+
+    try {
+        var users = await User.find({ application_id: application_id });
+
+        if (!users || users.length === 0) {
+            objx.data = localize.no_users_found;
+            objx.is_error = true;
+            return res.send(objx);
+        }
+
+        objx.data = [...users ];
+        objx.success = true;
+        objx.is_error = false;
+    } catch (error) {
+        objx.data = localize.something_wrong;
+        objx.is_error = true;
+    }
+
+    return res.send(objx);
+});
+
+
+apiRouters.post("/update_member", verify_user_tokens_and_keys, async (req, res) => {
+     
+     
+
+    var current_language = req.body.language? req.body.language: "en";
+    var localize = language[current_language];
+
+    var objx = {
+        is_error: true,
+        data: localize.access_denied,
+        success: false
+    };
+     
+    // Data Validation  
+    var name = req.body.data_object.name;
+    var email = to_lowercase(req.body.data_object.email); 
+    var password= req.body.data_object.password;
+    var user_id = req.body.data_object.user_id;
+    var company_name = to_lowercase(req.body.data_object.app_name); 
+
+    // additional parameters needed 
+    var app_name = to_lowercase(req.body.data_object.app_name); 
+
+ 
+    //- Validate inputs 
+    if( name == '' || name == undefined || email == '' || email == undefined || password == '' || password == undefined ) {
+        objx.data = localize.provide_fields;
+
+        return res.send(objx); 
+       
+    }
+
+
+    //- Validate inputs 
+    if( app_name == '' || app_name == undefined  ) {
+        objx.data = localize.additional_fields;
+
+        return res.send(objx);
+       
+    }
+
+    var validate = validateEmail(email); 
+    if( !validate ) {
+        objx.is_error = true; 
+        objx.success = false; 
+        objx.data = localize.invalid_email;
+        return res.send(objx); 
+    }
+    
+    var emailExists = await User.findOne({email: email});
+    
+    // Sanitizsation 
+    var userObject = {
+        name: sanitizer.sanitize(name), 
+        password: sanitizer.sanitize(password),
+        email: sanitizer.sanitize(email),
+        company_name: sanitizer.sanitize(company_name),
+        register_date: currentTimeStampInSeconds(),
+        last_login: currentTimeStampInSeconds(), 
+        application_id: req.body.data_object.application_id
+    } 
+
+
+    if(userObject.password == "") 
+        delete userObject.password;
+     
+    // assign id to user object  
+    if(password != "")
+        userObject.password = await bcrypt.hash(userObject.password, 10);
+
+    try {
+        
+        var build = req.body.data_object._id + '-' + email + '-' + database + userObject.last_login;
+        userObject.token = jwt.sign({token: build}, 'nexy-daily-sales-#1#$%*31&528451^1%^');
+        
+    } catch (error) { }
+
+    // Create User 
+    var _user = await User.updateOne({_id: user_id}, userObject);
+     
+    if( ! _user ) {
+       objx.is_error= true;
+       objx.data = localize.something_wrong;
+       objx.success= false;
+    }
+
+    var usr = {
+        user: _user 
+    }
+
+    objx.data = usr;
+    objx.success = true;
+    objx.is_error = false; 
+
+    return res.send(objx);
+
+});
+
 apiRouters.post("/create_member", verify_user_tokens_and_keys, async (req, res) => {
      
      
@@ -1359,8 +1536,9 @@ apiRouters.post("/create_member", verify_user_tokens_and_keys, async (req, res) 
 
 
      
-    // assign id to user object 
-    userObject.password = await bcrypt.hash(userObject.password, 10); 
+    // assign id to user object  
+    userObject.password = await bcrypt.hash(userObject.password, 10);
+
     try {
         
         var build = req.body.data_object._id + '-' + email + '-' + database + userObject.last_login;

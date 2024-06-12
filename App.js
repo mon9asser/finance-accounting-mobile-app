@@ -46,7 +46,7 @@ import {DashboardComponents} from './interface/dashboard.js';
 import { AppSettingsComponents } from './interface/settings.js';
 import { TeamComponents } from './interface/team/all-team.js'; 
 import { AddNewTeamMemberComponents} from './interface/team/add-user.js'; 
-
+import { EditNewTeamMemberComponents } from './interface/team/edit-user.js'; 
 import { AppNotificationsComponents } from './interface/notifications.js';
 
 import {AppSidebarComponents}  from './interface/sidebar.js';
@@ -310,8 +310,9 @@ const App = () => {
                 <Stack.Screen name="Register" component={RegisterComponents} />
                 <Stack.Screen name="Settings" component={AppSettingsComponents} initialParams={{ langs: language }} />
                 
-               <Stack.Screen name="WorkTeam" component={TeamComponents} initialParams={{ langs: language }} />
-               <Stack.Screen name="add-new-team-member" component={AddNewTeamMemberComponents} initialParams={{ langs: language }} />
+               <Stack.Screen name="WorkTeam"  component={TeamComponents} options={{headerTitle: language.my_work_team}} initialParams={{ langs: language }} />
+               <Stack.Screen name="add-new-team-member" component={AddNewTeamMemberComponents} options={{headerTitle: language.add_team_member}} initialParams={{ langs: language }} />
+               <Stack.Screen name="edit-team-member" component={EditNewTeamMemberComponents} options={{headerTitle: language.edit_team_member}} initialParams={{ langs: language }} />
                 
             </Stack.Navigator> 
           </NavigationContainer> 
