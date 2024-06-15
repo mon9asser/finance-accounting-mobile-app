@@ -23,7 +23,7 @@ import {get_setting} from "./../controllers/cores/settings.js";
 import {get_lang} from './../controllers/languages.js'; 
 // import {add_session, get_session, delete_session } from './../controllers/storage.js'
 
-import { SalesInvoiceInstance } from "./../controllers/storage/sales.js";
+
 
 class DashboardComponents extends Component {
     
@@ -35,52 +35,13 @@ class DashboardComponents extends Component {
             language: {},
             current_language: "en",
             isConnected: true,
-            chartContainerWidth: 0,
-
-            selectedPeriod: "Weekly",
-            chartData: {
-                labels: [],
-                datasets: []
-            }
+            chartContainerWidth: 0
         }
 
         this.internetState = null;
         this.internetStateBox = new Animated.Value(0);
 
     } 
-
-    fetchChartData = async (period) => {
-        const response = await SalesInvoiceInstance.get_records();
-        const salesData = response.data;
-        let filteredData;
-
-        if (period === "Weekly") {
-            // Filter data for weekly
-            filteredData = salesData; // Implement filtering logic
-        } else if (period === "Monthly") {
-            // Filter data for monthly
-            filteredData = salesData; // Implement filtering logic
-        } else if (period === "Yearly") {
-            // Filter data for yearly
-            filteredData = salesData; // Implement filtering logic
-        }
-
-        const chartData = this.formatChartData(filteredData);
-        this.setState({ chartData });
-    }
-
-    formatChartData = (data) => {
-        // Format data for the chart
-        const formattedData = {
-            labels: data.map(item => `${new Date(item.created_date).getDate()}/${new Date(item.created_date).getMonth()}`),
-            datasets: [{
-                data: data.map(item => item.total),
-                color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
-                strokeWidth: 1
-            }]
-        };
-        return formattedData;
-    }
 
     setCurrentLanguage = (lang = "en") => {
         this.setState({
@@ -135,10 +96,7 @@ class DashboardComponents extends Component {
         // Apply screen and header options 
         this.screen_options(); 
 
-
-        this.fetchChartData(this.state.selectedPeriod);
-
-    }   
+    }
     
     componentDidUpdate(prevProps, prevState) {
         
@@ -233,7 +191,17 @@ class DashboardComponents extends Component {
 
     ChartComponents = () => {
         
-        const data = this.state.chartData;
+        const data = {
+            labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+            datasets: [
+              {
+                data: [20, 45, 28, 80, 99, 43, 50],
+                screen: "xxxxxxxxxxxxxxxxxxx",
+                color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
+                  strokeWidth: 1
+                }
+            ]
+        };
 
         const chartConfig = {
             backgroundGradientFrom: "#ffffff",
@@ -286,7 +254,7 @@ class DashboardComponents extends Component {
      
     render = () => { 
  
-        const chart_by = ["Monthly"];
+        const chart_by = ["Weekly", "Monthly", "Yearly"];
 
 
         return (
@@ -343,7 +311,7 @@ class DashboardComponents extends Component {
                             <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-sales-invoice")} style={{backgroundColor: "#EF6C00", ...styles.dashboard_cols}}>
                                 <View style={{...styles.space_bottom_10}}>
                                     <Image 
-                                        source={require("./../assets/icons/sales-invoice.png")}
+                                        source={require("./../assets/icons/add-new-branch.png")}
                                         style={{...styles.intenet_connection_icon}}
                                         resizeMode="cover"
                                     />

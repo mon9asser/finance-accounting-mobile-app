@@ -135,9 +135,7 @@ class EditNewTeamMemberComponents extends Component {
             var item = this.props.route.params.item;
             this.setState({
                 team_member_name: item.name,
-                user_email: item.email,
-                password: item.password,
-                confirm_password: item.password,
+                user_email: item.email, 
                 user_id: item._id , 
             });
         }
@@ -226,8 +224,8 @@ class EditNewTeamMemberComponents extends Component {
                 return; 
             };
 
-
-            if( _this.state.password !== _this.state.confirm_password) {
+            
+            if( _this.state.password != "" && (_this.state.password !== _this.state.confirm_password)) {
     
                 t_thishis.setPressBtn(false);  
 
@@ -237,16 +235,27 @@ class EditNewTeamMemberComponents extends Component {
                 _this.setNotificationMessage(_this.state.language.passwords_dont_match);
 
                 return; 
-            };
+            }; 
 
             
-            var customerReq = await TeamInstance.add_update_new_team_member({
-                name: _this.state.team_member_name,
-                email: _this.state.user_email,
-                password: _this.state.password,
-                user_id: this.state.user_id
-            });
             
+
+            var object_top_update = {
+                name: _this.state.team_member_name,
+                email: _this.state.user_email, 
+                user_id: this.state.user_id
+            };
+
+            if( _this.state.password != "" ) {
+                object_top_update = {
+                    ...object_top_update, 
+                    password: _this.state.password
+                }
+            }
+            
+            var customerReq = await TeamInstance.add_update_new_team_member(object_top_update);
+             
+
             // console.log(customerReq);
             if(customerReq.login_redirect) { 
     

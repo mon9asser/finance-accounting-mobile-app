@@ -56,8 +56,7 @@ class Team extends A_P_I_S {
 
         var data_object = {
             name: name == undefined? "":name,
-            email: email == undefined? "":email,
-            password: password == undefined? "":password,
+            email: email == undefined? "":email, 
             
             access_level_id: -1,
             rule_id: -1,
@@ -66,11 +65,10 @@ class Team extends A_P_I_S {
             application_id: session.application_id
         };  
         
-        
-        if( user_id == undefined ) {
-            user_id = "";
+        if(password != undefined && password != "" ) {
+            data_object.password = password;
         }
-
+        
         var request = await this.axiosRequest({
             api: user_id != undefined ?"api/update_member": "api/create_member", 
             dataObject: {
@@ -80,6 +78,8 @@ class Team extends A_P_I_S {
             method: "post",  
             model_name: ""  
         });
+
+        console.log(request);
 
         return request;
 

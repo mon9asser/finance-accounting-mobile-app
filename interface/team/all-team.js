@@ -91,7 +91,9 @@ class TeamComponents extends PureComponent {
             is_search_mode: false, 
             prices: [],
 
-            sales_documents: []
+            sales_documents: [],
+
+            my_data: null
         }
 
         this.internetState = null;

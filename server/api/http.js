@@ -1383,16 +1383,20 @@ apiRouters.post("/update_member", verify_user_tokens_and_keys, async (req, res) 
     // Data Validation  
     var name = req.body.data_object.name;
     var email = to_lowercase(req.body.data_object.email); 
-    var password= req.body.data_object.password;
-    var user_id = req.body.data_object.user_id;
+    
+    var user_id = req.body.user_id;
     var company_name = to_lowercase(req.body.data_object.app_name); 
+
+    var password= req.body.data_object.password;
+    
+    
 
     // additional parameters needed 
     var app_name = to_lowercase(req.body.data_object.app_name); 
 
  
     //- Validate inputs 
-    if( name == '' || name == undefined || email == '' || email == undefined || password == '' || password == undefined ) {
+    if( name == '' || name == undefined || email == '' || email == undefined ) {
         objx.data = localize.provide_fields;
 
         return res.send(objx); 
@@ -1430,11 +1434,11 @@ apiRouters.post("/update_member", verify_user_tokens_and_keys, async (req, res) 
     } 
 
 
-    if(userObject.password == "") 
+    if(userObject.password == "" || userObject.password == undefined ) 
         delete userObject.password;
      
     // assign id to user object  
-    if(password != "")
+    if(password != "" && password != undefined)
         userObject.password = await bcrypt.hash(userObject.password, 10);
 
     try {
@@ -1531,6 +1535,7 @@ apiRouters.post("/create_member", verify_user_tokens_and_keys, async (req, res) 
         company_name: sanitizer.sanitize(company_name),
         register_date: currentTimeStampInSeconds(),
         last_login: currentTimeStampInSeconds(), 
+        is_owner: false,
         application_id: req.body.data_object.application_id
     } 
 

@@ -80,6 +80,7 @@ var CustomDrawerContent = (props) => {
 
   return ( 
     <SafeAreaView style={{...styles.chart_container, ...styles.flex, alignItems:"center" }}>
+        {/* 
         <View style={{...styles.sidebar_header}}>
             <AnimatedCircularProgress
                 size={80}
@@ -103,8 +104,19 @@ var CustomDrawerContent = (props) => {
                 <Text style={{...styles.label}}>{language.total_storage_usage}</Text>
             </View>
         </View>
-        <View style={{...styles.sidebar_list_container}}>
+        */}
 
+        <View style={{...styles.sidebar_header}}> 
+            <View> 
+                <Text style={{...styles.capacity_number}}>
+                    Invoice Generator
+                </Text>
+                <Text style={{...styles.label}}>See Your Sales, Achieve Success.</Text>
+            </View>
+        </View>
+       
+        <View style={{...styles.sidebar_list_container}}>
+            {/* 
             <View style={{...styles.sidebar_nav_item}}>
                 <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
@@ -120,6 +132,7 @@ var CustomDrawerContent = (props) => {
 
                 </TouchableOpacity>
             </View> 
+            */}
             
             <View style={{...styles.sidebar_nav_item}}>
                 <TouchableOpacity onPress={() => props.navigation.navigate("WorkTeam")} style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
@@ -140,7 +153,7 @@ var CustomDrawerContent = (props) => {
 
                 </TouchableOpacity>
             </View> 
-
+            
             <View style={{...styles.sidebar_nav_item}}>
                 <TouchableOpacity onPress={() => props.navigation.navigate("Settings")} style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
@@ -156,7 +169,7 @@ var CustomDrawerContent = (props) => {
 
                 </TouchableOpacity>
             </View>
-
+            {/*     
             <View style={{...styles.sidebar_nav_item}}>
                 <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
@@ -221,7 +234,7 @@ var CustomDrawerContent = (props) => {
 
                 </TouchableOpacity>
             </View>
-
+            
             <View style={{...styles.sidebar_nav_item}}>
                 <TouchableOpacity style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
@@ -238,6 +251,8 @@ var CustomDrawerContent = (props) => {
                 </TouchableOpacity>
             </View>
 
+            */}
+             
             <View style={{...styles.sidebar_nav_item}}>
                 <TouchableOpacity onPress={( ) => logout_user( props.navigation )} style={{...styles.direction_row, ...styles.item_center, ...styles.gap_15}}>
 
