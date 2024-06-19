@@ -225,7 +225,13 @@ class ProductsComponents extends PureComponent {
         alert("https://www.npmjs.com/package/react-native-swipe-up-down")
         alert("https://www.npmjs.com/package/react-native-date-picker")
         */
+        var user = await usr.get_session();
+        if( user == null ) {
 
+            this.props.navigation.navigate("Login"); 
+            return;
+
+        }
         // Apply screen and header options 
         this.screen_options();  
 

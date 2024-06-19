@@ -14,15 +14,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Animated, I18nManager, StyleSheet, KeyboardAvoidingView, ScrollView, ActivityIndicator, Text, Image, View, TouchableOpacity, SafeAreaView, AppState, TextInput, Dimensions } from 'react-native';
 import { Button, Checkbox } from "react-native-paper";
 import { LineChart } from "react-native-chart-kit";
- 
+
 
 // App Files 
 import {config} from "./../settings/config.js" ;
 import {styles} from "./../controllers/styles.js"; 
 import {get_setting} from "./../controllers/cores/settings.js";
 import {get_lang} from './../controllers/languages.js'; 
-import { usr } from  "./../controllers/storage/user.js";
-
 // import {add_session, get_session, delete_session } from './../controllers/storage.js'
 
 import { SalesInvoiceInstance } from "./../controllers/storage/sales.js";
@@ -127,16 +125,7 @@ class DashboardComponents extends Component {
     }
 
     componentDidMount = async () => {
-        
-        
-        var user = await usr.get_session();
-        if( user == null ) {
-
-            this.props.navigation.navigate("Login"); 
-            return;
-
-        }
-
+         
         // setup language
         await this.setupLanguage();
 
@@ -304,8 +293,8 @@ class DashboardComponents extends Component {
             <SafeAreaView style={{...styles.container_fluid, backgroundColor: "#fff"}}>
  
                  <ScrollView>
-                      {/* 
-                        <View onLayout={this.onLayoutChartContainer} style={{...styles.dashboard_banner}}>
+                     
+                     <View onLayout={this.onLayoutChartContainer} style={{...styles.dashboard_banner}}>
                          
                          <View style={{ ...styles.row, ...styles.direction_row}}>
                               
@@ -346,9 +335,9 @@ class DashboardComponents extends Component {
                          </View>
  
                      </View>
-                      */}
-
-                     <View style={{...styles.flex, ...styles.space_5_left, ...styles.space_5_right, marginTop: 30, marginBottom: 30}}>
+                     
+ 
+                     <View style={{...styles.flex, ...styles.space_5_left, ...styles.space_5_right}}>
                          
                          <View style={{...styles.flex, ...styles.direction_row}}>
                              <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-sales-invoice")} style={{backgroundColor: "#EF6C00", ...styles.dashboard_cols}}>
@@ -378,7 +367,16 @@ class DashboardComponents extends Component {
                          </View>   
  
                          <View style={{...styles.flex, ...styles.direction_row}}>
-                             
+                             <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-branch")} style={{backgroundColor: "#6c5ce7", ...styles.dashboard_cols}}>
+                                 <View style={{...styles.space_bottom_10}}>
+                                     <Image 
+                                         source={require("./../assets/icons/add-new-branch.png")}
+                                         style={{...styles.intenet_connection_icon}}
+                                         resizeMode="cover"
+                                     />
+                                 </View>
+                                 <Text style={{...styles.bold, ...styles.colors.white}}>Add New Branch</Text>
+                             </TouchableOpacity> 
  
                              <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-product")} style={{backgroundColor: "#6b5353", ...styles.dashboard_cols}}>
                                  <View style={{...styles.space_bottom_10}}>
@@ -390,18 +388,6 @@ class DashboardComponents extends Component {
                                  </View>
                                  <Text style={{...styles.bold, ...styles.colors.white}}>Add New Product </Text>
                              </TouchableOpacity>
-
-
-                             <TouchableOpacity onPress={() => this.props.navigation.navigate("add-new-branch")} style={{backgroundColor: "#6c5ce7", ...styles.dashboard_cols}}>
-                                 <View style={{...styles.space_bottom_10}}>
-                                     <Image 
-                                         source={require("./../assets/icons/add-new-branch.png")}
-                                         style={{...styles.intenet_connection_icon}}
-                                         resizeMode="cover"
-                                     />
-                                 </View>
-                                 <Text style={{...styles.bold, ...styles.colors.white}}>Add New Branch</Text>
-                             </TouchableOpacity> 
                              
                          </View>
  
@@ -459,6 +445,7 @@ class DashboardComponents extends Component {
                          </View>
  
                      </View>
+                      
  
                  </ScrollView>
  

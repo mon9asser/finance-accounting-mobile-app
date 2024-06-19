@@ -358,7 +358,7 @@ var styles = StyleSheet.create({
         width: '100%', 
         borderRadius: 10,  
         borderWidth: 1,   
-        flex: 1
+        
     },
 
     input_color_no_border: {
@@ -480,7 +480,7 @@ var styles = StyleSheet.create({
         verticalAlign: "middle",
         justifyContent: "center",
         alignItems: "center",
-        height: '100%' 
+        height: '100%'
     },
 
     textarea_field: {

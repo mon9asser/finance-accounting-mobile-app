@@ -316,7 +316,14 @@ class AddNewProductComponents extends Component {
 
     componentDidMount = async () => {
          
-         
+        var user = await usr.get_session();
+        if( user == null ) {
+
+            this.props.navigation.navigate("Login"); 
+            return;
+
+        }
+        
         // setup language
         this.setup_params();  
         
@@ -600,7 +607,7 @@ class AddNewProductComponents extends Component {
 
                         <TouchableOpacity style={{marginTop: 10, textAlign:"center", width: "100%", justifyContent: "center", alignItems: "center"}} onPress={this.toggleBarcodeScannerOpen}><Text>{this.state.language.cancel}</Text></TouchableOpacity>
                         <View style={{marginTop: 10, height: 250, justifyContent: 'center', alignItems: 'center'}}> 
-                            <Camera style={{height: "100%", width: "100%", aspectRatio: 1}} onBarCodeScanned={this.state.scanned ? undefined : this.handleBarCodeScanned}></Camera>
+                            {/*<Camera style={{height: "100%", width: "100%", aspectRatio: 1}} onBarCodeScanned={this.state.scanned ? undefined : this.handleBarCodeScanned}></Camera>*/}
                         </View> 
 
                         <View>  

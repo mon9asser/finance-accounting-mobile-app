@@ -2474,6 +2474,13 @@ class EditSalesInvoice extends Component {
 
     componentDidMount = async () => {
          
+        var user = await usr.get_session();
+        if( user == null ) {
+
+            this.props.navigation.navigate("Login"); 
+            return;
+
+        }
         
         // setup language
         await this.setup_params();  

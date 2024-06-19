@@ -2441,6 +2441,13 @@ class AddNewSalesInvoiceComponents extends Component {
 
     componentDidMount = async () => {
          
+        var user = await usr.get_session();
+        if( user == null ) {
+
+            this.props.navigation.navigate("Login"); 
+            return;
+
+        }
         
         // setup language
         this.setup_params();  
